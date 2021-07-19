@@ -9,6 +9,8 @@ This code repository is forked from [ipfs-service-provider](https://github.com/P
 - REST API over HTTP
 - JSON RPC over IPFS using [ipfs-coord](https://www.npmjs.com/package/ipfs-coord)
 
+More documentation will be provided shortly.
+
 ## License
 
 [MIT](./LICENSE.md)
