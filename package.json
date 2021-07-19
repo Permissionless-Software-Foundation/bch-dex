@@ -1,7 +1,7 @@
 {
-  "name": "ipfs-service-provider",
+  "name": "ipfs-torlist-service",
   "version": "1.0.0",
-  "description": "A Koa-based combination of a REST API and IPFS JSON RPC. Boilerplate for starting new projects.",
+  "description": "REST API and JSON RPC server for interacting with the torlist database. ",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -18,10 +18,10 @@
   "author": "Chris Troutner <chris.troutner@gmail.com>",
   "license": "MIT",
   "apidoc": {
-    "title": "ipfs-service-provider",
+    "title": "ipfs-torlist-service",
     "url": "localhost:5000"
   },
-  "repository": "Permissionless-Software-Foundation/ipfs-service-provider",
+  "repository": "Permissionless-Software-Foundation/ipfs-torlist-service",
   "dependencies": {
     "@psf/bch-js": "^4.20.1",
     "axios": "^0.21.1",
