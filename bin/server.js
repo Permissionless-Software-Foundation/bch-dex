@@ -15,6 +15,10 @@ const config = require('../config') // this first.
 // const IPFSLib = require('../src/lib/ipfs')
 const AdminLib = require('../src/adapters/admin')
 const adminLib = new AdminLib()
+
+const WebHookLib = require('../src/adapters/webhook')
+const webHookLib = new WebHookLib()
+
 // const JSONRPC = require('../src/rpc')
 // const rpc = new JSONRPC()
 
@@ -71,6 +75,14 @@ async function startServer () {
   // Create the system admin user.
   const success = await adminLib.createSystemUser()
   if (success) console.log('System admin user created.')
+
+  // Create webhook
+  try {
+    await webHookLib.createWebHook('https://test.com/my-webhook')
+    console.log('Webhook created')
+  } catch (error) {
+    console.log('Webhook cant be created')
+  }
 
   return app
 }

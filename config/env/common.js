@@ -35,5 +35,7 @@ module.exports = {
       name: 'Permissionless Software Foundation',
       url: 'https://PSFoundation.cash'
     }
-  }
+  },
+  // P2WDB webhook endpoint
+  webhookService: process.env.WEBHOOKSERVICE ? process.env.WEBHOOKSERVICE : 'http://localhost:5001/webhook'
 }
