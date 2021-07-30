@@ -46,5 +46,5 @@ module.exports = {
   // P2WDB webhook endpoint
   webhookService: process.env.WEBHOOKSERVICE
     ? process.env.WEBHOOKSERVICE
-    : 'http://localhost:5001/webhook'
+    : 'http://localhost:5001/webhook' // P2WDB.
 }
