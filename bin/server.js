@@ -78,7 +78,7 @@ async function startServer () {
 
   // Create webhook
   try {
-    await webHookLib.createWebHook('http://157.90.28.11:5667/entry')
+    await webHookLib.createWebHook('http://localhost:5002/entry')
     console.log('Webhook created')
   } catch (error) {
     console.log('Webhook cant be created')
