@@ -1,6 +1,6 @@
 const { wlogger } = require('../adapters/wlogger')
 
-const EntryEntiy =  require('../entities/entry')
+const EntryEntiy = require('../entities/entry')
 class EntryLib {
   constructor (localConfig = {}) {
     // console.log('User localConfig: ', localConfig)
