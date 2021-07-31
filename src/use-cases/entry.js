@@ -1,5 +1,6 @@
 const { wlogger } = require('../adapters/wlogger')
 
+const EntryEntiy =  require('../entities/entry')
 class EntryLib {
   constructor (localConfig = {}) {
     // console.log('User localConfig: ', localConfig)
@@ -11,6 +12,7 @@ class EntryLib {
     }
 
     // Encapsulate dependencies
+    this.EntryEntity = new EntryEntiy()
     this.EntryModel = this.adapters.localdb.Entry
     this.bchjs = this.adapters.bchjs
   }
@@ -19,44 +21,30 @@ class EntryLib {
   async createEntry (entryObj) {
     try {
       // Input Validation
-      if (!entryObj.entry || typeof entryObj.entry !== 'string') {
-        throw new Error("Property 'entry' must be a string!")
-      }
-      if (!entryObj.description || typeof entryObj.description !== 'string') {
-        throw new Error("Property 'description' must be a string!")
-      }
-      if (!entryObj.slpAddress || typeof entryObj.slpAddress !== 'string') {
-        throw new Error("Property 'slpAddress' must be a string!")
-      }
-      if (!entryObj.signature || typeof entryObj.signature !== 'string') {
-        throw new Error("Property 'signature' must be a string!")
-      }
-      if (!entryObj.category || typeof entryObj.category !== 'string') {
-        throw new Error("Property 'category' must be a string!")
-      }
+      const entryEntity = this.EntryEntity.validate(entryObj)
 
       // Verify that the entry was signed by a specific BCH address.
-      const isValidSignature = this.bchjs._verifySignature(entryObj.slpAddress)
+      const isValidSignature = this.bchjs._verifySignature(entryEntity.slpAddress)
       if (!isValidSignature) {
         throw new Error('Invalid signature')
       }
 
       // Verify psf tokens balance
 
-      const psfBalance = await this.bchjs.getPSFTokenBalance(entryObj.slpAddress)
+      const psfBalance = await this.bchjs.getPSFTokenBalance(entryEntity.slpAddress)
 
       if (psfBalance < 10) {
         throw new Error('Insufficient psf balance')
       }
 
-      const merit = await this.bchjs.getMerit(entryObj.slpAddress)
+      const merit = await this.bchjs.getMerit(entryEntity.slpAddress)
 
       const updatedEntry = {
-        entry: entryObj.entry.trim(),
-        slpAddress: entryObj.slpAddress.trim(),
-        description: entryObj.description.trim(),
-        signature: entryObj.signature.trim(),
-        category: entryObj.category.trim(),
+        entry: entryEntity.entry.trim(),
+        slpAddress: entryEntity.slpAddress.trim(),
+        description: entryEntity.description.trim(),
+        signature: entryEntity.signature.trim(),
+        category: entryEntity.category.trim(),
         balance: psfBalance,
         merit
       }
