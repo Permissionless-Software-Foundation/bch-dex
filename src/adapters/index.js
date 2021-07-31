@@ -12,6 +12,7 @@ const Passport = require('./passport')
 const Nodemailer = require('./nodemailer')
 const { wlogger } = require('./wlogger')
 const JSONFiles = require('./json-files')
+const BCHJSAdapter = require('./bch')
 
 // Instantiate adapter libraries.
 const ipfs = new IPFSAdapter()
@@ -20,6 +21,7 @@ const logapi = new LogsAPI()
 const passport = new Passport()
 const nodemailer = new Nodemailer()
 const jsonFiles = new JSONFiles()
+const bchjs = new BCHJSAdapter()
 
 module.exports = {
   ipfs,
@@ -28,5 +30,6 @@ module.exports = {
   passport,
   nodemailer,
   wlogger,
-  jsonFiles
+  jsonFiles,
+  bchjs
 }

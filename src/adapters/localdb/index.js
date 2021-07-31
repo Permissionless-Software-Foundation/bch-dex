@@ -4,7 +4,7 @@
 
 // Load Mongoose models.
 const Users = require('./models/users')
-const Entry = require('./models/entry')
+const Entries = require('./models/entry')
 class LocalDB {
   constructor () {
     // Encapsulate dependencies

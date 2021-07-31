@@ -11,83 +11,62 @@ class EntryLib {
     }
 
     // Encapsulate dependencies
-    this.EntryModel = this.adapters.localdb.Entries
+    this.EntryModel = this.adapters.localdb.Entry
+    this.bchjs = this.adapters.bchjs
   }
 
   // Create a new entry model and add it to the Mongo database.
   async createEntry (entryObj) {
     try {
-      const {
-        entry,
-        description,
-        slpAddress,
-        signature,
-        category
-      } = entryObj
-
       // Input Validation
-      if (!entry || typeof entry !== 'string') {
+      if (!entryObj.entry || typeof entryObj.entry !== 'string') {
         throw new Error("Property 'entry' must be a string!")
       }
-      if (!description || typeof description !== 'string') {
+      if (!entryObj.description || typeof entryObj.description !== 'string') {
         throw new Error("Property 'description' must be a string!")
       }
-      if (!slpAddress || typeof slpAddress !== 'string') {
+      if (!entryObj.slpAddress || typeof entryObj.slpAddress !== 'string') {
         throw new Error("Property 'slpAddress' must be a string!")
       }
-      if (!signature || typeof signature !== 'string') {
+      if (!entryObj.signature || typeof entryObj.signature !== 'string') {
         throw new Error("Property 'signature' must be a string!")
       }
-      if (!category || typeof category !== 'string') {
+      if (!entryObj.category || typeof entryObj.category !== 'string') {
         throw new Error("Property 'category' must be a string!")
       }
 
-      let psfBalance
-
-      try {
-        // Verify that the entry was signed by a specific BCH address.
-        const isValidSignature = _this.bchjs._verifySignature(body)
-        if (!isValidSignature) {
-          throw new Error('Invalid signature')
-        }
-
-        // Verify psf tokens balance
-        if (_this.env === 'test') {
-          psfBalance = 100
-        } else {
-          psfBalance = 100// await _this.bchjs.getPSFTokenBalance(slpAddress)
-        }
-
-        if (psfBalance < 10) {
-          throw new Error('Insufficient psf balance')
-        }
-      } catch (err) {
-        ctx.throw(406, err.message)
+      // Verify that the entry was signed by a specific BCH address.
+      const isValidSignature = this.bchjs._verifySignature(entryObj.slpAddress)
+      if (!isValidSignature) {
+        throw new Error('Invalid signature')
       }
-      let merit
-      if (_this.env === 'test') {
-        merit = 100
-      } else {
-        merit = 100// await _this.bchjs.getMerit(slpAddress)
+
+      // Verify psf tokens balance
+
+      const psfBalance = await this.bchjs.getPSFTokenBalance(entryObj.slpAddress)
+
+      if (psfBalance < 10) {
+        throw new Error('Insufficient psf balance')
       }
+
+      const merit = await this.bchjs.getMerit(entryObj.slpAddress)
 
       const updatedEntry = {
-        entry: entry.trim(),
-        slpAddress: slpAddress.trim(),
-        description: description.trim(),
-        signature: signature.trim(),
-        category: category.trim(),
+        entry: entryObj.entry.trim(),
+        slpAddress: entryObj.slpAddress.trim(),
+        description: entryObj.description.trim(),
+        signature: entryObj.signature.trim(),
+        category: entryObj.category.trim(),
         balance: psfBalance,
         merit
       }
 
       const entryModel = new this.EntryModel(updatedEntry)
-
       await entryModel.save()
 
-      return { id: entry._id.toString() }
+      return entryModel
     } catch (err) {
-      // console.log('createUser() error: ', err)
+      // console.log("Error in use-cases/entry.js/createEntry()", err.message)
       wlogger.error('Error in use-cases/entry.js/createEntry()')
       throw err
     }

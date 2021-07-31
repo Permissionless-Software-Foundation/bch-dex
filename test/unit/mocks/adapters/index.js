@@ -1,7 +1,6 @@
 /*
   Mocks for the Adapter library.
 */
-
 const ipfs = {
   ipfsAdapter: {
     ipfs: {}
@@ -13,38 +12,67 @@ const ipfs = {
 
 const localdb = {
   Users: class Users {
-    static findById () {}
-    static find () {}
-    static findOne () {
+    static findById() { }
+    static find() { }
+    static findOne() {
       return {
         validatePassword: localdb.validatePassword
       }
     }
 
-    async save () {
+    async save() {
       return {}
     }
 
-    generateToken () {
+    generateToken() {
       return '123'
     }
 
-    toJSON () {
+    toJSON() {
       return {}
     }
 
-    async remove () {
+    async remove() {
       return true
     }
 
-    async validatePassword () {
+    async validatePassword() {
       return true
     }
   },
 
   validatePassword: () => {
     return true
+  },
+
+  Entry: class Entry {
+    constructor(obj){
+      this._id = 'id',
+      this.entry = obj.entry
+      this.slpAddress = obj.slpAddress
+      this.description = obj.description
+      this.signature = obj.signature
+      this.category = obj.category
+      this.balance = obj.balance
+      this.merit = obj.merit
+    }
+    
+    static findById() { }
+    static find() { }
+    static findOne() {}
+
+    async save() {
+      return {}
+    }
+
   }
 }
 
-module.exports = { ipfs, localdb }
+const bchjs = {
+  getMerit: async () => { return 100 },
+  getPSFTokenBalance: async () => { return 100 },
+  _verifySignature: () => { return true }
+}
+
+
+module.exports = { ipfs, localdb, bchjs }
