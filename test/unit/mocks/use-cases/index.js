@@ -31,12 +31,19 @@ class UserUseCaseMock {
   }
 }
 
+class EntryUseCaseMock {
+  async createEntry(userObj) {
+    return {}
+  }
+}
+
 class UseCasesMock {
   constuctor(localConfig = {}) {
     // this.user = new UserUseCaseMock(localConfig)
   }
 
   user = new UserUseCaseMock()
+  entry = new EntryUseCaseMock()
 }
 
 module.exports = UseCasesMock

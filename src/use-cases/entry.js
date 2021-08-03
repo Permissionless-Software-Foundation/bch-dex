@@ -24,7 +24,7 @@ class EntryLib {
       const entryEntity = this.EntryEntity.validate(entryObj)
 
       // Verify that the entry was signed by a specific BCH address.
-      const isValidSignature = this.bchjs._verifySignature(entryEntity.slpAddress)
+      const isValidSignature = this.bchjs._verifySignature(entryEntity)
       if (!isValidSignature) {
         throw new Error('Invalid signature')
       }
@@ -33,7 +33,7 @@ class EntryLib {
 
       const psfBalance = await this.bchjs.getPSFTokenBalance(entryEntity.slpAddress)
 
-      if (psfBalance < 10) {
+      if (psfBalance < 1) {
         throw new Error('Insufficient psf balance')
       }
 
