@@ -32,6 +32,8 @@ class EntryRESTControllerLib {
   // No api-doc documentation because this wont be a public endpoint
   async createEntry (ctx) {
     try {
+      console.log('body: ', ctx.request.body)
+
       const entryObj = ctx.request.body.entry
 
       const entry = await _this.useCases.entry.createEntry(entryObj)
