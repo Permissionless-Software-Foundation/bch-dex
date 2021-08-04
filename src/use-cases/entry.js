@@ -33,7 +33,7 @@ class EntryLib {
 
       const psfBalance = await this.bchjs.getPSFTokenBalance(entryEntity.slpAddress)
 
-      if (psfBalance < 1) {
+      if (psfBalance < 10) {
         throw new Error('Insufficient psf balance')
       }
 
