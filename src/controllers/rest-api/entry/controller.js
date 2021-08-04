@@ -12,13 +12,13 @@ class EntryRESTControllerLib {
     this.adapters = localConfig.adapters
     if (!this.adapters) {
       throw new Error(
-        'Instance of Adapters library required when instantiating /users REST Controller.'
+        'Instance of Adapters library required when instantiating /entry REST Controller.'
       )
     }
     this.useCases = localConfig.useCases
     if (!this.useCases) {
       throw new Error(
-        'Instance of Use Cases library required when instantiating /users REST Controller.'
+        'Instance of Use Cases library required when instantiating /entry REST Controller.'
       )
     }
 
@@ -29,14 +29,12 @@ class EntryRESTControllerLib {
     _this = this
   }
 
-  // No Documentation because this wont be a public endpoint
+  // No api-doc documentation because this wont be a public endpoint
   async createEntry (ctx) {
     try {
       const entryObj = ctx.request.body.entry
 
       const entry = await _this.useCases.entry.createEntry(entryObj)
-      // console.log('userData: ', userData)
-      // console.log('token: ', token)
 
       ctx.body = { entry }
     } catch (err) {
@@ -63,4 +61,5 @@ class EntryRESTControllerLib {
     }
   }
 }
+
 module.exports = EntryRESTControllerLib

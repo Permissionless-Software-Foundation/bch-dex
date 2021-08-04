@@ -42,7 +42,7 @@ describe('#Entry-REST-Router', () => {
       } catch (err) {
         assert.include(
           err.message,
-          'Instance of Adapters library required when instantiating PostEntry REST Controller.'
+          'Instance of Adapters library required when instantiating /entry REST Controller.'
         )
       }
     })
@@ -55,7 +55,7 @@ describe('#Entry-REST-Router', () => {
       } catch (err) {
         assert.include(
           err.message,
-          'Instance of Use Cases library required when instantiating PostEntry REST Controller.'
+          'Instance of Use Cases library required when instantiating /entry REST Controller.'
         )
       }
     })

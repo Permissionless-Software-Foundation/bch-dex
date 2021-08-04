@@ -41,7 +41,7 @@ describe('#Entry-REST-Controller', () => {
       } catch (err) {
         assert.include(
           err.message,
-          'Instance of Adapters library required when instantiating /users REST Controller.'
+          'Instance of Adapters library required when instantiating /entry REST Controller.'
         )
       }
     })
@@ -54,7 +54,7 @@ describe('#Entry-REST-Controller', () => {
       } catch (err) {
         assert.include(
           err.message,
-          'Instance of Use Cases library required when instantiating /users REST Controller.'
+          'Instance of Use Cases library required when instantiating /entry REST Controller.'
         )
       }
     })
@@ -79,7 +79,8 @@ describe('#Entry-REST-Controller', () => {
           entry: 'entry',
           description: 'test',
           slpAddress: 'simpleledger:qpnty9t0w93fez04h7yzevujpv8pun204qqp0jfafg',
-          signature: 'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw=',
+          signature:
+            'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw=',
           category: 'test'
         }
       }
