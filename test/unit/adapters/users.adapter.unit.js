@@ -7,7 +7,7 @@ const sinon = require('sinon')
 const mongoose = require('mongoose')
 
 // Set the environment variable to signal this is a test.
-process.env.SVC_ENV = 'test'
+process.env.TORLIST_ENV = 'test'
 
 const User = require('../../../src/adapters/localdb/models/users')
 const config = require('../../../config')
