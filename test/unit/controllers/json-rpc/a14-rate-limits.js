@@ -9,7 +9,7 @@ const sinon = require('sinon')
 const assert = require('chai').assert
 
 // Set the environment variable to signal this is a test.
-process.env.SVC_ENV = 'test'
+process.env.TORLIST_ENV = 'test'
 
 // Local libraries
 const RateLimit = require('../../../../src/controllers/json-rpc/rate-limit')

@@ -23,24 +23,24 @@ WORKDIR /home/safeuser
 #RUN runuser -l safeuser -c "npm config set prefix '~/.npm-global'"
 
 # Switch to user account.
-USER safeuser
+#USER safeuser
 # Prep 'sudo' commands.
-RUN echo 'abcd8765' | sudo -S pwd
+#RUN echo 'abcd8765' | sudo -S pwd
 
 # Clone the rest.bitcoin.com repository
 WORKDIR /home/safeuser
-RUN git clone https://github.com/christroutner/koa-api-boilerplate
-RUN mv koa-api-boilerplate koa
-RUN mkdir keys
+RUN git clone https://github.com/Permissionless-Software-Foundation/ipfs-service-provider
 
 # Switch to the desired branch. `master` is usually stable,
 # and `stage` has the most up-to-date changes.
-WORKDIR /home/safeuser/koa
+WORKDIR /home/safeuser/ipfs-service-provider
 
 # For development: switch to unstable branch
-# RUN git checkout unstable
+#RUN git checkout ct-unstable
 
 # Install dependencies
+#RUN mkdir .ipfsdata
+RUN npm install -g @mapbox/node-pre-gyp
 RUN npm install
 
 # Generate the API docs
@@ -52,7 +52,7 @@ VOLUME /home/safeuser/keys
 EXPOSE 5001
 
 # Start the application.
-COPY start-production start-production
-CMD ["./start-production"]
+COPY start-production.sh start-production.sh
+CMD ["./start-production.sh"]
 
 #CMD ["npm", "start"]

@@ -36,6 +36,11 @@ class JSONRPC {
     this.authController = new AuthController(localConfig)
     this.aboutController = new AboutController()
 
+    // Cache to store IDs of processed JSON RPC commands. Used to prevent
+    // duplicate processing.
+    this.msgCache = []
+    this.MSG_CACHE_SIZE = 30
+
     _this = this
   }
 
@@ -44,23 +49,45 @@ class JSONRPC {
   async router (str, from) {
     try {
       // console.log('router str: ', str)
-      // console.log('router from: ', from)
+      console.log('JSON RPC router recieved data from: ', from)
 
       // Exit quietly if 'from' is not specified.
       if (!from || typeof from !== 'string') {
-        // console.warn(
-        //   'Warning: Can not send JSON RPC response. Can not determine which peer this message came from.'
-        // )
+        wlogger.info(
+          'Warning: Can not send JSON RPC response. Can not determine which peer this message came from.'
+        )
         return
       }
 
       // Attempt to parse the incoming data as a JSON RPC string.
       const parsedData = _this.jsonrpc.parse(str)
-      // console.log('parsedData: ', parsedData)
+      // wlogger.debug(`parsedData: ${JSON.stringify(parsedData, null, 2)}`)
 
       // Exit quietly if the incoming string is an invalid JSON RPC string.
       if (parsedData.type === 'invalid') {
+        wlogger.info('Rejecting invalid JSON RPC command.')
         return
+      }
+
+      // Check for duplicate entries with same 'id' value.
+      const alreadyProcessed = _this._checkIfAlreadyProcessed(parsedData)
+      if (alreadyProcessed) {
+        return
+      } else {
+        // This node will regularly ping known circuit relays with an /about
+        // JSON RPC call. These will be handled by ipfs-coord, but will percolate
+        // up to ipfs-coord. Ignore these messages.
+        if (
+          parsedData.type.includes('success') &&
+          parsedData.payload.method === undefined
+        ) {
+          return
+        }
+
+        // Log the incoming JSON RPC command.
+        wlogger.info(
+          `JSON RPC received from ${from}, ID: ${parsedData.payload.id}, type: ${parsedData.type}, method: ${parsedData.payload.method}`
+        )
       }
 
       // Added the property "from" to the parsedData object;
@@ -95,8 +122,19 @@ class JSONRPC {
 
       // Encrypt and publish the response to the originators private OrbitDB,
       // if ipfs-coord has been initialized and the peers ID is registered.
-      if (_this.ipfsCoord.ipfs) {
-        await _this.ipfsCoord.ipfs.orbitdb.sendToDb(from, retStr)
+
+      // console.log('responding to JSON RPC command')
+      const thisNode = _this.ipfsCoord.thisNode
+      // console.log('thisNode: ', thisNode)
+
+      try {
+        await _this.ipfsCoord.useCases.peer.sendPrivateMessage(
+          from,
+          retStr,
+          thisNode
+        )
+      } catch (err) {
+        console.log('sendPrivateMessage() err: ', err)
       }
 
       // Return the response and originator. Useful for testing.
@@ -105,6 +143,34 @@ class JSONRPC {
       // console.error('Error in rpc router(): ', err)
       wlogger.error('Error in rpc router(): ', err)
       // Do not throw error. This is a top-level function.
+    }
+  }
+
+  // Checks the ID of the JSON RPC call, to see if the message has already been
+  // processed. Returns true if the ID exists in the cache of processed messages.
+  // If the ID is new, the function adds it to the cache and return false.
+  _checkIfAlreadyProcessed (data) {
+    try {
+      const id = data.payload.id
+
+      // Check if the hash is in the array of already processed message.
+      const alreadyProcessed = this.msgCache.includes(id)
+
+      // Update the msgCache if this is a new message.
+      if (!alreadyProcessed) {
+        // Add the hash to the array.
+        this.msgCache.push(id)
+
+        // If the array is at its max size, then remove the oldest element.
+        if (this.msgCache.length > this.MSG_CACHE_SIZE) {
+          this.msgCache.shift()
+        }
+      }
+
+      return alreadyProcessed
+    } catch (err) {
+      console.error('Error in _checkIfAlreadyProcessed: ', err)
+      return false
     }
   }
 

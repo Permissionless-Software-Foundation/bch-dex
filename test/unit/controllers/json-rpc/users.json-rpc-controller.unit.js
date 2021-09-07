@@ -9,7 +9,7 @@ const assert = require('chai').assert
 const { v4: uid } = require('uuid')
 
 // Set the environment variable to signal this is a test.
-process.env.SVC_ENV = 'test'
+process.env.TORLIST_ENV = 'test'
 
 // Local libraries
 const UserRPC = require('../../../../src/controllers/json-rpc/users')

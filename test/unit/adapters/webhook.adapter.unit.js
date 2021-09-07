@@ -6,7 +6,7 @@ const assert = require('chai').assert
 const sinon = require('sinon')
 
 // Set the environment variable to signal this is a test.
-process.env.SVC_ENV = 'test'
+process.env.TORLIST_ENV = 'test'
 
 const WebHook = require('../../../src/adapters/webhook')
 
