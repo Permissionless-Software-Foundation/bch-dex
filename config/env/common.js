@@ -5,6 +5,14 @@
 
 /* eslint  no-unneeded-ternary:0 */
 
+// Get the version from the package.json file.
+const pkgInfo = require('../../package.json')
+const version = pkgInfo.version
+
+const ipfsCoordName = process.env.COORD_NAME
+  ? process.env.COORD_NAME
+  : 'ipfs-torlist-service-generic'
+
 module.exports = {
   // Configure TCP port.
   port: process.env.PORT || 5002,
@@ -23,6 +31,21 @@ module.exports = {
     ? process.env.EMAILPASS
     : 'emailpassword',
 
+  // FullStack.cash account information, used for automatic JWT handling.
+  getJwtAtStartup: false,
+  authServer: process.env.AUTHSERVER
+    ? process.env.AUTHSERVER
+    : 'https://auth.fullstack.cash',
+  apiServer: process.env.APISERVER
+    ? process.env.APISERVER
+    : 'https://api.fullstack.cash/v5/',
+  fullstackLogin: process.env.FULLSTACKLOGIN
+    ? process.env.FULLSTACKLOGIN
+    : 'demo@demo.com',
+  fullstackPassword: process.env.FULLSTACKPASS
+    ? process.env.FULLSTACKPASS
+    : 'demo',
+
   // IPFS settings.
   isCircuitRelay: process.env.ENABLE_CIRCUIT_RELAY ? true : false,
 
@@ -33,7 +56,9 @@ module.exports = {
   announceJsonLd: {
     '@context': 'https://schema.org/',
     '@type': 'WebAPI',
-    name: 'ipfs-service-provider',
+    name: ipfsCoordName,
+    version,
+    protocol: 'generic-service',
     description:
       'This is a generic IPFS Serivice Provider that uses JSON RPC over IPFS to communicate with it. This instance has not been customized. Source code: https://github.com/Permissionless-Software-Foundation/ipfs-service-provider',
     documentation: 'https://ipfs-service-provider.fullstack.cash/',
@@ -43,8 +68,18 @@ module.exports = {
       url: 'https://PSFoundation.cash'
     }
   },
+
   // P2WDB webhook endpoint
   webhookService: process.env.WEBHOOKSERVICE
     ? process.env.WEBHOOKSERVICE
-    : 'http://localhost:5001/webhook' // P2WDB.
+    : 'http://localhost:5001/webhook', // P2WDB.
+
+  // IPFS Ports
+  ipfsTcpPort: process.env.IPFS_TCP_PORT ? process.env.IPFS_TCP_PORT : 4001,
+  ipfsWsPort: process.env.IPFS_WS_PORT ? process.env.IPFS_WS_PORT : 4003,
+
+  // BCH Mnemonic for generating encryption keys and payment address
+  mnemonic: process.env.MNEMONIC ? process.env.MNEMONIC : '',
+
+  debugLevel: process.env.DEBUG_LEVEL ? parseInt(process.env.DEBUG_LEVEL) : 1
 }
