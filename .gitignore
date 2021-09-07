@@ -66,5 +66,6 @@ orbitdb
 ipfsdata
 .ipfsdata
 ipfs-service-provider.sh
+run-dev.sh
 
 !README.md
