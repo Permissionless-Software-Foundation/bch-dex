@@ -22,11 +22,12 @@ describe('bch', () => {
 
   describe('#_verifySignature', () => {
     it('should return true for valid signature', () => {
-      const slpAddress = 'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
+      const offerBchAddr =
+        'bitcoincash:qphjncqpnv444jq8acqk4dkm3296c50xhqggeatvn8'
       const signature =
-        'H1Bv2xUBGZBTuNsUghix03Yp8n8YPPkfsPq6LktwDpC2e1estOfYx96NH3/eaHJpQpPSHSb6pQYaiR3KZ6Z9lRc='
-      const entry = 'example.com'
-      const verifyObj = { slpAddress, signature, entry }
+        'Hz8bi9CsHaYkk5SGtHLU0aaxFspEXz7IdBNn6xV8ejE6OCuIRoZuVE9QJsGSlJ3Rt0ez2LWD0e292NZ84rRwnfk='
+      const sigMsg = 'example.com'
+      const verifyObj = { offerBchAddr, signature, sigMsg }
 
       const result = uut._verifySignature(verifyObj)
 
@@ -34,12 +35,12 @@ describe('bch', () => {
     })
 
     it('should return false for invalid signature', () => {
-      const slpAddress = 'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
+      const offerBchAddr =
+        'bitcoincash:qphjncqpnv444jq8acqk4dkm3296c50xhqggeatvn8'
       const signature =
-        'ICcj+ShSRIllp0iTqQK49Ltnycg1upaT7dK5CPAwNIBqEtegn305dPBf5IMdx/ScuyOBWPEfOqab2V73TbuK6Us='
-      const entry = 'example.com'
-
-      const verifyObj = { slpAddress, signature, entry }
+        'Hz8bi9CsHaYkk5SGtHLU0aaxFspEXz7IdBNn6xV8ejE6OCuIRoZuVE9QJsGSlJ3Rt0ez2LWD0e292NZ84rRwnfd='
+      const sigMsg = 'example.com'
+      const verifyObj = { offerBchAddr, signature, sigMsg }
 
       const result = uut._verifySignature(verifyObj)
 
@@ -53,11 +54,12 @@ describe('bch', () => {
           .stub(uut.bchjs.BitcoinCash, 'verifyMessage')
           .throws(new Error('test error'))
 
-        const slpAddress = 'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
+        const offerBchAddr =
+          'bitcoincash:qphjncqpnv444jq8acqk4dkm3296c50xhqggeatvn8'
         const signature =
-          'ICcj+ShSRIllp0iTqQK49Ltnycg1upaT7dK5CPAwNIBqEtegn305dPBf5IMdx/ScuyOBWPEfOqab2V73TbuK6Us='
-        const entry = 'example.com'
-        const verifyObj = { slpAddress, signature, entry }
+          'Hz8bi9CsHaYkk5SGtHLU0aaxFspEXz7IdBNn6xV8ejE6OCuIRoZuVE9QJsGSlJ3Rt0ez2LWD0e292NZ84rRwnfk='
+        const sigMsg = 'example.com'
+        const verifyObj = { offerBchAddr, signature, sigMsg }
         uut._verifySignature(verifyObj)
 
         assert.fail('Unexpected result')
@@ -83,7 +85,8 @@ describe('bch', () => {
         .stub(uut.bchjs.SLP.Utils, 'balancesForAddress')
         .resolves(mockData.psfBalances)
 
-      const slpAddress = 'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
+      const slpAddress =
+        'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
       const result = await uut.getPSFTokenBalance(slpAddress)
 
       assert.isNumber(result)
@@ -96,7 +99,8 @@ describe('bch', () => {
         .stub(uut.bchjs.SLP.Utils, 'balancesForAddress')
         .resolves(mockData.noPsfBalances)
 
-      const slpAddress = 'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
+      const slpAddress =
+        'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
       const result = await uut.getPSFTokenBalance(slpAddress)
 
       assert.isNumber(result)
@@ -105,11 +109,10 @@ describe('bch', () => {
 
     it('should return 0 for empty balances', async () => {
       // Mock live network calls.
-      sandbox
-        .stub(uut.bchjs.SLP.Utils, 'balancesForAddress')
-        .resolves([])
+      sandbox.stub(uut.bchjs.SLP.Utils, 'balancesForAddress').resolves([])
 
-      const slpAddress = 'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
+      const slpAddress =
+        'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
       const result = await uut.getPSFTokenBalance(slpAddress)
 
       assert.isNumber(result)
@@ -136,11 +139,10 @@ describe('bch', () => {
     it('should return the merit ', async () => {
       try {
         // Mock live network calls.
-        sandbox
-          .stub(uut.msgLib.merit, 'agMerit')
-          .resolves(100)
+        sandbox.stub(uut.msgLib.merit, 'agMerit').resolves(100)
 
-        const slpAddr = 'simpleledger:qqgnksc6zr4nzxrye69fq625wu2myxey6uh9kzjy96'
+        const slpAddr =
+          'simpleledger:qqgnksc6zr4nzxrye69fq625wu2myxey6uh9kzjy96'
         const merit = await uut.getMerit(slpAddr)
         assert.isNumber(merit)
       } catch (err) {

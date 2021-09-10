@@ -10,7 +10,8 @@ class Bch {
   constructor () {
     // Encapsulate dependencies
     this.bchjs = new BCHJS()
-    this.PSF_TOKEN_ID = '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0'
+    this.PSF_TOKEN_ID =
+      '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0'
     this.msgLib = new MsgLib({ bchjs: this.bchjs })
   }
 
@@ -18,15 +19,15 @@ class Bch {
   _verifySignature (verifyObj) {
     try {
       // Expand the input object.
-      const { slpAddress, signature, entry } = verifyObj
+      const { offerBchAddr, signature, sigMsg } = verifyObj
 
       // Convert to BCH address.
-      const scrubbedAddr = this.bchjs.SLP.Address.toCashAddress(slpAddress)
+      // const scrubbedAddr = this.bchjs.SLP.Address.toCashAddress(slpAddress)
 
       const isValid = this.bchjs.BitcoinCash.verifyMessage(
-        scrubbedAddr,
+        offerBchAddr,
         signature,
-        entry
+        sigMsg
       )
 
       return isValid
@@ -43,7 +44,9 @@ class Bch {
         throw new Error('slpAddress must be a string')
       }
       let psfBalance = 0
-      const balances = await this.bchjs.SLP.Utils.balancesForAddress(slpAddress)
+      const balances = await this.bchjs.SLP.Utils.balancesForAddress(
+        slpAddress
+      )
 
       // Sums all the balances of all tokens
       // that match the psf token ID
