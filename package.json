@@ -1,7 +1,7 @@
 {
-  "name": "ipfs-torlist-service",
+  "name": "ipfs-swap-service",
   "version": "1.0.0",
-  "description": "REST API and JSON RPC server for interacting with the torlist database. ",
+  "description": "Prototype token trading API for BCH and SLP tokens.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -18,10 +18,10 @@
   "author": "Chris Troutner <chris.troutner@gmail.com>",
   "license": "MIT",
   "apidoc": {
-    "title": "ipfs-torlist-service",
+    "title": "ipfs-swap-service",
     "url": "localhost:5000"
   },
-  "repository": "Permissionless-Software-Foundation/ipfs-torlist-service",
+  "repository": "christroutner/ipfs-swap-service",
   "dependencies": {
     "@psf/bch-js": "^4.20.3",
     "axios": "^0.21.1",
