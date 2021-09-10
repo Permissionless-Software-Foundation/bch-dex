@@ -25,7 +25,7 @@ describe('OfferApi', () => {
   afterEach(() => sandbox.restore())
 
   describe('POST /offer', () => {
-    it('pass data to the handlers', async () => {
+    it('should pass data to the handlers', async () => {
       try {
         const mockOffer = {
           lokadId: 'SWP',
