@@ -32,30 +32,7 @@ class OfferLib {
         throw new Error('Invalid signature')
       }
 
-      // Verify psf tokens balance
-
-      // const psfBalance = await this.bchjs.getPSFTokenBalance(entryEntity.slpAddress)
-      //
-      // if (psfBalance < 10) {
-      //   throw new Error('Insufficient psf balance')
-      // }
-      //
-      // const merit = await this.bchjs.getMerit(entryEntity.slpAddress)
-      //
-      // const updatedEntry = {
-      //   entry: entryEntity.entry.trim(),
-      //   slpAddress: entryEntity.slpAddress.trim(),
-      //   description: entryEntity.description.trim(),
-      //   signature: entryEntity.signature.trim(),
-      //   category: entryEntity.category.trim(),
-      //   balance: psfBalance,
-      //   merit
-      // }
-      //
-      // const entryModel = new this.EntryModel(updatedEntry)
-      // await entryModel.save()
-      //
-      // return entryModel
+      // Add offer to P2WDB.
 
       return true
     } catch (err) {
