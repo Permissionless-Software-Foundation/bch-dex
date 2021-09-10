@@ -34,9 +34,9 @@ class OfferRESTControllerLib {
     try {
       console.log('body: ', ctx.request.body)
 
-      const offerObj = ctx.request.body.entry
+      const offerObj = ctx.request.body.offer
 
-      const offer = await _this.useCases.offer.createoffer(offerObj)
+      const offer = await _this.useCases.offer.createOffer(offerObj)
 
       ctx.body = { offer }
     } catch (err) {

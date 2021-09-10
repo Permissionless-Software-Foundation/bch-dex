@@ -14,17 +14,20 @@ class OfferLib {
     // Encapsulate dependencies
     this.OfferEntity = new OfferEntity()
     this.OfferModel = this.adapters.localdb.Offer
-    this.bchjs = this.adapters.bchjs
+    this.bch = this.adapters.bch
   }
 
   // Create a new offer model and add it to the Mongo database.
   async createOffer (entryObj) {
     try {
+      console.log('createOffer(entryObj): ', entryObj)
+
       // Input Validation
       const offerEntity = this.OfferEntity.validate(entryObj)
+      console.log('offerEntity: ', offerEntity)
 
       // Verify that the entry was signed by a specific BCH address.
-      const isValidSignature = this.bchjs._verifySignature(offerEntity)
+      const isValidSignature = this.bch._verifySignature(offerEntity)
       if (!isValidSignature) {
         throw new Error('Invalid signature')
       }

@@ -23,7 +23,7 @@
   }
 */
 class Offer {
-  validate ({ data } = {}) {
+  validate (data) {
     // Input Validation
     // if (!entry || typeof entry !== "string") {
     //   throw new Error("Property 'entry' must be a string!");
@@ -41,9 +41,7 @@ class Offer {
     //   throw new Error("Property 'category' must be a string!");
     // }
 
-    const offerData = {
-      data
-    }
+    const offerData = data
 
     return offerData
   }

@@ -12,6 +12,7 @@ const UserRouter = require('./users')
 const ContactRESTController = require('./contact')
 const LogsRESTController = require('./logs')
 const EntryRouter = require('./entry')
+const OfferRouter = require('./offer')
 
 class RESTControllers {
   constructor (localConfig = {}) {
@@ -57,6 +58,9 @@ class RESTControllers {
     // Attach the REST API Controllers associated with the /entry route
     const entryRouter = new EntryRouter(dependencies)
     entryRouter.attach(app)
+
+    const offerRouter = new OfferRouter(dependencies)
+    offerRouter.attach(app)
   }
 }
 

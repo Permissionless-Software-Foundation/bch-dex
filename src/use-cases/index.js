@@ -6,6 +6,7 @@
 
 const UserUseCases = require('./user')
 const EntryUseCases = require('./entry')
+const OfferUseCases = require('./offer')
 
 class UseCases {
   constructor (localConfig = {}) {
@@ -19,6 +20,7 @@ class UseCases {
     // console.log('use-cases/index.js localConfig: ', localConfig)
     this.user = new UserUseCases(localConfig)
     this.entry = new EntryUseCases(localConfig)
+    this.offer = new OfferUseCases(localConfig)
   }
 }
 
