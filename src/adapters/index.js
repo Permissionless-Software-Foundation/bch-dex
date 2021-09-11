@@ -17,6 +17,8 @@ const Nodemailer = require('./nodemailer')
 const JSONFiles = require('./json-files')
 const FullStackJWT = require('./fullstack-jwt')
 const BCHAdapter = require('./bch')
+const WalletAdapter = require('./wallet')
+
 //
 // // Instantiate adapter libraries.
 // const ipfs = new IPFSAdapter()
@@ -51,6 +53,7 @@ class Adapters {
     this.bchjs = new BCHJS()
     this.bch = new BCHAdapter()
     this.config = config
+    this.wallet = new WalletAdapter()
 
     // Get a valid JWT API key and instance bch-js.
     this.fullStackJwt = new FullStackJWT(config)

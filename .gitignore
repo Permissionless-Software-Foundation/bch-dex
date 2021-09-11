@@ -67,5 +67,6 @@ ipfsdata
 .ipfsdata
 ipfs-service-provider.sh
 run-dev.sh
+wallet.json
 
 !README.md
