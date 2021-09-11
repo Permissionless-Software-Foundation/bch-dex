@@ -2,6 +2,8 @@
   Mock data for the wallet.adapter.unit.js test file.
 */
 
+const BCHJS = require('@psf/bch-js')
+
 const mockWallet = {
   mnemonic:
     'course abstract aerobic deer try switch turtle diet fence affair butter top',
@@ -19,6 +21,7 @@ class MockBchWallet {
   constructor () {
     this.walletInfoPromise = true
     this.walletInfo = mockWallet
+    this.bchjs = new BCHJS()
   }
 }
 

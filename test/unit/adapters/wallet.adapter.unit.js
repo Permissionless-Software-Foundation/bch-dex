@@ -127,6 +127,25 @@ describe('#wallet', () => {
       }
     })
   })
+
+  describe('#generateSignature', () => {
+    it('should return a signature', async () => {
+      // mock instance of minimal-slp-wallet
+      uut.bchWallet = new MockBchWallet()
+
+      const result = await uut.generateSignature('test')
+      // console.log('result: ', result)
+
+      assert.isString(result)
+    })
+
+    // it('should catch and throw errors', async () => {
+    //   try {
+    //   } catch (err) {
+    //     assert.include(err.message, 'test error')
+    //   }
+    // })
+  })
 })
 
 const deleteFile = (filepath) => {

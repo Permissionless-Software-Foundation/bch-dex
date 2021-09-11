@@ -78,6 +78,28 @@ class WalletAdapter {
       throw err
     }
   }
+
+  // Generate a cryptographic signature, required to write to the P2WDB.
+  async generateSignature (message) {
+    try {
+      // TODO: Add input validation for message.
+
+      const privKey = this.bchWallet.walletInfo.privateKey
+
+      // console.log('privKey: ', privKey)
+      // console.log('flags.data: ', flags.data)
+
+      const signature = this.bchWallet.bchjs.BitcoinCash.signMessageWithPrivKey(
+        privKey,
+        message
+      )
+
+      return signature
+    } catch (err) {
+      console.error('Error in generateSignature()')
+      throw err
+    }
+  }
 }
 
 module.exports = WalletAdapter
