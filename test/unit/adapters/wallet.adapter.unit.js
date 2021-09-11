@@ -95,6 +95,38 @@ describe('#wallet', () => {
       }
     })
   })
+
+  describe('#instanceWallet', () => {
+    it('should create an instance of BchWallet', async () => {
+      // Mock dependencies
+      uut.BchWallet = MockBchWallet
+
+      const bchjs = {
+        restURL: 'dummyUrl',
+        apiToken: 'dummyToken'
+      }
+
+      // Ensure we open the test file, not the production wallet file.
+      uut.WALLET_FILE = testWalletFile
+
+      const walletData = await uut.openWallet()
+
+      const result = await uut.instanceWallet(walletData.mnemonic, bchjs)
+
+      assert.equal(result, true)
+    })
+
+    it('should catch and throw an error', async () => {
+      try {
+        await uut.instanceWallet()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log('err: ', err)
+        assert.include(err.message, 'Cannot read property')
+      }
+    })
+  })
 })
 
 const deleteFile = (filepath) => {

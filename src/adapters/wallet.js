@@ -33,7 +33,8 @@ class WalletAdapter {
         console.warn('Wallet file not found. Creating new wallet.json file.')
 
         // Create a new wallet.
-        const walletInstance = new this.BchWallet()
+        // No-Update flag creates wallet without making any network calls.
+        const walletInstance = new this.BchWallet(undefined, { noUpdate: true })
 
         // Wait for wallet to initialize.
         await walletInstance.walletInfoPromise
@@ -49,6 +50,31 @@ class WalletAdapter {
       return walletData
     } catch (err) {
       console.error('Error in openWallet()')
+      throw err
+    }
+  }
+
+  // Create an instance of minimal-slp-wallet. Use data in the wallet.json file,
+  // and pass the bch-js information to the minimal-slp-wallet library.
+  async instanceWallet (walletData, bchjs) {
+    try {
+      // TODO: Throw error if bch-js is not passed in.
+      // TODO: throw error if wallet data is not passed in.
+
+      const advancedConfig = {
+        restURL: bchjs.restURL,
+        apiToken: bchjs.apiToken
+      }
+
+      // Instantiate minimal-slp-wallet.
+      this.bchWallet = new this.BchWallet(walletData.mnemonic, advancedConfig)
+
+      // Wait for wallet to initialize.
+      await this.bchWallet.walletInfoPromise
+
+      return true
+    } catch (err) {
+      console.error('Error in instanceWallet()')
       throw err
     }
   }
