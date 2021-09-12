@@ -27,10 +27,24 @@ class OfferLib {
       console.log('offerEntity: ', offerEntity)
 
       // Verify that the entry was signed by a specific BCH address.
-      const isValidSignature = this.bch._verifySignature(offerEntity)
-      if (!isValidSignature) {
-        throw new Error('Invalid signature')
+      // const isValidSignature = this.bch._verifySignature(offerEntity)
+      // if (!isValidSignature) {
+      //   throw new Error('Invalid signature')
+      // }
+
+      // generate signature.
+      const now = new Date()
+      const message = now.toISOString()
+      const signature = await this.adapters.wallet.generateSignature(message)
+      console.log('signature: ', signature)
+
+      // Burn PSF token to pay for P2WDB write.
+      const result = await await this.adapters.wallet.burnPsf()
+      if (!result.success) {
+        throw new Error('Could not burn PSF token to pay for P2WDB write.')
       }
+      const txid = result.txid
+      console.log('txid: ', txid)
 
       // Add offer to P2WDB.
 
