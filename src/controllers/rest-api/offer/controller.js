@@ -36,9 +36,9 @@ class OfferRESTControllerLib {
 
       const offerObj = ctx.request.body.offer
 
-      const offer = await _this.useCases.offer.createOffer(offerObj)
+      const hash = await _this.useCases.offer.createOffer(offerObj)
 
-      ctx.body = { offer }
+      ctx.body = { hash }
     } catch (err) {
       // console.log(`err.message: ${err.message}`)
       // console.log('err: ', err)

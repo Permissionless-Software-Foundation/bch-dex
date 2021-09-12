@@ -18,6 +18,7 @@ const JSONFiles = require('./json-files')
 const FullStackJWT = require('./fullstack-jwt')
 const BCHAdapter = require('./bch')
 const WalletAdapter = require('./wallet')
+const P2wdbAdapter = require('./p2wdb')
 
 //
 // // Instantiate adapter libraries.
@@ -54,6 +55,7 @@ class Adapters {
     this.bch = new BCHAdapter()
     this.config = config
     this.wallet = new WalletAdapter()
+    this.p2wdb = new P2wdbAdapter()
 
     // Get a valid JWT API key and instance bch-js.
     this.fullStackJwt = new FullStackJWT(config)

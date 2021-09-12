@@ -39,16 +39,22 @@ class OfferLib {
       console.log('signature: ', signature)
 
       // Burn PSF token to pay for P2WDB write.
-      const result = await await this.adapters.wallet.burnPsf()
-      if (!result.success) {
-        throw new Error('Could not burn PSF token to pay for P2WDB write.')
+      const txid = await this.adapters.wallet.burnPsf()
+      console.log('burn txid: ', txid)
+      console.log(`https://simpleledger.info/tx/${txid}`)
+
+      const p2wdbObj = {
+        txid,
+        signature,
+        message,
+        appId: 'swapTest555',
+        data: offerEntity
       }
-      const txid = result.txid
-      console.log('txid: ', txid)
 
       // Add offer to P2WDB.
+      const hash = await this.adapters.p2wdb.write(p2wdbObj)
 
-      return true
+      return hash
     } catch (err) {
       // console.log("Error in use-cases/entry.js/createEntry()", err.message)
       wlogger.error('Error in use-cases/entry.js/createOffer())')
