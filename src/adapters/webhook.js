@@ -24,7 +24,7 @@ class WebHook {
       const endpoint = _this.config.webhookService
 
       const obj = {
-        appId: 'torlist',
+        appId: 'swapTest555',
         url
       }
 

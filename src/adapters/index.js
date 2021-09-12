@@ -16,7 +16,10 @@ const Nodemailer = require('./nodemailer')
 // const { wlogger } = require('./wlogger')
 const JSONFiles = require('./json-files')
 const FullStackJWT = require('./fullstack-jwt')
-// const BCHJSAdapter = require('./bch')
+const BCHAdapter = require('./bch')
+const WalletAdapter = require('./wallet')
+const P2wdbAdapter = require('./p2wdb')
+
 //
 // // Instantiate adapter libraries.
 // const ipfs = new IPFSAdapter()
@@ -49,7 +52,10 @@ class Adapters {
     this.nodemailer = new Nodemailer()
     this.jsonFiles = new JSONFiles()
     this.bchjs = new BCHJS()
+    this.bch = new BCHAdapter()
     this.config = config
+    this.wallet = new WalletAdapter()
+    this.p2wdb = new P2wdbAdapter()
 
     // Get a valid JWT API key and instance bch-js.
     this.fullStackJwt = new FullStackJWT(config)
@@ -67,6 +73,13 @@ class Adapters {
 
       // Start the IPFS node.
       await this.ipfs.start()
+
+      // Open the wallet file
+      const walletData = await this.wallet.openWallet()
+      // console.log('walletData: ', walletData)
+
+      // Instance the wallet.
+      await this.wallet.instanceWallet(walletData, this.bchjs)
     } catch (err) {
       console.error('Error in adapters/index.js/start()')
       throw err

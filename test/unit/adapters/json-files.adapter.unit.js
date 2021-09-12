@@ -1,3 +1,7 @@
+/*
+  Unit tests for the JSON File adapter.
+*/
+
 const assert = require('chai').assert
 const fs = require('fs')
 const sinon = require('sinon')
@@ -10,27 +14,32 @@ const JsonFiles = require('../../../src/adapters/json-files')
 const JSON_FILE = 'test-json-file.json'
 const JSON_PATH = `${__dirname.toString()}/${JSON_FILE}`
 
-const deleteFile = filepath => {
+const deleteFile = (filepath) => {
   try {
     // Delete state if exist
     fs.unlinkSync(filepath)
   } catch (error) {}
 }
+
 let sandbox
 let uut
+
 describe('JsonFiles', () => {
   const obj = {
     json: 'file'
   }
+
   beforeEach(() => {
     uut = new JsonFiles()
     sandbox = sinon.createSandbox()
   })
+
   afterEach(() => sandbox.restore())
 
   after(() => {
     deleteFile(JSON_PATH)
   })
+
   describe('writeJSON()', () => {
     it('should throw error if  inputs is not provided', async () => {
       try {
@@ -40,6 +49,7 @@ describe('JsonFiles', () => {
         assert.include(err.message, 'obj property is required')
       }
     })
+
     it('should throw error if  filename property is not provided', async () => {
       try {
         await uut.writeJSON(obj)
