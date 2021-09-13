@@ -155,7 +155,7 @@ class WalletAdapter {
       //   txid: 'fakeTxid',
       // }
     } catch (err) {
-      console.error('Error in burnPsf(): ', err)
+      console.error('Error in burnPsf()')
       throw err
     }
   }

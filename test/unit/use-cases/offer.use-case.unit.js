@@ -73,6 +73,21 @@ describe('#offer-use-case', () => {
 
       assert.isString(result)
     })
+
+    it('should catch and throw an error', async () => {
+      try {
+        // Force an error
+        sandbox
+          .stub(uut.adapters.wallet, 'burnPsf')
+          .rejects(new Error('test error'))
+
+        await uut.createOffer()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
   })
 
   // describe('#createEntry', () => {

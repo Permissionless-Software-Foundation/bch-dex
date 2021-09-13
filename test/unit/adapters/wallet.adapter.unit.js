@@ -139,12 +139,23 @@ describe('#wallet', () => {
       assert.isString(result)
     })
 
-    // it('should catch and throw errors', async () => {
-    //   try {
-    //   } catch (err) {
-    //     assert.include(err.message, 'test error')
-    //   }
-    // })
+    it('should catch and throw errors', async () => {
+      try {
+        // mock instance of minimal-slp-wallet
+        uut.bchWallet = new MockBchWallet()
+
+        // force an error
+        sandbox
+          .stub(uut.bchWallet.bchjs.BitcoinCash, 'signMessageWithPrivKey')
+          .throws(new Error('test error'))
+
+        await uut.generateSignature('test')
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
   })
 
   describe('#burnPsf', () => {
