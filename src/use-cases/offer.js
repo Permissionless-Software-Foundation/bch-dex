@@ -22,9 +22,17 @@ class OfferLib {
     try {
       console.log('createOffer(entryObj): ', entryObj)
 
+      // Burn PSF token to pay for P2WDB write.
+      const txid = await this.adapters.wallet.burnPsf()
+      console.log('burn txid: ', txid)
+      console.log(`https://simpleledger.info/tx/${txid}`)
+
       // Input Validation
       const offerEntity = this.OfferEntity.validate(entryObj)
       console.log('offerEntity: ', offerEntity)
+
+      // TODO: Move tokens to holding address, which will generate the UTXO to
+      // use in the Offer.
 
       // Verify that the entry was signed by a specific BCH address.
       // const isValidSignature = this.bch._verifySignature(offerEntity)
@@ -37,11 +45,6 @@ class OfferLib {
       const message = now.toISOString()
       const signature = await this.adapters.wallet.generateSignature(message)
       console.log('signature: ', signature)
-
-      // Burn PSF token to pay for P2WDB write.
-      const txid = await this.adapters.wallet.burnPsf()
-      console.log('burn txid: ', txid)
-      console.log(`https://simpleledger.info/tx/${txid}`)
 
       const p2wdbObj = {
         txid,
