@@ -44,6 +44,9 @@ class WalletAdapter {
 
         walletData = walletInstance.walletInfo
 
+        // Add the nextAddress property
+        walletData.nextAddress = 1
+
         // Write the wallet data to the JSON file.
         await this.jsonFiles.writeJSON(walletData, this.WALLET_FILE)
       }
@@ -53,6 +56,26 @@ class WalletAdapter {
       return walletData
     } catch (err) {
       console.error('Error in openWallet()')
+      throw err
+    }
+  }
+
+  // Increments the 'nextAddress' property in the wallet file. This property
+  // indicates the HD index that should be used to generate a key pair for
+  // storing funds for Offers.
+  // This function opens the wallet file, increments the nextAddress property,
+  // then saves the change to the wallet file.
+  async incrementNextAddress () {
+    try {
+      const walletData = await this.openWallet()
+      // console.log('original walletdata: ', walletData)
+
+      walletData.nextAddress++
+
+      // console.log('walletData finish: ', walletData)
+      await this.jsonFiles.writeJSON(walletData, this.WALLET_FILE)
+    } catch (err) {
+      console.error('Error in incrementNextAddress()')
       throw err
     }
   }

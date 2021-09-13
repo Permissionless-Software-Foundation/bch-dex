@@ -196,6 +196,15 @@ describe('#wallet', () => {
       }
     })
   })
+
+  describe('#incrementNextAddress', () => {
+    it('should increment the nextAddress property', async () => {
+      // Ensure we open the test file, not the production wallet file.
+      uut.WALLET_FILE = testWalletFile
+
+      await uut.incrementNextAddress()
+    })
+  })
 })
 
 const deleteFile = (filepath) => {
