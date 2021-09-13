@@ -46,6 +46,35 @@ describe('#offer-use-case', () => {
     })
   })
 
+  describe('#createOffer', () => {
+    it('should create an offer and return the hash', async () => {
+      const entryObj = {
+        lokadId: 'SWP',
+        messageType: 1,
+        messageClass: 1,
+        tokenId: 'token-id',
+        buyOrSell: 'sell',
+        rateInSats: 1000,
+        minSatsToExchange: 1250,
+        utxoTxid: 'txid-goes-here',
+        utxoVout: 1
+      }
+
+      // Mock dependencies
+      sandbox.stub(uut.adapters.wallet, 'burnPsf').resolves('fakeTxid')
+      sandbox.stub(uut.offerEntity, 'validate').returns(entryObj)
+      sandbox
+        .stub(uut.adapters.wallet, 'generateSignature')
+        .resolves('fakeSignature')
+      sandbox.stub(uut.adapters.p2wdb, 'write').resolves('fakeHash')
+
+      const result = await uut.createOffer(entryObj)
+      console.log('result: ', result)
+
+      assert.isString(result)
+    })
+  })
+
   // describe('#createEntry', () => {
   //   it('should throw an error if entry is not provided', async () => {
   //     try {

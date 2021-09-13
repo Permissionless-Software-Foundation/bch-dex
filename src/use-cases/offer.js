@@ -1,6 +1,7 @@
 const { wlogger } = require('../adapters/wlogger')
 
 const OfferEntity = require('../entities/offer')
+
 class OfferLib {
   constructor (localConfig = {}) {
     // console.log('User localConfig: ', localConfig)
@@ -12,7 +13,7 @@ class OfferLib {
     }
 
     // Encapsulate dependencies
-    this.OfferEntity = new OfferEntity()
+    this.offerEntity = new OfferEntity()
     this.OfferModel = this.adapters.localdb.Offer
     this.bch = this.adapters.bch
   }
@@ -20,7 +21,7 @@ class OfferLib {
   // Create a new offer model and add it to the Mongo database.
   async createOffer (entryObj) {
     try {
-      console.log('createOffer(entryObj): ', entryObj)
+      // console.log('createOffer(entryObj): ', entryObj)
 
       // Burn PSF token to pay for P2WDB write.
       const txid = await this.adapters.wallet.burnPsf()
@@ -28,23 +29,17 @@ class OfferLib {
       console.log(`https://simpleledger.info/tx/${txid}`)
 
       // Input Validation
-      const offerEntity = this.OfferEntity.validate(entryObj)
-      console.log('offerEntity: ', offerEntity)
+      const offerEntity = this.offerEntity.validate(entryObj)
+      // console.log('offerEntity: ', offerEntity)
 
       // TODO: Move tokens to holding address, which will generate the UTXO to
       // use in the Offer.
-
-      // Verify that the entry was signed by a specific BCH address.
-      // const isValidSignature = this.bch._verifySignature(offerEntity)
-      // if (!isValidSignature) {
-      //   throw new Error('Invalid signature')
-      // }
 
       // generate signature.
       const now = new Date()
       const message = now.toISOString()
       const signature = await this.adapters.wallet.generateSignature(message)
-      console.log('signature: ', signature)
+      // console.log('signature: ', signature)
 
       const p2wdbObj = {
         txid,
@@ -56,6 +51,7 @@ class OfferLib {
 
       // Add offer to P2WDB.
       const hash = await this.adapters.p2wdb.write(p2wdbObj)
+      // console.log('hash: ', hash)
 
       return hash
     } catch (err) {
