@@ -8,24 +8,53 @@
 */
 class Offer {
   validate (data) {
-    // Input Validation
-    // if (!entry || typeof entry !== "string") {
-    //   throw new Error("Property 'entry' must be a string!");
-    // }
-    // if (!description || typeof description !== "string") {
-    //   throw new Error("Property 'description' must be a string!");
-    // }
-    // if (!slpAddress || typeof slpAddress !== "string") {
-    //   throw new Error("Property 'slpAddress' must be a string!");
-    // }
-    // if (!signature || typeof signature !== "string") {
-    //   throw new Error("Property 'signature' must be a string!");
-    // }
-    // if (!category || typeof category !== "string") {
-    //   throw new Error("Property 'category' must be a string!");
-    // }
+    const {
+      messageType,
+      messageClass,
+      tokenId,
+      buyOrSell,
+      rateInSats,
+      minSatsToExchange,
+      utxoTxid,
+      utxoVout
+    } = data
 
-    const offerData = data
+    // Input Validation
+    if (!messageType || typeof messageType !== 'number') {
+      throw new Error("Property 'messageType' must be an integer number.")
+    }
+    if (!messageClass || typeof messageClass !== 'number') {
+      throw new Error("Property 'messageClass' must be an integer number.")
+    }
+    if (!tokenId || typeof tokenId !== 'string') {
+      throw new Error("Property 'tokenId' must be a string.")
+    }
+    if (!buyOrSell || typeof buyOrSell !== 'string') {
+      throw new Error("Property 'buyOrSell' must be a string.")
+    }
+    if (!rateInSats || typeof rateInSats !== 'number') {
+      throw new Error("Property 'rateInSats' must be an integer number.")
+    }
+    if (!minSatsToExchange || typeof minSatsToExchange !== 'number') {
+      throw new Error("Property 'minSatsToExchange' must be an integer number.")
+    }
+    if (!utxoTxid || typeof utxoTxid !== 'string') {
+      throw new Error("Property 'utxoTxid' must be a string.")
+    }
+    if (!utxoVout || typeof utxoVout !== 'number') {
+      throw new Error("Property 'utxoVout' must be an integer number.")
+    }
+
+    const offerData = {
+      messageType,
+      messageClass,
+      tokenId,
+      buyOrSell,
+      rateInSats,
+      minSatsToExchange,
+      utxoTxid,
+      utxoVout
+    }
 
     return offerData
   }
