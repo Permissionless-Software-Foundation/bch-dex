@@ -73,10 +73,10 @@ class OfferLib {
   // trade.
   async ensureFunds (offerEntity) {
     try {
-      // console.log('this.adapters.wallet: ', this.adapters.wallet)
+      // console.log('this.adapters.wallet: ', this.adapters.wallet.bchWallet)
 
       // Get UTXOs.
-      const utxos = this.adapters.wallet.utxos.utxoStore
+      const utxos = this.adapters.wallet.bchWallet.utxos.utxoStore
       // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
       if (offerEntity.buyOrSell.includes('sell')) {

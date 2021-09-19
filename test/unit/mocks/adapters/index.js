@@ -83,7 +83,11 @@ const bchjs = {
 //   generateSignature: async () => {}
 // }
 const { MockBchWallet } = require('./wallet')
-const wallet = new MockBchWallet()
+const wallet = {
+  burnPsf: async () => {},
+  generateSignature: async () => {},
+  bchWallet: new MockBchWallet()
+}
 
 const p2wdb = {
   write: async () => {}
