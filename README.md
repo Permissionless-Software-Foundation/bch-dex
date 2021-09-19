@@ -18,7 +18,7 @@ This repository was forked from [ipfs-torlist-service](https://github.com/Permis
     - Submit Signal message to P2WDB for new buy/sell order.
     - Check UTXO status before submitting Payment message.
   - React to webhook when new Offers come in.
-    - Add and track new Offers.
+    - Add and track new Offers in MongoDB.
     - Process Payment signals:
       - Checking transaction for compatibility
       - Broadcast/close trades managed by this app.

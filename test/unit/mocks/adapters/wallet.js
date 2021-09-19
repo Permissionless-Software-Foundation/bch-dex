@@ -14,7 +14,8 @@ const mockWallet = {
   address: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
   slpAddress: 'simpleledger:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acq9zm7d33',
   legacyAddress: '1JQj1KcQL7GPKzc1D2PvdUSgw3MbDtrHzi',
-  hdPath: "m/44'/245'/0'/0/0"
+  hdPath: "m/44'/245'/0'/0/0",
+  nextAddress: 1
 }
 
 class MockBchWallet {

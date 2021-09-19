@@ -6,6 +6,7 @@
 const assert = require('chai').assert
 const sinon = require('sinon')
 const fs = require('fs')
+// const BCHJS = require('@psf/bch-js')
 
 // Local libraries.
 const WalletAdapter = require('../../../src/adapters/wallet')
@@ -139,12 +140,23 @@ describe('#wallet', () => {
       assert.isString(result)
     })
 
-    // it('should catch and throw errors', async () => {
-    //   try {
-    //   } catch (err) {
-    //     assert.include(err.message, 'test error')
-    //   }
-    // })
+    it('should catch and throw errors', async () => {
+      try {
+        // mock instance of minimal-slp-wallet
+        uut.bchWallet = new MockBchWallet()
+
+        // force an error
+        sandbox
+          .stub(uut.bchWallet.bchjs.BitcoinCash, 'signMessageWithPrivKey')
+          .throws(new Error('test error'))
+
+        await uut.generateSignature('test')
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
   })
 
   describe('#burnPsf', () => {
@@ -182,6 +194,65 @@ describe('#wallet', () => {
         assert.fail('Unexpected code path')
       } catch (err) {
         assert.include(err.message, 'Cannot read property')
+      }
+    })
+  })
+
+  describe('#incrementNextAddress', () => {
+    it('should increment the nextAddress property', async () => {
+      // Ensure we open the test file, not the production wallet file.
+      uut.WALLET_FILE = testWalletFile
+
+      // mock instance of minimal-slp-wallet
+      uut.bchWallet = new MockBchWallet()
+
+      const result = await uut.incrementNextAddress()
+
+      assert.equal(result, 2)
+    })
+
+    it('should catch and throw an error', async () => {
+      try {
+        // Force an error
+        sandbox.stub(uut, 'openWallet').rejects(new Error('test error'))
+
+        await uut.incrementNextAddress()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
+
+  describe('#getKeyPair', () => {
+    it('should return an object with a key pair', async () => {
+      // Ensure we open the test file, not the production wallet file.
+      uut.WALLET_FILE = testWalletFile
+
+      // mock instance of minimal-slp-wallet
+      uut.bchWallet = new MockBchWallet()
+
+      const result = await uut.getKeyPair()
+      // console.log('result: ', result)
+
+      assert.property(result, 'cashAddress')
+      assert.property(result, 'wif')
+      assert.property(result, 'hdIndex')
+    })
+
+    it('should catch and throw an error', async () => {
+      try {
+        // Force an error
+        sandbox
+          .stub(uut, 'incrementNextAddress')
+          .rejects(new Error('test error'))
+
+        await uut.getKeyPair()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
       }
     })
   })

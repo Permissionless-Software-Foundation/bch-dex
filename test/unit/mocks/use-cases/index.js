@@ -37,6 +37,12 @@ class EntryUseCaseMock {
   }
 }
 
+class Offer {
+  async createOffer() {
+    return {}
+  }
+}
+
 class UseCasesMock {
   constuctor(localConfig = {}) {
     // this.user = new UserUseCaseMock(localConfig)
@@ -44,6 +50,7 @@ class UseCasesMock {
 
   user = new UserUseCaseMock()
   entry = new EntryUseCaseMock()
+  offer = new Offer()
 }
 
 module.exports = UseCasesMock

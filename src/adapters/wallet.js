@@ -44,6 +44,9 @@ class WalletAdapter {
 
         walletData = walletInstance.walletInfo
 
+        // Add the nextAddress property
+        walletData.nextAddress = 1
+
         // Write the wallet data to the JSON file.
         await this.jsonFiles.writeJSON(walletData, this.WALLET_FILE)
       }
@@ -53,6 +56,66 @@ class WalletAdapter {
       return walletData
     } catch (err) {
       console.error('Error in openWallet()')
+      throw err
+    }
+  }
+
+  // Increments the 'nextAddress' property in the wallet file. This property
+  // indicates the HD index that should be used to generate a key pair for
+  // storing funds for Offers.
+  // This function opens the wallet file, increments the nextAddress property,
+  // then saves the change to the wallet file.
+  async incrementNextAddress () {
+    try {
+      const walletData = await this.openWallet()
+      // console.log('original walletdata: ', walletData)
+
+      walletData.nextAddress++
+
+      // console.log('walletData finish: ', walletData)
+      await this.jsonFiles.writeJSON(walletData, this.WALLET_FILE)
+
+      // Update the working instance of the wallet.
+      this.bchWallet.walletInfo.nextAddress++
+      // console.log('this.bchWallet.walletInfo: ', this.bchWallet.walletInfo)
+
+      return walletData.nextAddress
+    } catch (err) {
+      console.error('Error in incrementNextAddress()')
+      throw err
+    }
+  }
+
+  // This method returns an object that contains a private key WIF, public address,
+  // and the index of the HD wallet that the key pair was generated from.
+  async getKeyPair () {
+    try {
+      const hdIndex = await this.incrementNextAddress()
+
+      const mnemonic = this.bchWallet.walletInfo.mnemonic
+
+      // root seed buffer
+      const rootSeed = await this.bchWallet.bchjs.Mnemonic.toSeed(mnemonic)
+
+      const masterHDNode = this.bchWallet.bchjs.HDNode.fromSeed(rootSeed)
+
+      // HDNode of BIP44 account
+      // const account = this.bchWallet.bchjs.HDNode.derivePath(masterHDNode, "m/44'/245'/0'")
+
+      const childNode = masterHDNode.derivePath(`m/44'/245'/0'/0/${hdIndex}`)
+
+      const cashAddress = this.bchWallet.bchjs.HDNode.toCashAddress(childNode)
+      const wif = this.bchWallet.bchjs.HDNode.toWIF(childNode)
+
+      const outObj = {
+        cashAddress,
+        wif,
+        hdIndex
+      }
+
+      return outObj
+    } catch (err) {
+      console.error('Error in getKeyPair()')
       throw err
     }
   }
@@ -155,7 +218,7 @@ class WalletAdapter {
       //   txid: 'fakeTxid',
       // }
     } catch (err) {
-      console.error('Error in burnPsf(): ', err)
+      console.error('Error in burnPsf()')
       throw err
     }
   }

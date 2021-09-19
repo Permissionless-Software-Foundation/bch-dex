@@ -32,7 +32,7 @@ class OfferRESTControllerLib {
   // No api-doc documentation because this wont be a public endpoint
   async createOffer (ctx) {
     try {
-      console.log('body: ', ctx.request.body)
+      // console.log('body: ', ctx.request.body)
 
       const offerObj = ctx.request.body.offer
 
