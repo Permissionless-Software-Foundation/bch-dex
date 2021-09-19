@@ -28,7 +28,7 @@ class OfferLib {
       // console.log('offerEntity: ', offerEntity)
 
       // Ensure sufficient tokens exist to create the offer.
-      // await this.ensureFunds(offerEntity)
+      await this.ensureFunds(offerEntity)
 
       // Move the tokens to holding address.
       // const utxoInfo = await moveTokens(offerEntity)
@@ -65,6 +65,49 @@ class OfferLib {
     } catch (err) {
       // console.log("Error in use-cases/entry.js/createEntry()", err.message)
       wlogger.error('Error in use-cases/entry.js/createOffer())')
+      throw err
+    }
+  }
+
+  // Ensure that the wallet has enough BCH and tokens to complete the requested
+  // trade.
+  async ensureFunds (offerEntity) {
+    try {
+      // console.log('this.adapters.wallet: ', this.adapters.wallet)
+
+      // Get UTXOs.
+      const utxos = this.adapters.wallet.utxos.utxoStore
+      // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
+
+      if (offerEntity.buyOrSell.includes('sell')) {
+        // Sell Offer
+
+        // Get token UTXOs that match the token in the offer.
+        const tokenUtxos = utxos.slpUtxos.type1.tokens.filter(
+          (x) => x.tokenId === offerEntity.tokenId
+        )
+        // console.log('tokenUtxos: ', tokenUtxos)
+
+        // Get the total amount of tokens in the wallet that match the token
+        // in the offer.
+        let totalTokenBalance = 0
+        tokenUtxos.map((x) => (totalTokenBalance += parseFloat(x.tokenQty)))
+        // console.log('totalTokenBalance: ', totalTokenBalance)
+
+        // If there are fewer tokens in the wallet than what's in the offer,
+        // throw an error.
+        if (totalTokenBalance <= offerEntity.numTokens) {
+          throw new Error(
+            'App wallet does not have enough tokens to satisfy the SELL offer.'
+          )
+        }
+      } else {
+        // Buy Offer
+      }
+
+      return true
+    } catch (err) {
+      console.error('Error in ensureFunds()')
       throw err
     }
   }

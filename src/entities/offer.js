@@ -15,8 +15,7 @@ class Offer {
       buyOrSell,
       rateInSats,
       minSatsToExchange,
-      utxoTxid,
-      utxoVout
+      numTokens
     } = data
 
     // Input Validation
@@ -38,11 +37,8 @@ class Offer {
     if (!minSatsToExchange || typeof minSatsToExchange !== 'number') {
       throw new Error("Property 'minSatsToExchange' must be an integer number.")
     }
-    if (!utxoTxid || typeof utxoTxid !== 'string') {
-      throw new Error("Property 'utxoTxid' must be a string.")
-    }
-    if (!utxoVout || typeof utxoVout !== 'number') {
-      throw new Error("Property 'utxoVout' must be an integer number.")
+    if (!numTokens || typeof numTokens !== 'number') {
+      throw new Error("Property 'numTokens' must be a number.")
     }
 
     const offerData = {
@@ -52,8 +48,7 @@ class Offer {
       buyOrSell,
       rateInSats,
       minSatsToExchange,
-      utxoTxid,
-      utxoVout
+      numTokens
     }
 
     return offerData

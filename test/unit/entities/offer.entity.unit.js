@@ -114,7 +114,7 @@ describe('#Offer-Entity', () => {
       }
     })
 
-    it('should throw an error if utxoTxid is not included', () => {
+    it('should throw an error if numTokens is not included', () => {
       try {
         const data = {
           messageType: 1,
@@ -122,33 +122,12 @@ describe('#Offer-Entity', () => {
           tokenId: 'fakeId',
           buyOrSell: 'buy',
           rateInSats: 1000,
-          minSatsToExchange: 1000
+          minSatsToExchange: 350
         }
         uut.validate(data)
       } catch (err) {
         // console.log(err)
-        assert.include(err.message, "Property 'utxoTxid' must be a string.")
-      }
-    })
-
-    it('should throw an error if utxoVout is not included', () => {
-      try {
-        const data = {
-          messageType: 1,
-          messageClass: 1,
-          tokenId: 'fakeId',
-          buyOrSell: 'buy',
-          rateInSats: 1000,
-          minSatsToExchange: 1000,
-          utxoTxid: 'fakeId'
-        }
-        uut.validate(data)
-      } catch (err) {
-        // console.log(err)
-        assert.include(
-          err.message,
-          "Property 'utxoVout' must be an integer number."
-        )
+        assert.include(err.message, "Property 'numTokens' must be a number.")
       }
     })
   })
