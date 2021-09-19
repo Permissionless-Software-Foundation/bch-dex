@@ -35,6 +35,7 @@ class OfferLib {
       console.log('utxoInfo: ', utxoInfo)
 
       // Update the UTXO store for the wallet.
+      await this.adapters.wallet.bchWallet.bchjs.Util.sleep(3000)
       await this.adapters.wallet.bchWallet.getUtxos()
 
       // Update the offer with the new UTXO information.
@@ -89,7 +90,7 @@ class OfferLib {
         qty: offerEntity.numTokens
       }
 
-      const txid = await this.adapters.wallet.bchWallet.sendTokens(receiver, 2)
+      const txid = await this.adapters.wallet.bchWallet.sendTokens(receiver, 3)
 
       const utxoInfo = {
         txid,
