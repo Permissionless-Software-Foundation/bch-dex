@@ -7,6 +7,8 @@ const axios = require('axios')
 
 let _this
 
+const APPID = 'swapTest555'
+
 class WebHook {
   constructor () {
     _this = this
@@ -15,7 +17,7 @@ class WebHook {
   }
 
   // REST petition to create a webhook in p2wdb-service
-  async createWebHook (url) {
+  async createWebhook (url) {
     try {
       if (!url || typeof url !== 'string') {
         throw new Error('url must be a string')
@@ -24,7 +26,7 @@ class WebHook {
       const endpoint = _this.config.webhookService
 
       const obj = {
-        appId: 'swapTest555',
+        appId: APPID,
         url
       }
 
@@ -33,6 +35,29 @@ class WebHook {
       return result.data
     } catch (err) {
       console.log('Error in adapters/webhook/createWebHook()')
+      throw err
+    }
+  }
+
+  // REST petition to delete a webhook in p2wdb-service
+  async deleteWebhook (url) {
+    try {
+      if (!url || typeof url !== 'string') {
+        throw new Error('url must be a string')
+      }
+
+      const endpoint = _this.config.webhookService
+
+      const obj = {
+        appId: APPID,
+        url
+      }
+
+      const result = await axios.delete(endpoint, { data: obj })
+
+      return result.data
+    } catch (err) {
+      console.log('Error in adapters/webhook/deleteWebHook()')
       throw err
     }
   }
