@@ -86,6 +86,9 @@ const { MockBchWallet } = require('./wallet')
 const wallet = {
   burnPsf: async () => {},
   generateSignature: async () => {},
+  getKeyPair: async () => {
+    return { cashAddress: 'fakeAddr', wif: 'fakeWif', hdIndex: 1 }
+  },
   bchWallet: new MockBchWallet()
 }
 

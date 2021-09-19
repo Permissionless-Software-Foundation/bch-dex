@@ -88,6 +88,8 @@ class WalletAdapter {
 
   // This method returns an object that contains a private key WIF, public address,
   // and the index of the HD wallet that the key pair was generated from.
+  // TODO: Allow input integer. If input is used, use that as the index. If no
+  // input is provided, then call incrementNextAddress().
   async getKeyPair () {
     try {
       const hdIndex = await this.incrementNextAddress()
@@ -105,6 +107,8 @@ class WalletAdapter {
       const childNode = masterHDNode.derivePath(`m/44'/245'/0'/0/${hdIndex}`)
 
       const cashAddress = this.bchWallet.bchjs.HDNode.toCashAddress(childNode)
+      console.log('cashAddress: ', cashAddress)
+
       const wif = this.bchWallet.bchjs.HDNode.toWIF(childNode)
 
       const outObj = {
@@ -218,7 +222,7 @@ class WalletAdapter {
       //   txid: 'fakeTxid',
       // }
     } catch (err) {
-      console.error('Error in burnPsf()')
+      console.error('Error in burnPsf(): ', err)
       throw err
     }
   }
