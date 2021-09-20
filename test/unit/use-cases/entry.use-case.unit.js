@@ -89,13 +89,15 @@ describe('#users-use-case', () => {
         assert.include(err.message, "Property 'signature' must be a string!")
       }
     })
+
     it('should throw an error if category is not provided', async () => {
       try {
         const inputData = {
           entry: 'entry',
           description: 'test',
           slpAddress: 'simpleledger:qpnty9t0w93fez04h7yzevujpv8pun204qqp0jfafg',
-          signature: 'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw='
+          signature:
+            'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw='
         }
         await uut.createEntry(inputData)
         assert.fail('Unexpected code path')
@@ -103,6 +105,7 @@ describe('#users-use-case', () => {
         assert.include(err.message, "Property 'category' must be a string!")
       }
     })
+
     it('should catch and throw DB errors', async () => {
       try {
         // Force an error with the database.
@@ -112,7 +115,8 @@ describe('#users-use-case', () => {
           entry: 'entry',
           description: 'test',
           slpAddress: 'simpleledger:qpnty9t0w93fez04h7yzevujpv8pun204qqp0jfafg',
-          signature: 'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw=',
+          signature:
+            'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw=',
           category: 'test'
         }
 
@@ -123,16 +127,20 @@ describe('#users-use-case', () => {
         assert.include(err.message, 'test error')
       }
     })
+
     it('should throw error if signature is invalid', async () => {
       try {
         // Mocking bchjs functions
-        sandbox.stub(uut.bchjs, '_verifySignature').callsFake(() => { return false })
+        sandbox.stub(uut.bch, '_verifySignature').callsFake(() => {
+          return false
+        })
 
         const inputData = {
           entry: 'entry',
           description: 'test',
           slpAddress: 'simpleledger:qpnty9t0w93fez04h7yzevujpv8pun204qqp0jfafg',
-          signature: 'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw=',
+          signature:
+            'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw=',
           category: 'test'
         }
 
@@ -146,13 +154,14 @@ describe('#users-use-case', () => {
     it('should throw error for insufficient psf balance', async () => {
       try {
         // Mocking bchjs functions
-        sandbox.stub(uut.bchjs, 'getPSFTokenBalance').resolves(0)
+        sandbox.stub(uut.bch, 'getPSFTokenBalance').resolves(0)
 
         const inputData = {
           entry: 'entry',
           description: 'test',
           slpAddress: 'simpleledger:qpnty9t0w93fez04h7yzevujpv8pun204qqp0jfafg',
-          signature: 'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw=',
+          signature:
+            'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw=',
           category: 'test'
         }
 
@@ -174,7 +183,8 @@ describe('#users-use-case', () => {
         entry: 'entry',
         description: 'test',
         slpAddress: 'simpleledger:qpnty9t0w93fez04h7yzevujpv8pun204qqp0jfafg',
-        signature: 'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw=',
+        signature:
+          'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw=',
         category: 'test'
       }
 

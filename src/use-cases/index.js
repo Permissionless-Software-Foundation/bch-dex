@@ -7,6 +7,7 @@
 const UserUseCases = require('./user')
 const EntryUseCases = require('./entry')
 const OfferUseCases = require('./offer')
+const OrderUseCases = require('./order')
 
 class UseCases {
   constructor (localConfig = {}) {
@@ -21,6 +22,7 @@ class UseCases {
     this.user = new UserUseCases(localConfig)
     this.entry = new EntryUseCases(localConfig)
     this.offer = new OfferUseCases(localConfig)
+    this.order = new OrderUseCases(localConfig)
   }
 }
 

@@ -64,21 +64,28 @@ describe('#Order-REST-Router', () => {
   describe('#createOrder', () => {
     it('should create a new order', async () => {
       ctx.request.body = {
-        messageType: 1,
-        messageClass: 1,
-        tokenId:
-          '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
-        buyOrSell: 'sell',
-        rateInSats: 1000,
-        minSatsToExchange: 10,
-        numTokens: 0.02,
-        utxoTxid:
-          '5b733e347adf79a05790ccb5a5ddaf28eaba983ccfa4507f075bb503943dbc4c',
-        utxoVout: 0
+        appId: 'swapTest555',
+        data: {
+          messageType: 1,
+          messageClass: 1,
+          tokenId:
+            '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
+          buyOrSell: 'sell',
+          rateInSats: 1000,
+          minSatsToExchange: 10,
+          numTokens: 0.02,
+          utxoTxid:
+            '241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87',
+          utxoVout: 0
+        },
+        timestamp: '2021-09-20T17:54:26.395Z',
+        localTimeStamp: '9/20/2021, 10:54:26 AM',
+        txid: '46f50f2a0cf44e3ed70dfb0618ef3ebfee57aabcf229b5d2d17c07322b54a8d7',
+        hash: 'zdpuB2X25AZCKo3wpr4sSbw44vqPWJRqcxWQRHZccK5BdtoGD'
       }
 
       // Mock dependencies
-      // sandbox.stub(uut.useCases.order, 'createOrder').resolves('testHash')
+      // sandbox.stub(uut.useCases.order, 'createOrder').resolves()
 
       await uut.createOrder(ctx)
 

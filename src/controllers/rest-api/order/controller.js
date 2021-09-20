@@ -34,11 +34,13 @@ class OrderRESTControllerLib {
     try {
       console.log('body: ', ctx.request.body)
 
-      // const offerObj = ctx.request.body.offer
-      //
-      // const hash = await _this.useCases.offer.createOffer(offerObj)
+      const orderObj = ctx.request.body
 
-      ctx.body = {}
+      await _this.useCases.order.createOrder(orderObj)
+
+      ctx.body = {
+        success: true
+      }
     } catch (err) {
       // console.log(`err.message: ${err.message}`)
       // console.log('err: ', err)

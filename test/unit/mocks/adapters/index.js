@@ -1,6 +1,10 @@
 /*
   Mocks for the Adapter library.
 */
+
+const BCHJS = require('@psf/bch-js')
+const bchjs = new BCHJS()
+
 const ipfs = {
   ipfsAdapter: {
     ipfs: {}
@@ -66,7 +70,7 @@ const localdb = {
   }
 }
 
-const bchjs = {
+const bch = {
   getMerit: async () => {
     return 100
   },
@@ -96,4 +100,4 @@ const p2wdb = {
   write: async () => {}
 }
 
-module.exports = { ipfs, localdb, bchjs, wallet, p2wdb }
+module.exports = { ipfs, localdb, bch, wallet, p2wdb, bchjs }
