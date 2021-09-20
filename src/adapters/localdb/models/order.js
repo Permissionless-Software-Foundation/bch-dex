@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const Offer = new mongoose.Schema({
+const Order = new mongoose.Schema({
   // SWaP Protocol Properties
   lokadId: { type: String },
   messageType: { type: Number },
@@ -21,4 +21,4 @@ const Offer = new mongoose.Schema({
   offerPubKey: { type: String }
 })
 
-module.exports = mongoose.model('offer', Offer)
+module.exports = mongoose.model('order', Order)

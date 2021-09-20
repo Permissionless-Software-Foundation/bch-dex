@@ -13,6 +13,7 @@ const ContactRESTController = require('./contact')
 const LogsRESTController = require('./logs')
 const EntryRouter = require('./entry')
 const OfferRouter = require('./offer')
+const OrderRouter = require('./order')
 
 class RESTControllers {
   constructor (localConfig = {}) {
@@ -61,6 +62,9 @@ class RESTControllers {
 
     const offerRouter = new OfferRouter(dependencies)
     offerRouter.attach(app)
+
+    const orderRouter = new OrderRouter(dependencies)
+    orderRouter.attach(app)
   }
 }
 
