@@ -36,6 +36,7 @@ class OrderUseCases {
         vout
       )
       console.log('utxoStatus: ', utxoStatus)
+      if (utxoStatus === null) return
     } catch (err) {
       console.error('Error in createOrder()')
       throw err
