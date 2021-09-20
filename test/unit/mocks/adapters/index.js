@@ -67,6 +67,18 @@ const localdb = {
     async save () {
       return {}
     }
+  },
+
+  Order: class Order {
+    constructor (obj) {}
+
+    static findById () {}
+    static find () {}
+    static findOne () {}
+
+    async save () {
+      return {}
+    }
   }
 }
 

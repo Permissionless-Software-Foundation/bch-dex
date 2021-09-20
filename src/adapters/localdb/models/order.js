@@ -14,11 +14,10 @@ const Order = new mongoose.Schema({
   utxoTxid: { type: String },
   utxoVout: { type: Number },
   numTokens: { type: Number },
-
-  //
-  offerIpfsId: { type: String },
-  offerBchAddr: { type: String },
-  offerPubKey: { type: String }
+  timestamp: { type: String },
+  localTimestamp: { type: String },
+  txid: { type: String },
+  p2wdbHash: { type: String }
 })
 
 module.exports = mongoose.model('order', Order)
