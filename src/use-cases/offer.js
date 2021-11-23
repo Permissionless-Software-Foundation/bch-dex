@@ -47,9 +47,6 @@ class OfferLib {
       console.log('burn txid: ', txid)
       console.log(`https://simpleledger.info/tx/${txid}`)
 
-      // TODO: Move tokens to holding address, which will generate the UTXO to
-      // use in the Offer.
-
       // generate signature.
       const now = new Date()
       const message = now.toISOString()

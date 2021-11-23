@@ -15,11 +15,9 @@ class OrderPagination {
   }
 
   // Read all entries in the P2WDB.
-  async readAll (page) {
+  async readAll (page = 0) {
     try {
       const ENTRIES_PER_PAGE = 20
-
-      if (!page) page = 0
 
       // Pull data from MongoDB.
       // Get all entries in the database.

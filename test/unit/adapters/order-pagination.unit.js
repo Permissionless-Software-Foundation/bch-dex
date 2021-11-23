@@ -8,12 +8,47 @@
 // Public npm libraries.
 const assert = require('chai').assert
 const sinon = require('sinon')
+const mongoose = require('mongoose')
 
 // Local libraries.
 const OrderPagination = require('../../../src/adapters/localdb/order-pagination')
+const Order = require('../../../src/adapters/localdb/models/order')
+const config = require('../../../config')
 
-describe('#P2wdbAdapter', () => {
+describe('#OrderPagination', () => {
   let uut, sandbox
+
+  before(async () => {
+    // Connect to the Mongo Database.
+    console.log(`Connecting to database: ${config.database}`)
+    mongoose.Promise = global.Promise
+    mongoose.set('useCreateIndex', true) // Stop deprecation warning.
+
+    await mongoose.connect(config.database, {
+      useUnifiedTopology: true,
+      useNewUrlParser: true
+    })
+
+    const order = new Order({
+      lokadId: 'lokadId',
+      messageType: 1,
+      messageClass: 1,
+      tokenId: 'tokenId',
+      buyOrSell: 'buy',
+      rateInSats: 'rateInSats',
+      minSatsToExchange: '100',
+      signature: 'signature',
+      sigMsg: 'sigMsg',
+      utxoTxid: 'utxoTxid',
+      utxoVout: 1,
+      numTokens: 1,
+      timestamp: 'timestamp',
+      localTimestamp: 'localTimestamp',
+      txid: 'txid',
+      p2wdbHash: 'p2wdbHash'
+    })
+    await order.save()
+  })
 
   beforeEach(() => {
     uut = new OrderPagination()
@@ -21,6 +56,10 @@ describe('#P2wdbAdapter', () => {
   })
 
   afterEach(() => sandbox.restore())
+
+  after(() => {
+    mongoose.connection.close()
+  })
 
   describe('#readAll', () => {
     it('should get the first page of Order entries', async () => {
@@ -30,19 +69,17 @@ describe('#P2wdbAdapter', () => {
       assert.isArray(data)
     })
 
-    // it('should catch and throw an error', async () => {
-    //   try {
-    //     // sandbox.stub(uut.orbit, 'readAll').throws(new Error('test error'))
-    //
-    //     // Force and error.
-    //     sandbox.stub(uut.KeyValue, 'find').rejects(new Error('test error'))
-    //
-    //     await uut.readAll()
-    //
-    //     assert.fail('unexpected code path')
-    //   } catch (err) {
-    //     assert.include(err.message, 'is not a function')
-    //   }
-    // })
+    it('should catch and throw an error', async () => {
+      try {
+        // Force and error.
+        sandbox.stub(uut.Order, 'find').rejects(new Error('test error'))
+
+        await uut.readAll()
+
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'is not a function')
+      }
+    })
   })
 })
