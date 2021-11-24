@@ -48,24 +48,17 @@ These are just a brief, high-level overview. Review the [Specifications](./speci
 
 ## Writing to the Global Database
 
-Adding data to the global P2WDB is a result of the interaction between the _Client_ and the P2WDB. `ipfs-swap-service` is not involved. The [p2wdb npm library](https://www.npmjs.com/package/p2wdb) can be leveraged for easy reading and writing to the P2WDB.
+Adding data to the global P2WDB is a result of the interaction between the _Client_ and the P2WDB. Ideally, `ipfs-swap-service` is not involved. The [p2wdb npm library](https://www.npmjs.com/package/p2wdb) can be leveraged for easy reading and writing to the P2WDB.
+
+During development, `ipfs-swap-service` is being used to submit Offers to the P2WDB and custody funds. When the project reaches maturity, these functions may be removed, and they should be handled by the Client, so that legal issues around custody of funds are not a problem.
 
 Writing data follows these steps:
 
-- To add an entry to the P2WDB, tor-list-frontend collects the data the user wants to add to the database, but it also collects several pieces of required information 'behind the scenes':
-  - The users BCH address.
-  - A cleartext message (The website URL)
-  - A signature generated from the cleartext message and the BCH address.
-  - It burns the required amount of PSF tokens, and generates a transaction ID (TXID) as proof of this burn.
-- tor-list-frontend then communicates with P2WDB via its REST API to submit all the data.
+- A user submits data to the POST `/offer` REST API endpoint. This will move the funds a segregated UTXO and submit the data to the P2WDB to convert the Offer to an Order. Offers are tracked by the local instance of `ipfs-swap-service`, but Orders are tracked by all instances of `ipfs-swap-service`.
 - The P2WDB REST API will then evaluate the data and attempt to update the p2p database using the TXID.
 - Each peer on the network will independently validate the new database entry.
-- tor-list-api will receive a webhook call to its POST endpoint. This event will trigger the import of the new data into the apps local Mongo database.
+- `ipfs-swap-service` will receive a webhook call to its POST `/order` endpoint. This event will trigger the import of the new data into the apps local Mongo database, and generate a new Order model.
 
 ## Reading from the Local Database
 
-tor-list-frontend reads data from the local database stored by tor-list-api, and does not read the global database directly. This gives tor-list-api the opportunity to filter and modify the data locally for a more controlled user experience.
-
-The most important filter that tor-list-api runs against the data is the blacklist filter. Entries in the OrbitDB are identified by a [CID](https://docs.ipfs.io/concepts/content-addressing/) or 'hash'. The blacklist filter is a collection of CIDs that have been 'blacklisted' for removal before being displayed on the front end. This allows the administrators of the website to prevent spam and abuse.
-
-Entries on tor-list-frontend are organized relative to their [merit](https://github.com/Permissionless-Software-Foundation/bch-message-lib/blob/master/lib/merit.js). This merit value will change with time. Every 24 hours, the entries displayed at TorList.cash have their merit recalculated, and the merit value in the local database is updated.
+The Client reads data from the local database stored by `ipfs-swap-service`, and does not read the global database directly. This gives `ipfs-swap-service` the opportunity to filter and modify the data locally for a more controlled user experience.
