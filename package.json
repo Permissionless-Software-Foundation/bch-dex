@@ -1,7 +1,7 @@
 {
-  "name": "avax-dex",
+  "name": "slp-dex",
   "version": "1.0.0",
-  "description": "A DEX for trading tokens on the AVAX X-Chain",
+  "description": "A prototype for a DEX on BCH for SLP tokens.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -21,10 +21,10 @@
   ],
   "license": "MIT",
   "apidoc": {
-    "title": "avax-dex",
+    "title": "slp-dex",
     "url": "localhost:5000"
   },
-  "repository": "Permissionless-Software-Foundation/avax-dex",
+  "repository": "Permissionless-Software-Foundation/slp-dex",
   "dependencies": {
     "@chris.troutner/ipfs": "2.0.2",
     "@psf/bch-js": "4.20.26",
