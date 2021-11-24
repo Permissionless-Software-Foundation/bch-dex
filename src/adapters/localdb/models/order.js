@@ -16,7 +16,7 @@ const Order = new mongoose.Schema({
   numTokens: { type: Number },
   timestamp: { type: String },
   localTimestamp: { type: String },
-  txid: { type: String },
+  p2wdbTxid: { type: String },
   p2wdbHash: { type: String }
 })
 

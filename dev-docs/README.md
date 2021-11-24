@@ -36,7 +36,7 @@ Because OrbitDB is a p2p database, no one party holds the 'official' copy of the
 
 The [ipfs-swap-service](https://github.com/christroutner/ipfs-swap-service) replicates a copy of the global P2WDB, but has the ability to apply localized filters to the data before passing it on to the _Client_, to be displayed.
 
-`ipfs-swap-service` is based on this [ipfs-service-provider boilerplate](https://github.com/Permissionless-Software-Foundation/ipfs-service-provider). It's a production-ready template for a web server, providing interfaced via REST API over HTTP, as well as JSON RPC over IPFS. It includes many features for building a web app. This includes user management and authentication, REST API scaffolding, API documentation, Docker container generation, and extensive test coverage. It's intended to be customized for the needs of the website administrator.
+`ipfs-swap-service` is based on this [ipfs-service-provider boilerplate](https://github.com/Permissionless-Software-Foundation/ipfs-service-provider). It's a production-ready template for a web server, providing interfaces via REST API over HTTP, as well as JSON RPC over IPFS. It includes many features for building a web app. This includes user management and authentication, REST API and JSON RPC scaffolding, API documentation, Docker container generation, and extensive test coverage. It's intended to be customized for the needs of the website administrator.
 
 - [Specification](./specification.md)
 
@@ -48,7 +48,7 @@ These are just a brief, high-level overview. Review the [Specifications](./speci
 
 ## Writing to the Global Database
 
-Adding data to the global P2WDB is a result of the interaction between tor-list-frontend and the P2WDB. tor-list-api is not involved.
+Adding data to the global P2WDB is a result of the interaction between the _Client_ and the P2WDB. `ipfs-swap-service` is not involved. The [p2wdb npm library](https://www.npmjs.com/package/p2wdb) can be leveraged for easy reading and writing to the P2WDB.
 
 Writing data follows these steps:
 
