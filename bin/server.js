@@ -25,7 +25,7 @@ const AdminLib = require('../src/adapters/admin')
 // const adminLib = new AdminLib()
 
 const WebHookLib = require('../src/adapters/webhook')
-const webHookLib = new WebHookLib()
+const webhookLib = new WebHookLib()
 
 // const JSONRPC = require('../src/rpc')
 // const rpc = new JSONRPC()
@@ -91,7 +91,15 @@ class Server {
 
       // Create webhook
       try {
-        await webHookLib.createWebHook('http://localhost:5002/entry')
+        try {
+          // Delete an old webhook if it exists.
+          await webhookLib.deleteWebhook('http://localhost:5700/order')
+        } catch (err) {
+          /* exit quietly */
+          // console.log('err deleting webhook: ', err)
+        }
+
+        await webhookLib.createWebhook('http://localhost:5700/order')
         console.log('Webhook created')
       } catch (error) {
         console.log('Webhook cant be created')
@@ -108,12 +116,12 @@ class Server {
       // Attach the other IPFS controllers
       await controllers.attachControllers(app)
 
-      // ipfs-coord has a memory leak. This app shuts down after 8 hours. It
+      // ipfs-coord has a memory leak. This app shuts down after 4 hours. It
       // expects to be run by Docker or pm2, which can automatically restart
       // the app.
       setTimeout(function () {
         process.exit(0)
-      }, 60000 * 60 * 8)
+      }, 60000 * 60 * 4)
 
       return app
     } catch (err) {

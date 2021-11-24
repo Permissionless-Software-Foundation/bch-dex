@@ -19,7 +19,7 @@ async function start () {
       buyOrSell: 'sell',
       rateInSats: 1000,
       minSatsToExchange: 10,
-      numTokens: 0.1
+      numTokens: 0.02
     }
 
     const options = {

@@ -25,7 +25,7 @@ class P2wdbAdapter {
 
       const dataObj = {
         appId,
-        offer: data,
+        data,
         timestamp: now.toISOString(),
         localTimeStamp: now.toLocaleString()
       }

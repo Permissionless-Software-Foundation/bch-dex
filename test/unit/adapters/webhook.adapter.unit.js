@@ -24,7 +24,7 @@ describe('#Webhook-Adapter', () => {
   describe('#createWebHook', () => {
     it('should throw error if input is not provided', async () => {
       try {
-        await uut.createWebHook()
+        await uut.createWebhook()
         assert.fail('unexpected code path')
       } catch (err) {
         assert.include(err.message, 'url must be a string')
@@ -33,7 +33,7 @@ describe('#Webhook-Adapter', () => {
 
     it('should throw error if input is not string', async () => {
       try {
-        await uut.createWebHook(1)
+        await uut.createWebhook(1)
         assert.fail('unexpected code path')
       } catch (err) {
         assert.include(err.message, 'url must be a string')
@@ -43,7 +43,7 @@ describe('#Webhook-Adapter', () => {
     it('should handle error', async () => {
       try {
         sandbox.stub(uut.axios, 'post').throws(new Error('test error'))
-        await uut.createWebHook('https://test.com/my-webhook')
+        await uut.createWebhook('https://test.com/my-webhook')
         assert.fail('unexpected code path')
       } catch (err) {
         assert.include(err.message, 'test error')
@@ -56,7 +56,7 @@ describe('#Webhook-Adapter', () => {
         .resolves({ data: { success: true, id: '61018c8c9a71973a596cdccb' } })
 
       const url = 'https://test.com/my-webhook'
-      const result = await uut.createWebHook(url)
+      const result = await uut.createWebhook(url)
 
       assert.isObject(result)
       assert.property(result, 'success')

@@ -31,17 +31,21 @@ class OfferLib {
       await this.ensureFunds(offerEntity)
 
       // Move the tokens to holding address.
-      // const utxoInfo = await moveTokens(offerEntity)
+      const utxoInfo = await this.moveTokens(offerEntity)
+      console.log('utxoInfo: ', utxoInfo)
+
+      // Update the UTXO store for the wallet.
+      await this.adapters.wallet.bchWallet.bchjs.Util.sleep(3000)
+      await this.adapters.wallet.bchWallet.getUtxos()
 
       // Update the offer with the new UTXO information.
+      offerEntity.utxoTxid = utxoInfo.txid
+      offerEntity.utxoVout = utxoInfo.vout
 
       // Burn PSF token to pay for P2WDB write.
       const txid = await this.adapters.wallet.burnPsf()
       console.log('burn txid: ', txid)
       console.log(`https://simpleledger.info/tx/${txid}`)
-
-      // TODO: Move tokens to holding address, which will generate the UTXO to
-      // use in the Offer.
 
       // generate signature.
       const now = new Date()
@@ -65,6 +69,34 @@ class OfferLib {
     } catch (err) {
       // console.log("Error in use-cases/entry.js/createEntry()", err.message)
       wlogger.error('Error in use-cases/entry.js/createOffer())')
+      throw err
+    }
+  }
+
+  // Move the tokens indicated in the offer to a temporary holding address.
+  // This will generate the UTXO used in the Signal message. This function
+  // moves the funds and returns the UTXO information.
+  async moveTokens (offerEntity) {
+    try {
+      const keyPair = await this.adapters.wallet.getKeyPair()
+      console.log('keyPair: ', keyPair)
+
+      const receiver = {
+        address: keyPair.cashAddress,
+        tokenId: offerEntity.tokenId,
+        qty: offerEntity.numTokens
+      }
+
+      const txid = await this.adapters.wallet.bchWallet.sendTokens(receiver, 3)
+
+      const utxoInfo = {
+        txid,
+        vout: 0
+      }
+
+      return utxoInfo
+    } catch (err) {
+      console.error('Error in moveTokens(): ', err)
       throw err
     }
   }
@@ -109,17 +141,6 @@ class OfferLib {
     } catch (err) {
       console.error('Error in ensureFunds()')
       throw err
-    }
-  }
-
-  // Move the tokens indicated in the offer to a temporary holding address.
-  // This will generate the UTXO used in the Signal message. This function
-  // moves the funds and returns the UTXO information.
-  async moveTokens () {
-    try {
-      //
-    } catch (err) {
-      console.error('Error in moveTokens()')
     }
   }
 }

@@ -1,6 +1,10 @@
 /*
   Mocks for the Adapter library.
 */
+
+const BCHJS = require('@psf/bch-js')
+const bchjs = new BCHJS()
+
 const ipfs = {
   ipfsAdapter: {
     ipfs: {}
@@ -63,10 +67,22 @@ const localdb = {
     async save () {
       return {}
     }
+  },
+
+  Order: class Order {
+    constructor (obj) {}
+
+    static findById () {}
+    static find () {}
+    static findOne () {}
+
+    async save () {
+      return {}
+    }
   }
 }
 
-const bchjs = {
+const bch = {
   getMerit: async () => {
     return 100
   },
@@ -86,6 +102,9 @@ const { MockBchWallet } = require('./wallet')
 const wallet = {
   burnPsf: async () => {},
   generateSignature: async () => {},
+  getKeyPair: async () => {
+    return { cashAddress: 'fakeAddr', wif: 'fakeWif', hdIndex: 1 }
+  },
   bchWallet: new MockBchWallet()
 }
 
@@ -93,4 +112,4 @@ const p2wdb = {
   write: async () => {}
 }
 
-module.exports = { ipfs, localdb, bchjs, wallet, p2wdb }
+module.exports = { ipfs, localdb, bch, wallet, p2wdb, bchjs }

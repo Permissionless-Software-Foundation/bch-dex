@@ -14,7 +14,7 @@ class EntryLib {
     // Encapsulate dependencies
     this.EntryEntity = new EntryEntiy()
     this.EntryModel = this.adapters.localdb.Entry
-    this.bchjs = this.adapters.bchjs
+    this.bch = this.adapters.bch
   }
 
   // Create a new entry model and add it to the Mongo database.
@@ -24,20 +24,22 @@ class EntryLib {
       const entryEntity = this.EntryEntity.validate(entryObj)
 
       // Verify that the entry was signed by a specific BCH address.
-      const isValidSignature = this.bchjs._verifySignature(entryEntity)
+      const isValidSignature = this.bch._verifySignature(entryEntity)
       if (!isValidSignature) {
         throw new Error('Invalid signature')
       }
 
       // Verify psf tokens balance
 
-      const psfBalance = await this.bchjs.getPSFTokenBalance(entryEntity.slpAddress)
+      const psfBalance = await this.bch.getPSFTokenBalance(
+        entryEntity.slpAddress
+      )
 
       if (psfBalance < 10) {
         throw new Error('Insufficient psf balance')
       }
 
-      const merit = await this.bchjs.getMerit(entryEntity.slpAddress)
+      const merit = await this.bch.getMerit(entryEntity.slpAddress)
 
       const updatedEntry = {
         entry: entryEntity.entry.trim(),
