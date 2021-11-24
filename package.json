@@ -1,7 +1,7 @@
 {
-  "name": "ipfs-swap-service",
-  "version": "1.1.0",
-  "description": "Prototype token trading API for BCH and SLP tokens.",
+  "name": "avax-dex",
+  "version": "1.0.0",
+  "description": "A DEX for trading tokens on the AVAX X-Chain",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -18,10 +18,10 @@
   "author": "Chris Troutner <chris.troutner@gmail.com>",
   "license": "MIT",
   "apidoc": {
-    "title": "ipfs-swap-service",
+    "title": "avax-dex",
     "url": "localhost:5000"
   },
-  "repository": "christroutner/ipfs-swap-service",
+  "repository": "Permissionless-Software-Foundation/avax-dex",
   "dependencies": {
     "@chris.troutner/ipfs": "2.0.2",
     "@psf/bch-js": "4.20.26",
