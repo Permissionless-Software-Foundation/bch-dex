@@ -18,7 +18,7 @@ The arrows in the image represent the information flow between the three pieces 
 
 - The _Client_ displays information about orders. It _reads_ this information from ipfs-swap-service.
 - The _Client_ is also a wallet. It can generate the needed transactions to _write_ information to the P2WDB.
-- `ipfs-swap-service` imports data from the global P2WDB database into its local database, using a [webhook](https://en.wikipedia.org/wiki/Webhook).
+- `ipfs-swap-service` imports data from the global P2WDB database into its local database, using a [webhook](https://en.wikipedia.org/wiki/Webhook) (dashed line). It can also custody funds by creating an _Offer_ and submitting the data to the P2WDB to generate an _Order_ (solid line).
 
 This architecture keeps the global database highly censorship resistant, while allowing local installations to maintain tight control over the user experience. The goal is to have many redundant copies of `ipfs-swap-service` on the network, and to empower individual traders to run their own, private copy.
 
