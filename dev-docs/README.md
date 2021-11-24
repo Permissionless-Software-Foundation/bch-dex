@@ -1,44 +1,42 @@
 # Developer Documentation
 
-This is living documentation that will be updated, edited, and changed over time, using the same version control as the rest of the code. The purpose of this documentation is to capture and explain how this tor-list-api and [tor-list-frontend](https://github.com/Permissionless-Software-Foundation/tor-list-frontend) [SPA](https://en.wikipedia.org/wiki/Single-page_application) interact with the [P2WDB](https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service) to create a permissionless, censorship-resistant database for storing and sharing deep-web websites at [TorList.cash](https://torlist.cash).
+This is living documentation that will be updated, edited, and changed over time, using the same version control as the rest of the code. The purpose of this documentation is to capture and explain how this ipfs-swap-service interacts with the [P2WDB](https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service), to create a permissionless, censorship-resistant database for storing trading orders. A web client will be built in the future that will interact with the REST API of this app.
 
 - [Specification](./specification.md)
 
 # Overview
 
-There are three major pieces of software behind the tor-list concept. They work together to form a censorship-resistant application for curating information about websites.
+There are three major pieces of software behind the ipfs-swap-service concept. They work together to form a censorship-resistant application for exchanging transaction data for building trades.
 
-![tor-list major subcomponents](./diagrams/software-interaction.png)
+![ipfs-swap-service major subcomponents](./diagrams/software-interaction.png)
 
-- [tor-list-frontend](https://github.com/Permissionless-Software-Foundation/tor-list-frontend) is the web based user interface (UI) which can be seen at [TorList.cash](https://torlist.cash/).
-- [tor-list-api](https://github.com/Permissionless-Software-Foundation/tor-list-api) is the back end REST API that maintains a local database of information that tor-list-frontend reads from.
+- _Client_ could be a web browser, or a command-line client like [psf-bch-wallet](https://github.com/Permissionless-Software-Foundation/psf-bch-wallet) or [psf-avax-wallet](https://github.com/Permissionless-Software-Foundation/psf-avax-wallet).
+- [ipfs-swap-service](https://github.com/christroutner/ipfs-swap-service) is the back end REST API that maintains a local database of information that the client reads from.
 - [P2WDB](https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service) is the pay-to-write global database with a REST API for interfacing with the other two pieces of software.
 
 The arrows in the image represent the information flow between the three pieces of software:
 
-- tor-list-frontend displays information about websites. It _reads_ this information from tor-list-api.
-- tor-list-frontend is also a web wallet. It can generate the needed transactions to _write_ information to the P2WDB.
-- tor-list-api imports data from the global database into its local database using a [webhook](https://en.wikipedia.org/wiki/Webhook).
+- The _Client_ displays information about orders. It _reads_ this information from ipfs-swap-service.
+- The _Client_ is also a wallet. It can generate the needed transactions to _write_ information to the P2WDB.
+- `ipfs-swap-service` imports data from the global P2WDB database into its local database, using a [webhook](https://en.wikipedia.org/wiki/Webhook).
 
-This architecture keeps the global database highly censorship resistant, while allowing local installations to maintain tight control over the user experience. The goal is to have many curation sites similar to [TorList.cash](https://torlist.cash). Each site would cater to their niche by customizing the display of the data, but they would all tap into the same global database of information.
-
-**Example:** [TorList.cash](https://torlist.cash) will prevent the display of sites that are associated with drugs, guns, pornography, or gambling. That data can still exist in the global database, it just won't be displayed on Torlist.cash. Other websites, using a fork of the same software, can display those categories. They could also impose stricter rules to filter the data even more aggressively. (Imagine a site that focuses just on cryptocurrency trading, and filters out all sites that are not strictly about cryptocurrency trading.) Each site competes with the others for users, but work together to maintain the global database.
+This architecture keeps the global database highly censorship resistant, while allowing local installations to maintain tight control over the user experience. The goal is to have many redundant copies of `ipfs-swap-service` on the network, and to empower individual traders to run their own, private copy.
 
 # Back End
 
-This section provides additional information on the tor-list-api and P2WDB back end software.
+This section provides additional information on `ipfs-swap-service` and P2WDB back end software.
 
 ## P2WDB
 
-The heart of the censorship resistance is the pay-to-write database ([P2WDB](https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service)). This is an [OrbitDB](https://orbitdb.org/) peer-to-peer (p2p) database. The write-access rules have been customized to allow anyone to write to the database, so long they prove that a sufficient quantity [PSF tokens](https://psfoundation.cash) have been burned, to pay for the write.
+The heart of the censorship resistance is the pay-to-write database ([P2WDB](https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service)). This is an [OrbitDB](https://orbitdb.org/) peer-to-peer (p2p) database. The write-access rules have been customized to allow anyone to write to the database, so long as they prove that a sufficient quantity of [PSF tokens](https://psfoundation.cash) have been burned, to pay for the write.
 
 Because OrbitDB is a p2p database, no one party holds the 'official' copy of the database. Instead, like a blockchain, the database is replicated among several peers, and they coordinate updates to the database using consensus rules. Peers are free to leave or enter the network. Each peer independently verifies the database entries have sufficient proof-of-burn.
 
-## tor-list-api
+## `ipfs-swap-service`
 
-The [tor-list-api](https://github.com/Permissionless-Software-Foundation/tor-list-api) replicates a copy of the global P2WDB, but has the ability to apply localized filters to the data before passing it on to tor-list-frontend to be displayed. The most important filter is the `blacklist` model, which allows administrators of the site to mark database entries as 'blacklisted', to prevent them from being displayed.
+The [ipfs-swap-service](https://github.com/christroutner/ipfs-swap-service) replicates a copy of the global P2WDB, but has the ability to apply localized filters to the data before passing it on to the _Client_, to be displayed.
 
-tor-list-api is based on this [koa-api-boilerplate](https://github.com/christroutner/koa-api-boilerplate), which is a production ready REST API that includes many features for building a web app. This includes user management and authentication, REST API scaffolding, API documentation, Docker container generation, and extensive test coverage. It's intended to be customized for the needs of the website administrator.
+`ipfs-swap-service` is based on this [ipfs-service-provider boilerplate](https://github.com/Permissionless-Software-Foundation/ipfs-service-provider). It's a production-ready template for a web server, providing interfaced via REST API over HTTP, as well as JSON RPC over IPFS. It includes many features for building a web app. This includes user management and authentication, REST API scaffolding, API documentation, Docker container generation, and extensive test coverage. It's intended to be customized for the needs of the website administrator.
 
 - [Specification](./specification.md)
 
