@@ -25,7 +25,7 @@ class OfferLib {
 
       // Input Validation
       const offerEntity = this.offerEntity.validate(entryObj)
-      // console.log('offerEntity: ', offerEntity)
+      console.log('offerEntity: ', offerEntity)
 
       // Ensure sufficient tokens exist to create the offer.
       await this.ensureFunds(offerEntity)

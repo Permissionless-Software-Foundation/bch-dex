@@ -78,6 +78,7 @@ module.exports = {
   },
 
   // P2WDB webhook endpoint
+  p2wdbPort: process.env.P2WDB_PORT ? process.env.P2WDB_PORT : 5010,
   webhookService: process.env.WEBHOOKSERVICE
     ? process.env.WEBHOOKSERVICE
     : 'http://localhost:5010/webhook', // P2WDB.
