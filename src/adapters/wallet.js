@@ -36,7 +36,6 @@ class WalletAdapter {
         walletData = await this.jsonFiles.readJSON(this.WALLET_FILE)
       } catch (err) {
         // Create a new wallet file if one does not already exist.
-        // console.log('caught: ', err)
         console.warn('Wallet file not found. Creating new wallet.json file.')
 
         // Create a new wallet.
@@ -140,7 +139,7 @@ class WalletAdapter {
       const childNode = masterHDNode.derivePath(`m/44'/245'/0'/0/${hdIndex}`)
 
       const cashAddress = this.bchWallet.bchjs.HDNode.toCashAddress(childNode)
-      console.log('cashAddress: ', cashAddress)
+      console.log('Generating a new key pair for cashAddress: ', cashAddress)
 
       const wif = this.bchWallet.bchjs.HDNode.toWIF(childNode)
 
@@ -195,6 +194,7 @@ class WalletAdapter {
 
       // Get token UTXOs held by the wallet.
       const tokenUtxos = this.bchWallet.utxos.utxoStore.slpUtxos.type1.tokens
+      // console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`)
 
       // Find a token UTXO that contains PSF with a quantity higher than needed
       // to generate a proof-of-burn.
@@ -204,7 +204,7 @@ class WalletAdapter {
 
         // If token ID matches.
         if (thisUtxo.tokenId === P2WDB_TOKEN_ID) {
-          if (parseFloat(thisUtxo.tokenQty) >= PROOF_OF_BURN_QTY) {
+          if (parseFloat(thisUtxo.qtyStr) >= PROOF_OF_BURN_QTY) {
             tokenUtxo = thisUtxo
             break
           }
@@ -216,6 +216,7 @@ class WalletAdapter {
           `Token UTXO of with ID of ${P2WDB_TOKEN_ID} and quantity greater than ${PROOF_OF_BURN_QTY} could not be found in wallet.`
         )
       }
+      // console.log(`tokenUtxo: ${JSON.stringify(tokenUtxo, null, 2)}`)
 
       const result = await this.bchWallet.burnTokens(
         PROOF_OF_BURN_QTY,

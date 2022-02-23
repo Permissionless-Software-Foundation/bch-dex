@@ -7,8 +7,6 @@ const axios = require('axios')
 
 let _this
 
-const APPID = 'swapTest555'
-
 class WebHook {
   constructor () {
     _this = this
@@ -26,7 +24,7 @@ class WebHook {
       const endpoint = _this.config.webhookService
 
       const obj = {
-        appId: APPID,
+        appId: this.config.p2wdbAppId,
         url
       }
 
@@ -49,7 +47,7 @@ class WebHook {
       const endpoint = _this.config.webhookService
 
       const obj = {
-        appId: APPID,
+        appId: this.config.p2wdbAppId,
         url
       }
 

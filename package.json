@@ -51,7 +51,7 @@
     "koa2-ratelimit": "0.9.1",
     "libp2p": "^0.36.2",
     "line-reader": "0.4.0",
-    "minimal-slp-wallet": "4.4.1",
+    "minimal-slp-wallet": "../minimal-slp-wallet",
     "mongoose": "5.13.13",
     "node-fetch": "npm:@achingbrain/node-fetch@2.6.7",
     "nodemailer": "6.4.17",

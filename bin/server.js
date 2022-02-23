@@ -94,13 +94,13 @@ class Server {
       try {
         try {
           // Delete an old webhook if it exists.
-          await webhookLib.deleteWebhook('http://localhost:5700/order')
+          await webhookLib.deleteWebhook(`http://localhost:${config.port}/order`)
         } catch (err) {
           /* exit quietly */
           // console.log('err deleting webhook: ', err)
         }
 
-        await webhookLib.createWebhook('http://localhost:5700/order')
+        await webhookLib.createWebhook(`http://localhost:${config.port}/order`)
         console.log('Webhook created')
       } catch (error) {
         console.log('Webhook cant be created')
