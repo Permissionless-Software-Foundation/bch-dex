@@ -57,7 +57,7 @@ class OfferLib {
         txid,
         signature,
         message,
-        appId: 'swapTest555',
+        appId: 'bch-dex-test556',
         data: offerEntity
       }
 
@@ -116,14 +116,14 @@ class OfferLib {
 
         // Get token UTXOs that match the token in the offer.
         const tokenUtxos = utxos.slpUtxos.type1.tokens.filter(
-          (x) => x.tokenId === offerEntity.tokenId
+          x => x.tokenId === offerEntity.tokenId
         )
         // console.log('tokenUtxos: ', tokenUtxos)
 
         // Get the total amount of tokens in the wallet that match the token
         // in the offer.
         let totalTokenBalance = 0
-        tokenUtxos.map((x) => (totalTokenBalance += parseFloat(x.tokenQty)))
+        tokenUtxos.map(x => (totalTokenBalance += parseFloat(x.tokenQty)))
         // console.log('totalTokenBalance: ', totalTokenBalance)
 
         // If there are fewer tokens in the wallet than what's in the offer,
