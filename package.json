@@ -1,0 +1,96 @@
+{
+  "name": "slp-dex",
+  "version": "1.0.0",
+  "description": "A prototype for a DEX on BCH for SLP tokens.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "npm run test:all",
+    "test:all": "export SLP_DEX=test && nyc --reporter=text mocha --exit --timeout 15000 --recursive test/unit test/e2e/automated/",
+    "test:unit": "export SLP_DEX=test && mocha --exit --timeout 15000 --recursive test/unit/",
+    "test:e2e:auto": "export SLP_DEX=test && mocha --exit --timeout 15000 test/e2e/automated/",
+    "test:temp": "export SLP_DEX=test && mocha --exit --timeout 15000 -g '#rate-limit' test/unit/json-rpc/",
+    "lint": "standard --env mocha --fix",
+    "docs": "./node_modules/.bin/apidoc -i src/ -o docs",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "coverage:report": "export SLP_DEX=test && nyc --reporter=html mocha --exit --timeout 15000 --recursive test/unit/ test/e2e/automated/"
+  },
+  "author": "Chris Troutner <chris.troutner@gmail.com>",
+  "contributors": [
+    "Gary Nadir"
+  ],
+  "license": "MIT",
+  "apidoc": {
+    "title": "slp-dex",
+    "url": "localhost:5000"
+  },
+  "repository": "Permissionless-Software-Foundation/slp-dex",
+  "dependencies": {
+    "@chris.troutner/ipfs": "2.0.2",
+    "@psf/bch-js": "4.20.26",
+    "axios": "^0.21.4",
+    "bch-message-lib": "1.13.9",
+    "bcryptjs": "2.4.3",
+    "glob": "7.1.6",
+    "ipfs-coord": "6.7.4",
+    "jsonrpc-lite": "2.2.0",
+    "jsonwebtoken": "8.5.1",
+    "jwt-bch-lib": "1.3.0",
+    "kcors": "2.2.2",
+    "koa": "2.13.1",
+    "koa-bodyparser": "4.3.0",
+    "koa-convert": "2.0.0",
+    "koa-generic-session": "2.1.1",
+    "koa-logger": "3.2.1",
+    "koa-mount": "4.0.0",
+    "koa-passport": "4.1.3",
+    "koa-router": "10.0.0",
+    "koa-static": "5.0.0",
+    "koa2-ratelimit": "0.9.0",
+    "line-reader": "0.4.0",
+    "minimal-slp-wallet": "3.4.7",
+    "mongoose": "5.13.13",
+    "node-fetch": "npm:@achingbrain/node-fetch@2.6.7",
+    "nodemailer": "6.4.17",
+    "passport-local": "1.0.0",
+    "public-ip": "^4.0.4",
+    "winston": "3.3.3",
+    "winston-daily-rotate-file": "4.5.0"
+  },
+  "devDependencies": {
+    "apidoc": "0.26.0",
+    "chai": "4.3.0",
+    "coveralls": "2.11.4",
+    "eslint": "7.19.0",
+    "eslint-config-prettier": "7.2.0",
+    "eslint-config-standard": "16.0.2",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-prettier": "3.3.1",
+    "eslint-plugin-standard": "4.0.0",
+    "husky": "4.3.8",
+    "mocha": "8.4.0",
+    "nyc": "15.1.0",
+    "semantic-release": "17.4.4",
+    "sinon": "9.2.4",
+    "standard": "16.0.4",
+    "uuid": "8.3.2"
+  },
+  "release": {
+    "publish": [
+      {
+        "path": "@semantic-release/npm",
+        "npmPublish": false
+      }
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
+  },
+  "standard": {
+    "ignore": [
+      "/test/unit/mocks/**/*.js"
+    ]
+  }
+}
