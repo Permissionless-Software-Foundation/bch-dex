@@ -102,19 +102,15 @@ describe('#wallet', () => {
       // Mock dependencies
       uut.BchWallet = MockBchWallet
 
-      const bchjs = {
-        restURL: 'dummyUrl',
-        apiToken: 'dummyToken'
-      }
-
       // Ensure we open the test file, not the production wallet file.
       uut.WALLET_FILE = testWalletFile
 
       const walletData = await uut.openWallet()
 
-      const result = await uut.instanceWallet(walletData.mnemonic, bchjs)
+      const result = await uut.instanceWallet(walletData.mnemonic)
+      console.log('result: ', result)
 
-      assert.equal(result, true)
+      assert.property(result, 'walletInfoPromise')
     })
 
     it('should catch and throw an error', async () => {

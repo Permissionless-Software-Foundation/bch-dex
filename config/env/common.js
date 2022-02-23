@@ -31,6 +31,12 @@ module.exports = {
     ? process.env.EMAILPASS
     : 'emailpassword',
 
+  // PSF Web 3 community infrastructure
+  useFullStackCash: process.env.USE_FULLSTACKCASH ? true : false,
+  consumerUrl: process.env.CONSUMER_URL
+    ? process.env.CONSUMER_URL
+    : 'https://free-bch.fullstack.cash',
+
   // FullStack.cash account information, used for automatic JWT handling.
   getJwtAtStartup: process.env.GET_JWT_AT_STARTUP ? true : false,
   authServer: process.env.AUTHSERVER
@@ -74,7 +80,7 @@ module.exports = {
   // P2WDB webhook endpoint
   webhookService: process.env.WEBHOOKSERVICE
     ? process.env.WEBHOOKSERVICE
-    : 'http://localhost:5001/webhook', // P2WDB.
+    : 'http://localhost:5010/webhook', // P2WDB.
 
   // IPFS Ports
   ipfsTcpPort: process.env.IPFS_TCP_PORT ? process.env.IPFS_TCP_PORT : 4001,

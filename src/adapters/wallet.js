@@ -7,6 +7,7 @@ const BchWallet = require('minimal-slp-wallet/index')
 
 // Local libraries
 const JsonFiles = require('./json-files')
+const config = require('../../config')
 
 const WALLET_FILE = `${__dirname.toString()}/../../wallet.json`
 const PROOF_OF_BURN_QTY = 0.01
@@ -19,9 +20,12 @@ class WalletAdapter {
     this.jsonFiles = new JsonFiles()
     this.WALLET_FILE = WALLET_FILE
     this.BchWallet = BchWallet
+    this.config = config
   }
 
   // Open the wallet file, or create one if the file doesn't exist.
+  // Does not instance the wallet. The output of this function is expected to
+  // be passed to instanceWallet().
   async openWallet () {
     try {
       let walletData
@@ -56,6 +60,35 @@ class WalletAdapter {
       return walletData
     } catch (err) {
       console.error('Error in openWallet()')
+      throw err
+    }
+  }
+
+  // Create an instance of minimal-slp-wallet. Use data in the wallet.json file,
+  // and pass the bch-js information to the minimal-slp-wallet library.
+  async instanceWallet (walletData) {
+    try {
+      // TODO: throw error if wallet data is not passed in.
+
+      const advancedConfig = {}
+      if (this.config.useFullStackCash) {
+        advancedConfig.interface = 'rest-api'
+        advancedConfig.restURL = this.config.apiServer
+        advancedConfig.apiToken = this.config.apiToken
+      } else {
+        advancedConfig.interface = 'consumer-api'
+        advancedConfig.restURL = this.config.consumerUrl
+      }
+
+      // Instantiate minimal-slp-wallet.
+      this.bchWallet = new this.BchWallet(walletData.mnemonic, advancedConfig)
+
+      // Wait for wallet to initialize.
+      await this.bchWallet.walletInfoPromise
+
+      return this.bchWallet
+    } catch (err) {
+      console.error('Error in instanceWallet()')
       throw err
     }
   }
@@ -120,31 +153,6 @@ class WalletAdapter {
       return outObj
     } catch (err) {
       console.error('Error in getKeyPair()')
-      throw err
-    }
-  }
-
-  // Create an instance of minimal-slp-wallet. Use data in the wallet.json file,
-  // and pass the bch-js information to the minimal-slp-wallet library.
-  async instanceWallet (walletData, bchjs) {
-    try {
-      // TODO: Throw error if bch-js is not passed in.
-      // TODO: throw error if wallet data is not passed in.
-
-      const advancedConfig = {
-        restURL: bchjs.restURL,
-        apiToken: bchjs.apiToken
-      }
-
-      // Instantiate minimal-slp-wallet.
-      this.bchWallet = new this.BchWallet(walletData.mnemonic, advancedConfig)
-
-      // Wait for wallet to initialize.
-      await this.bchWallet.walletInfoPromise
-
-      return true
-    } catch (err) {
-      console.error('Error in instanceWallet()')
       throw err
     }
   }
