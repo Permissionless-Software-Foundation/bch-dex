@@ -1,4 +1,4 @@
-# ipfs-swap-service Specification
+# bch-dex Specification
 
 This document contains a high-level, human-readable specification for the four major architectural areas of the bch-dex:
 
@@ -7,7 +7,7 @@ This document contains a high-level, human-readable specification for the four m
 - Controllers (inputs)
 - Adapters (outputs)
 
-This reflects the [Clean Architecture](https://troutsblog.com/blog/clean-architecture) design pattern.
+This reflects the [Clean Architecture](https://bafybeiajggd4zju7oen627bcy5l32hrxqomoqzvwqfir6phzgducozksv4.ipfs.dweb.link/blog/clean-architecture) design pattern.
 
 ## Entities
 
