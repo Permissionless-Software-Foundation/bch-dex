@@ -1,19 +1,19 @@
 {
-  "name": "slp-dex",
+  "name": "bch-dex",
   "version": "1.0.0",
-  "description": "A prototype for a DEX on BCH for SLP tokens.",
+  "description": "A DEX on BCH for trading SLP tokens.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "test": "npm run test:all",
-    "test:all": "export SLP_DEX=test && nyc --reporter=text mocha --exit --timeout 15000 --recursive test/unit test/e2e/automated/",
-    "test:unit": "export SLP_DEX=test && mocha --exit --timeout 15000 --recursive test/unit/",
-    "test:e2e:auto": "export SLP_DEX=test && mocha --exit --timeout 15000 test/e2e/automated/",
-    "test:temp": "export SLP_DEX=test && mocha --exit --timeout 15000 -g '#rate-limit' test/unit/json-rpc/",
+    "test:all": "export BCH_DEX=test && nyc --reporter=text mocha --exit --timeout 15000 --recursive test/unit test/e2e/automated/",
+    "test:unit": "export BCH_DEX=test && mocha --exit --timeout 15000 --recursive test/unit/",
+    "test:e2e:auto": "export BCH_DEX=test && mocha --exit --timeout 15000 test/e2e/automated/",
+    "test:temp": "export BCH_DEX=test && mocha --exit --timeout 15000 -g '#rate-limit' test/unit/json-rpc/",
     "lint": "standard --env mocha --fix",
     "docs": "./node_modules/.bin/apidoc -i src/ -o docs",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "coverage:report": "export SLP_DEX=test && nyc --reporter=html mocha --exit --timeout 15000 --recursive test/unit/ test/e2e/automated/"
+    "coverage:report": "export BCH_DEX=test && nyc --reporter=html mocha --exit --timeout 15000 --recursive test/unit/ test/e2e/automated/"
   },
   "author": "Chris Troutner <chris.troutner@gmail.com>",
   "contributors": [
@@ -21,10 +21,10 @@
   ],
   "license": "MIT",
   "apidoc": {
-    "title": "slp-dex",
+    "title": "bch-dex",
     "url": "localhost:5000"
   },
-  "repository": "Permissionless-Software-Foundation/slp-dex",
+  "repository": "Permissionless-Software-Foundation/bch-dex",
   "dependencies": {
     "@chris.troutner/ipfs": "2.0.2",
     "@psf/bch-js": "4.20.26",
