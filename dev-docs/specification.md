@@ -1,6 +1,6 @@
 # ipfs-swap-service Specification
 
-This document contains a high-level, human-readable specification for the four major architectural areas of the ipfs-swap-service:
+This document contains a high-level, human-readable specification for the four major architectural areas of the bch-dex:
 
 - Entities
 - Use Cases
