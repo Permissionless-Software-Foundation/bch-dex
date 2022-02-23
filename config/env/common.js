@@ -31,6 +31,12 @@ module.exports = {
     ? process.env.EMAILPASS
     : 'emailpassword',
 
+  // PSF Web 3 community infrastructure
+  useFullStackCash: process.env.USE_FULLSTACKCASH ? true : false,
+  consumerUrl: process.env.CONSUMER_URL
+    ? process.env.CONSUMER_URL
+    : 'https://free-bch.fullstack.cash',
+
   // FullStack.cash account information, used for automatic JWT handling.
   getJwtAtStartup: process.env.GET_JWT_AT_STARTUP ? true : false,
   authServer: process.env.AUTHSERVER
