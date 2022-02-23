@@ -194,7 +194,7 @@ class WalletAdapter {
 
       // Get token UTXOs held by the wallet.
       const tokenUtxos = this.bchWallet.utxos.utxoStore.slpUtxos.type1.tokens
-      console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`)
+      // console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`)
 
       // Find a token UTXO that contains PSF with a quantity higher than needed
       // to generate a proof-of-burn.
