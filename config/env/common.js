@@ -74,7 +74,7 @@ module.exports = {
   // P2WDB webhook endpoint
   webhookService: process.env.WEBHOOKSERVICE
     ? process.env.WEBHOOKSERVICE
-    : 'http://localhost:5001/webhook', // P2WDB.
+    : 'http://localhost:5010/webhook', // P2WDB.
 
   // IPFS Ports
   ipfsTcpPort: process.env.IPFS_TCP_PORT ? process.env.IPFS_TCP_PORT : 4001,

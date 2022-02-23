@@ -6,7 +6,7 @@
 
 const axios = require('axios')
 
-const LOCALHOST = 'http://localhost:5700'
+const LOCALHOST = 'http://localhost:5002'
 
 async function start () {
   try {

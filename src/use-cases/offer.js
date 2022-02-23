@@ -109,7 +109,7 @@ class OfferLib {
 
       // Get UTXOs.
       const utxos = this.adapters.wallet.bchWallet.utxos.utxoStore
-      // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
+      console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
       if (offerEntity.buyOrSell.includes('sell')) {
         // Sell Offer
@@ -135,6 +135,7 @@ class OfferLib {
         }
       } else {
         // Buy Offer
+        throw new Error('Buy orders are not supported yet.')
       }
 
       return true
