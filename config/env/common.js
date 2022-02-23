@@ -82,6 +82,7 @@ module.exports = {
   webhookService: process.env.WEBHOOKSERVICE
     ? process.env.WEBHOOKSERVICE
     : 'http://localhost:5010/webhook', // P2WDB.
+  p2wdbAppId: process.env.APP_ID ? process.env.APP_ID : 'bch-dex-test556',
 
   // IPFS Ports
   ipfsTcpPort: process.env.IPFS_TCP_PORT ? process.env.IPFS_TCP_PORT : 4001,

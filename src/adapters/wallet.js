@@ -216,8 +216,7 @@ class WalletAdapter {
           `Token UTXO of with ID of ${P2WDB_TOKEN_ID} and quantity greater than ${PROOF_OF_BURN_QTY} could not be found in wallet.`
         )
       }
-
-      console.log(`tokenUtxo: ${JSON.stringify(tokenUtxo, null, 2)}`)
+      // console.log(`tokenUtxo: ${JSON.stringify(tokenUtxo, null, 2)}`)
 
       const result = await this.bchWallet.burnTokens(
         PROOF_OF_BURN_QTY,
