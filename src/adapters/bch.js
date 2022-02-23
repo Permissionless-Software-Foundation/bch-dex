@@ -13,7 +13,7 @@ class Bch {
     this.bchjs = new BCHJS()
     this.PSF_TOKEN_ID =
       '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0'
-    this.wallet = new BchWallet(undefined, {noUpdate: true})
+    this.wallet = new BchWallet(undefined, { noUpdate: true })
     this.msgLib = new MsgLib({ wallet: this.wallet })
   }
 
