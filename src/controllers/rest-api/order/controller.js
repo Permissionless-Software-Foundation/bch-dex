@@ -49,6 +49,18 @@ class OrderRESTControllerLib {
     }
   }
 
+  // curl -X GET http://localhost:5700/order/list
+  async listOrders (ctx) {
+    try {
+      const orders = await _this.useCases.order.listOrders()
+
+      ctx.body = orders
+    } catch (err) {
+      console.log('Error in listOrders REST API handler.')
+      _this.handleError(ctx, err)
+    }
+  }
+
   // DRY error handler
   handleError (ctx, err) {
     console.log('err', err.message)
