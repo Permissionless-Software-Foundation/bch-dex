@@ -1,6 +1,11 @@
-const { wlogger } = require('../adapters/wlogger')
+/*
+  Offer use-case library.
+*/
 
+// Local libraries
+const { wlogger } = require('../adapters/wlogger')
 const OfferEntity = require('../entities/offer')
+const config = require('../../config')
 
 class OfferLib {
   constructor (localConfig = {}) {
@@ -16,6 +21,7 @@ class OfferLib {
     this.offerEntity = new OfferEntity()
     this.OfferModel = this.adapters.localdb.Offer
     this.bch = this.adapters.bch
+    this.config = config
   }
 
   // Create a new offer model and add it to the Mongo database.
@@ -25,7 +31,7 @@ class OfferLib {
 
       // Input Validation
       const offerEntity = this.offerEntity.validate(entryObj)
-      // console.log('offerEntity: ', offerEntity)
+      console.log('offerEntity: ', offerEntity)
 
       // Ensure sufficient tokens exist to create the offer.
       await this.ensureFunds(offerEntity)
@@ -57,7 +63,7 @@ class OfferLib {
         txid,
         signature,
         message,
-        appId: 'bch-dex-test556',
+        appId: this.config.p2wdbAppId,
         data: offerEntity
       }
 
@@ -109,7 +115,7 @@ class OfferLib {
 
       // Get UTXOs.
       const utxos = this.adapters.wallet.bchWallet.utxos.utxoStore
-      // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
+      console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
       if (offerEntity.buyOrSell.includes('sell')) {
         // Sell Offer
@@ -135,6 +141,7 @@ class OfferLib {
         }
       } else {
         // Buy Offer
+        throw new Error('Buy orders are not supported yet.')
       }
 
       return true

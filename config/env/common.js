@@ -15,7 +15,7 @@ const ipfsCoordName = process.env.COORD_NAME
 
 module.exports = {
   // Configure TCP port.
-  port: process.env.PORT || 5002,
+  port: process.env.PORT || 5700,
 
   // Password for HTML UI that displays logs.
   logPass: 'test',
@@ -30,6 +30,12 @@ module.exports = {
   emailPassword: process.env.EMAILPASS
     ? process.env.EMAILPASS
     : 'emailpassword',
+
+  // PSF Web 3 community infrastructure
+  useFullStackCash: process.env.USE_FULLSTACKCASH ? true : false,
+  consumerUrl: process.env.CONSUMER_URL
+    ? process.env.CONSUMER_URL
+    : 'https://free-bch.fullstack.cash',
 
   // FullStack.cash account information, used for automatic JWT handling.
   getJwtAtStartup: process.env.GET_JWT_AT_STARTUP ? true : false,
@@ -72,9 +78,11 @@ module.exports = {
   },
 
   // P2WDB webhook endpoint
+  p2wdbPort: process.env.P2WDB_PORT ? process.env.P2WDB_PORT : 5010,
   webhookService: process.env.WEBHOOKSERVICE
     ? process.env.WEBHOOKSERVICE
-    : 'http://localhost:5001/webhook', // P2WDB.
+    : 'http://localhost:5010/webhook', // P2WDB.
+  p2wdbAppId: process.env.APP_ID ? process.env.APP_ID : 'bch-dex-test556',
 
   // IPFS Ports
   ipfsTcpPort: process.env.IPFS_TCP_PORT ? process.env.IPFS_TCP_PORT : 4001,

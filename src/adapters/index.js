@@ -72,7 +72,7 @@ class Adapters {
       }
 
       // Start the IPFS node.
-      await this.ipfs.start()
+      // await this.ipfs.start()
 
       // Open the wallet file
       const walletData = await this.wallet.openWallet()

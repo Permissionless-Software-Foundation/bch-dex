@@ -49,7 +49,8 @@ class OfferRESTControllerLib {
 
   // DRY error handler
   handleError (ctx, err) {
-    console.log('err', err.message)
+    console.log('err', err)
+
     // If an HTTP status is specified by the buisiness logic, use that.
     if (err.status) {
       if (err.message) {

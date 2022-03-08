@@ -105,7 +105,8 @@ class MockBchWallet {
                   decimals: 8,
                   tokenType: 1,
                   isValid: true,
-                  tokenQty: '1'
+                  tokenQty: '1',
+                  qtyStr: '1'
                 }
               ]
             },

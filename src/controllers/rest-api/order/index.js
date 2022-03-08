@@ -50,6 +50,7 @@ class OrderRouter {
 
     // Define the routes and attach the controller.
     this.router.post('/', _this.orderRESTController.createOrder)
+    this.router.get('/list', _this.orderRESTController.listOrders)
 
     // Attach the Controller routes to the Koa app.
     app.use(_this.router.routes())
