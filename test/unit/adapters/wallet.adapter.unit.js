@@ -84,7 +84,8 @@ describe('#wallet', () => {
       try {
         // Force an error
         uut.WALLET_FILE = ''
-        uut.BchWallet = () => {}
+        uut.BchWallet = () => {
+        }
 
         await uut.openWallet()
         // console.log('result: ', result)
@@ -120,7 +121,7 @@ describe('#wallet', () => {
         assert.fail('Unexpected code path')
       } catch (err) {
         // console.log('err: ', err)
-        assert.include(err.message, 'Cannot read property')
+        assert.include(err.message, 'Cannot read')
       }
     })
   })
@@ -189,7 +190,7 @@ describe('#wallet', () => {
 
         assert.fail('Unexpected code path')
       } catch (err) {
-        assert.include(err.message, 'Cannot read property')
+        assert.include(err.message, 'Cannot read')
       }
     })
   })
