@@ -13,7 +13,8 @@ const ipfs = {
     ipfsCoord: {
       useCases: {
         peer: {
-          sendPrivateMessage: () => {}
+          sendPrivateMessage: () => {
+          }
         }
       }
     }
@@ -85,6 +86,18 @@ const localdb = {
     async save () {
       return {}
     }
+  },
+
+  Offer: class Offer {
+    constructor (obj) {}
+
+    static findById () {}
+    static find () {}
+    static findOne () {}
+
+    async save () {
+      return {}
+    }
   }
 }
 
@@ -106,8 +119,10 @@ const bch = {
 // }
 const { MockBchWallet } = require('./wallet')
 const wallet = {
-  burnPsf: async () => {},
-  generateSignature: async () => {},
+  burnPsf: async () => {
+  },
+  generateSignature: async () => {
+  },
   getKeyPair: async () => {
     return { cashAddress: 'fakeAddr', wif: 'fakeWif', hdIndex: 1 }
   },
@@ -115,7 +130,9 @@ const wallet = {
 }
 
 const p2wdb = {
-  write: async () => {}
+  write: async () => {
+  },
+  checkForSufficientFunds: async () => true
 }
 
-module.exports = { ipfs, localdb, bch, wallet, p2wdb, bchjs }
+module.exports = { ipfs, localdb, bch, wallet, p2wdb, bchjs}

@@ -47,29 +47,22 @@ class OfferLib {
       // Update the offer with the new UTXO information.
       offerEntity.utxoTxid = utxoInfo.txid
       offerEntity.utxoVout = utxoInfo.vout
-
-      // Burn PSF token to pay for P2WDB write.
-      const txid = await this.adapters.wallet.burnPsf()
-      console.log('burn txid: ', txid)
-      console.log(`https://simpleledger.info/tx/${txid}`)
-
-      // generate signature.
-      const now = new Date()
-      const message = now.toISOString()
-      const signature = await this.adapters.wallet.generateSignature(message)
-      // console.log('signature: ', signature)
-
-      const p2wdbObj = {
-        txid,
-        signature,
-        message,
-        appId: this.config.p2wdbAppId,
-        data: offerEntity
-      }
+      offerEntity.hdIndex = utxoInfo.hdIndex
 
       // Add offer to P2WDB.
+      const p2wdbObj = {
+        wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
+        data: offerEntity,
+        appId: this.config.p2wdbAppId
+      }
       const hash = await this.adapters.p2wdb.write(p2wdbObj)
       // console.log('hash: ', hash)
+
+      // Create a MongoDB model to hold the Offer
+      offerEntity.p2wdbHash = hash
+      console.log(`creating new offer model: ${JSON.stringify(offerEntity, null, 2)}`)
+      const offer = new this.OfferModel(offerEntity)
+      await offer.save()
 
       return hash
     } catch (err) {
@@ -97,7 +90,8 @@ class OfferLib {
 
       const utxoInfo = {
         txid,
-        vout: 0
+        vout: 0,
+        hdIndex: keyPair.hdIndex
       }
 
       return utxoInfo
@@ -112,6 +106,12 @@ class OfferLib {
   async ensureFunds (offerEntity) {
     try {
       // console.log('this.adapters.wallet: ', this.adapters.wallet.bchWallet)
+      // console.log(`walletInfo: ${JSON.stringify(this.adapters.wallet.bchWallet.walletInfo, null, 2)}`)
+
+      // Ensure the app wallet has enough funds to write to the P2WDB.
+      const wif = this.adapters.wallet.bchWallet.walletInfo.privateKey
+      const canWriteToP2WDB = await this.adapters.p2wdb.checkForSufficientFunds(wif)
+      if (!canWriteToP2WDB) throw new Error('App wallet does not have funds for writing to the P2WDB.')
 
       // Get UTXOs.
       const utxos = this.adapters.wallet.bchWallet.utxos.utxoStore
@@ -129,16 +129,18 @@ class OfferLib {
         // Get the total amount of tokens in the wallet that match the token
         // in the offer.
         let totalTokenBalance = 0
-        tokenUtxos.map(x => (totalTokenBalance += parseFloat(x.tokenQty)))
-        // console.log('totalTokenBalance: ', totalTokenBalance)
+        tokenUtxos.map(x => (totalTokenBalance += parseFloat(x.qtyStr)))
+        console.log('totalTokenBalance: ', totalTokenBalance)
 
         // If there are fewer tokens in the wallet than what's in the offer,
         // throw an error.
-        if (totalTokenBalance <= offerEntity.numTokens) {
+        if (totalTokenBalance <= offerEntity.numTokens || isNaN(totalTokenBalance)) {
           throw new Error(
             'App wallet does not have enough tokens to satisfy the SELL offer.'
           )
         }
+
+      //
       } else {
         // Buy Offer
         throw new Error('Buy orders are not supported yet.')

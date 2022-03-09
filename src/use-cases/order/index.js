@@ -56,6 +56,15 @@ class OrderUseCases {
       throw err
     }
   }
+
+  async listOrders () {
+    try {
+      return this.OrderModel.find({})
+    } catch (error) {
+      console.error('Error in use-cases/order/listOrders()')
+      throw error
+    }
+  }
 }
 
 module.exports = OrderUseCases

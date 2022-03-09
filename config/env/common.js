@@ -15,7 +15,7 @@ const ipfsCoordName = process.env.COORD_NAME
 
 module.exports = {
   // Configure TCP port.
-  port: process.env.PORT || 5002,
+  port: process.env.PORT || 5700,
 
   // Password for HTML UI that displays logs.
   logPass: 'test',
@@ -36,6 +36,9 @@ module.exports = {
   consumerUrl: process.env.CONSUMER_URL
     ? process.env.CONSUMER_URL
     : 'https://free-bch.fullstack.cash',
+
+  // P2WDB URL that will accept API calls from the p2wdb npm library.
+  p2wdbUrl: process.env.P2WDB_URL ? process.env.P2WDB_URL : 'https://p2wdb.fullstack.cash',
 
   // FullStack.cash account information, used for automatic JWT handling.
   getJwtAtStartup: process.env.GET_JWT_AT_STARTUP ? true : false,
@@ -67,8 +70,7 @@ module.exports = {
     name: ipfsCoordName,
     version,
     protocol: 'generic-service',
-    description:
-      'This is a generic IPFS Serivice Provider that uses JSON RPC over IPFS to communicate with it. This instance has not been customized. Source code: https://github.com/Permissionless-Software-Foundation/ipfs-service-provider',
+    description: 'This is a generic IPFS Serivice Provider that uses JSON RPC over IPFS to communicate with it. This instance has not been customized. Source code: https://github.com/Permissionless-Software-Foundation/ipfs-service-provider',
     documentation: 'https://ipfs-service-provider.fullstack.cash/',
     provider: {
       '@type': 'Organization',

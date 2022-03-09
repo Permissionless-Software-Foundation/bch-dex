@@ -69,7 +69,7 @@ describe('#Entry-REST-Controller', () => {
       } catch (err) {
         // console.log(err)
         assert.equal(err.status, 422)
-        assert.include(err.message, 'Cannot read property')
+        assert.include(err.message, 'Cannot read')
       }
     })
 
@@ -79,8 +79,7 @@ describe('#Entry-REST-Controller', () => {
           entry: 'entry',
           description: 'test',
           slpAddress: 'simpleledger:qpnty9t0w93fez04h7yzevujpv8pun204qqp0jfafg',
-          signature:
-            'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw=',
+          signature: 'IFytRg6KpvTHCzcW0ZwVhPqdKtRGpoRDcuEb958yIgJFUJlb1F5qPzt/JnlYE7r012BSFj+UT67DZVTU8oNB5vw=',
           category: 'test'
         }
       }

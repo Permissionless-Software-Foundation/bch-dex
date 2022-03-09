@@ -14,6 +14,7 @@ const Offer = new mongoose.Schema({
   utxoTxid: { type: String },
   utxoVout: { type: Number },
   numTokens: { type: Number },
+  hdIndex: { type: Number }, // HD index address holding the UTXO for this offer.
 
   //
   offerIpfsId: { type: String },
