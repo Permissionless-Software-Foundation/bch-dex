@@ -27,7 +27,7 @@
   },
   "repository": "Permissionless-Software-Foundation/bch-dex",
   "dependencies": {
-    "@psf/bch-js": "5.3.2",
+    "@psf/bch-js": "../bch-js",
     "axios": "0.21.1",
     "bch-message-lib": "2.1.4",
     "bcryptjs": "2.4.3",
@@ -55,6 +55,7 @@
     "mongoose": "5.13.13",
     "node-fetch": "npm:@achingbrain/node-fetch@2.6.7",
     "nodemailer": "6.4.17",
+    "p2wdb": "../p2wdb",
     "passport-local": "1.0.0",
     "public-ip": "^4.0.4",
     "winston": "3.3.3",
