@@ -108,14 +108,14 @@ describe('#offer-use-case', () => {
       }
 
       // Mock dependencies
-      sandbox.stub(uut.adapters.wallet, 'burnPsf').resolves('fakeTxid')
+      // sandbox.stub(uut.adapters.wallet, 'burnPsf').resolves('fakeTxid')
       sandbox.stub(uut.offerEntity, 'validate').returns(entryObj)
       sandbox.stub(uut, 'ensureFunds').resolves()
-      sandbox.stub(uut, 'moveTokens').resolves({ txid: 'fakeTxid', vout: 0 })
+      sandbox.stub(uut, 'moveTokens').resolves({ txid: 'fakeTxid', vout: 0, hdIndex: 1 })
       sandbox.stub(uut.adapters.wallet.bchWallet, 'getUtxos').resolves()
-      sandbox
-        .stub(uut.adapters.wallet, 'generateSignature')
-        .resolves('fakeSignature')
+      // sandbox
+      //   .stub(uut.adapters.wallet, 'generateSignature')
+      //   .resolves('fakeSignature')
       sandbox.stub(uut.adapters.p2wdb, 'write').resolves('fakeHash')
 
       const result = await uut.createOffer(entryObj)

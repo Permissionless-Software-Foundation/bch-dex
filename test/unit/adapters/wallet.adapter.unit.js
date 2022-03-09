@@ -156,44 +156,44 @@ describe('#wallet', () => {
     })
   })
 
-  describe('#burnPsf', () => {
-    it('should burn PSF tokens and return the txid', async () => {
-      // mock instance of minimal-slp-wallet
-      uut.bchWallet = new MockBchWallet()
-
-      const result = await uut.burnPsf()
-      // console.log('result: ', result)
-
-      assert.equal(result.success, true)
-      assert.equal(result.txid, 'txid')
-    })
-
-    it('should throw error if no PSF tokens are found', async () => {
-      try {
-        // mock instance of minimal-slp-wallet
-        uut.bchWallet = new MockBchWallet()
-
-        // Remove the PSF token from the mock data.
-        uut.bchWallet.utxos.utxoStore.slpUtxos.type1.tokens.pop()
-
-        await uut.burnPsf()
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        assert.include(err.message, 'Token UTXO of with ID of')
-      }
-    })
-
-    it('should catch and throw an error', async () => {
-      try {
-        await uut.burnPsf()
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        assert.include(err.message, 'Cannot read')
-      }
-    })
-  })
+  // describe('#burnPsf', () => {
+  //   it('should burn PSF tokens and return the txid', async () => {
+  //     // mock instance of minimal-slp-wallet
+  //     uut.bchWallet = new MockBchWallet()
+  //
+  //     const result = await uut.burnPsf()
+  //     // console.log('result: ', result)
+  //
+  //     assert.equal(result.success, true)
+  //     assert.equal(result.txid, 'txid')
+  //   })
+  //
+  //   it('should throw error if no PSF tokens are found', async () => {
+  //     try {
+  //       // mock instance of minimal-slp-wallet
+  //       uut.bchWallet = new MockBchWallet()
+  //
+  //       // Remove the PSF token from the mock data.
+  //       uut.bchWallet.utxos.utxoStore.slpUtxos.type1.tokens.pop()
+  //
+  //       await uut.burnPsf()
+  //
+  //       assert.fail('Unexpected code path')
+  //     } catch (err) {
+  //       assert.include(err.message, 'Token UTXO of with ID of')
+  //     }
+  //   })
+  //
+  //   it('should catch and throw an error', async () => {
+  //     try {
+  //       await uut.burnPsf()
+  //
+  //       assert.fail('Unexpected code path')
+  //     } catch (err) {
+  //       assert.include(err.message, 'Cannot read')
+  //     }
+  //   })
+  // })
 
   describe('#incrementNextAddress', () => {
     it('should increment the nextAddress property', async () => {

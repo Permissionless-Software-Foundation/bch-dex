@@ -130,7 +130,7 @@ class OfferLib {
         // in the offer.
         let totalTokenBalance = 0
         tokenUtxos.map(x => (totalTokenBalance += parseFloat(x.qtyStr)))
-        // console.log('totalTokenBalance: ', totalTokenBalance)
+        console.log('totalTokenBalance: ', totalTokenBalance)
 
         // If there are fewer tokens in the wallet than what's in the offer,
         // throw an error.

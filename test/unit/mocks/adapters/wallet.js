@@ -5,11 +5,9 @@
 const BCHJS = require('@psf/bch-js')
 
 const mockWallet = {
-  mnemonic:
-    'course abstract aerobic deer try switch turtle diet fence affair butter top',
+  mnemonic: 'course abstract aerobic deer try switch turtle diet fence affair butter top',
   privateKey: 'L5D2UAam8tvo3uii5kpgaGyjvVMimdrXu8nWGQSQjuuAix6ji1YQ',
-  publicKey:
-    '0379433ffc401483ade310469953c1cba77c71af904f07c15bde330d7198b4d6dc',
+  publicKey: '0379433ffc401483ade310469953c1cba77c71af904f07c15bde330d7198b4d6dc',
   cashAddress: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
   address: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
   slpAddress: 'simpleledger:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acq9zm7d33',
@@ -29,7 +27,8 @@ class MockBchWallet {
     this.sendTokens = async () => {
       return 'fakeTxid'
     }
-    this.getUtxos = async () => {}
+    this.getUtxos = async () => {
+    }
 
     // Environment variable is used by wallet-balance.unit.js to force an error.
     if (process.env.NO_UTXO) {
@@ -41,8 +40,7 @@ class MockBchWallet {
           bchUtxos: [
             {
               height: 700685,
-              tx_hash:
-                '1fc577caaff5626a8477162581e57bae1b19dc6aa6c10638013c2b1ba14dc654',
+              tx_hash: '1fc577caaff5626a8477162581e57bae1b19dc6aa6c10638013c2b1ba14dc654',
               tx_pos: 0,
               value: 1000,
               txid: '1fc577caaff5626a8477162581e57bae1b19dc6aa6c10638013c2b1ba14dc654',
@@ -51,8 +49,7 @@ class MockBchWallet {
             },
             {
               height: 700685,
-              tx_hash:
-                '1fc577caaff5626a8477162581e57bae1b19dc6aa6c10638013c2b1ba14dc654',
+              tx_hash: '1fc577caaff5626a8477162581e57bae1b19dc6aa6c10638013c2b1ba14dc654',
               tx_pos: 2,
               value: 19406,
               txid: '1fc577caaff5626a8477162581e57bae1b19dc6aa6c10638013c2b1ba14dc654',
@@ -66,47 +63,61 @@ class MockBchWallet {
               mintBatons: [],
               tokens: [
                 {
-                  height: 700522,
-                  tx_hash:
-                    'bb5691b50930816be78dad76d203a1c97ac94c03f6051b2fa0159c71c43aa3d0',
-                  tx_pos: 1,
-                  value: 546,
-                  txid: 'bb5691b50930816be78dad76d203a1c97ac94c03f6051b2fa0159c71c43aa3d0',
-                  vout: 1,
-                  utxoType: 'token',
-                  transactionType: 'send',
-                  tokenId:
-                    'a4fb5c2da1aa064e25018a43f9165040071d9e984ba190c222a7f59053af84b2',
-                  tokenTicker: 'TROUT',
-                  tokenName: "Trout's test token",
-                  tokenDocumentUrl: 'troutsblog.com',
-                  tokenDocumentHash: '',
-                  decimals: 2,
-                  tokenType: 1,
-                  isValid: true,
-                  tokenQty: '4.25'
+                  'height': 717331,
+                  'tx_hash': '74889580bb1a5f8c026aa2f55118ac9917df3332f7abae72a70343daa1c29621',
+                  'tx_pos': 1,
+                  'value': 546,
+                  'txid': '74889580bb1a5f8c026aa2f55118ac9917df3332f7abae72a70343daa1c29621',
+                  'vout': 1,
+                  'isSlp': true,
+                  'type': 'token',
+                  'qty': '10',
+                  'tokenId': '600ee24d0f208aebc2bdd2c4ee1b9acb6d57343561442e8676b5bbea311d5a0f',
+                  'address': 'bitcoincash:qqraj35x6l2qyqhjm5l7qlt7z2245ez8l5z3dwkeq5',
+                  'ticker': 'FLIPS',
+                  'name': 'FLIPS',
+                  'documentUri': '',
+                  'documentHash': '',
+                  'decimals': 1,
+                  'qtyStr': '1'
                 },
                 {
-                  height: 0,
-                  tx_hash:
-                    'c0ac066ce6efa1fa4763bf85a91c738e57c12b8765731bd07f0d8f5a55ce582f',
-                  tx_pos: 1,
-                  value: 546,
-                  txid: 'c0ac066ce6efa1fa4763bf85a91c738e57c12b8765731bd07f0d8f5a55ce582f',
-                  vout: 1,
-                  utxoType: 'token',
-                  transactionType: 'send',
-                  tokenId:
-                    '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
-                  tokenTicker: 'PSF',
-                  tokenName: 'Permissionless Software Foundation',
-                  tokenDocumentUrl: 'psfoundation.cash',
-                  tokenDocumentHash: '',
-                  decimals: 8,
-                  tokenType: 1,
-                  isValid: true,
-                  tokenQty: '1',
-                  qtyStr: '1'
+                  'height': 730597,
+                  'tx_hash': '52520faddfafc46b8f8c9548b097f3a3b82a5bf363b5095047b9c5f83247fe36',
+                  'tx_pos': 1,
+                  'value': 546,
+                  'txid': '52520faddfafc46b8f8c9548b097f3a3b82a5bf363b5095047b9c5f83247fe36',
+                  'vout': 1,
+                  'isSlp': true,
+                  'type': 'token',
+                  'qty': '34999991',
+                  'tokenId': '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
+                  'address': 'bitcoincash:qqraj35x6l2qyqhjm5l7qlt7z2245ez8l5z3dwkeq5',
+                  'ticker': 'PSF',
+                  'name': 'Permissionless Software Foundation',
+                  'documentUri': 'psfoundation.cash',
+                  'documentHash': '',
+                  'decimals': 8,
+                  'qtyStr': '0.34999991'
+                },
+                {
+                  'height': 730597,
+                  'tx_hash': '5dc7e7c91382aed1666a51212dfb74050261e12c3c4f62b6b1e57f42d6c51ee1',
+                  'tx_pos': 2,
+                  'value': 546,
+                  'txid': '5dc7e7c91382aed1666a51212dfb74050261e12c3c4f62b6b1e57f42d6c51ee1',
+                  'vout': 2,
+                  'isSlp': true,
+                  'type': 'token',
+                  'qty': '18898',
+                  'tokenId': 'a4fb5c2da1aa064e25018a43f9165040071d9e984ba190c222a7f59053af84b2',
+                  'address': 'bitcoincash:qqraj35x6l2qyqhjm5l7qlt7z2245ez8l5z3dwkeq5',
+                  'ticker': 'TROUT',
+                  'name': "Trout's test token",
+                  'documentUri': 'troutsblog.com',
+                  'documentHash': '',
+                  'decimals': 2,
+                  'qtyStr': '188.98'
                 }
               ]
             },
@@ -122,4 +133,4 @@ class MockBchWallet {
   }
 }
 
-module.exports = { MockBchWallet, mockWallet }
+module.exports = { MockBchWallet, mockWallet}

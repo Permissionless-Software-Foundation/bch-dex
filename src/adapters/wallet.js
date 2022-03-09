@@ -10,9 +10,9 @@ const JsonFiles = require('./json-files')
 const config = require('../../config')
 
 const WALLET_FILE = `${__dirname.toString()}/../../wallet.json`
-const PROOF_OF_BURN_QTY = 0.01
-const P2WDB_TOKEN_ID =
-  '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0'
+// const PROOF_OF_BURN_QTY = 0.01
+// const P2WDB_TOKEN_ID =
+// '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0'
 
 class WalletAdapter {
   constructor (localConfig = {}) {
@@ -178,63 +178,63 @@ class WalletAdapter {
     }
   }
 
-  // Burn enough PSF to generate a valide proof-of-burn for writing to the P2WDB.
-  async burnPsf () {
-    try {
-      // TODO: Throw error if this.bchWallet has not been instantiated.
-
-      // console.log('walletData: ', walletData)
-      // console.log(
-      //   `walletData.utxos.utxoStore.slpUtxos: ${JSON.stringify(
-      //     walletData.utxos.utxoStore.slpUtxos,
-      //     null,
-      //     2,
-      //   )}`,
-      // )
-
-      // Get token UTXOs held by the wallet.
-      const tokenUtxos = this.bchWallet.utxos.utxoStore.slpUtxos.type1.tokens
-      // console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`)
-
-      // Find a token UTXO that contains PSF with a quantity higher than needed
-      // to generate a proof-of-burn.
-      let tokenUtxo = {}
-      for (let i = 0; i < tokenUtxos.length; i++) {
-        const thisUtxo = tokenUtxos[i]
-
-        // If token ID matches.
-        if (thisUtxo.tokenId === P2WDB_TOKEN_ID) {
-          if (parseFloat(thisUtxo.qtyStr) >= PROOF_OF_BURN_QTY) {
-            tokenUtxo = thisUtxo
-            break
-          }
-        }
-      }
-
-      if (tokenUtxo.tokenId !== P2WDB_TOKEN_ID) {
-        throw new Error(
-          `Token UTXO of with ID of ${P2WDB_TOKEN_ID} and quantity greater than ${PROOF_OF_BURN_QTY} could not be found in wallet.`
-        )
-      }
-      // console.log(`tokenUtxo: ${JSON.stringify(tokenUtxo, null, 2)}`)
-
-      const result = await this.bchWallet.burnTokens(
-        PROOF_OF_BURN_QTY,
-        P2WDB_TOKEN_ID
-      )
-      // console.log('walletData.burnTokens() result: ', result)
-
-      return result
-
-      // return {
-      //   success: true,
-      //   txid: 'fakeTxid',
-      // }
-    } catch (err) {
-      console.error('Error in burnPsf(): ', err)
-      throw err
-    }
-  }
+// Burn enough PSF to generate a valide proof-of-burn for writing to the P2WDB.
+// async burnPsf () {
+//   try {
+//     // TODO: Throw error if this.bchWallet has not been instantiated.
+//
+//     // console.log('walletData: ', walletData)
+//     // console.log(
+//     //   `walletData.utxos.utxoStore.slpUtxos: ${JSON.stringify(
+//     //     walletData.utxos.utxoStore.slpUtxos,
+//     //     null,
+//     //     2,
+//     //   )}`,
+//     // )
+//
+//     // Get token UTXOs held by the wallet.
+//     const tokenUtxos = this.bchWallet.utxos.utxoStore.slpUtxos.type1.tokens
+//     // console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`)
+//
+//     // Find a token UTXO that contains PSF with a quantity higher than needed
+//     // to generate a proof-of-burn.
+//     let tokenUtxo = {}
+//     for (let i = 0; i < tokenUtxos.length; i++) {
+//       const thisUtxo = tokenUtxos[i]
+//
+//       // If token ID matches.
+//       if (thisUtxo.tokenId === P2WDB_TOKEN_ID) {
+//         if (parseFloat(thisUtxo.qtyStr) >= PROOF_OF_BURN_QTY) {
+//           tokenUtxo = thisUtxo
+//           break
+//         }
+//       }
+//     }
+//
+//     if (tokenUtxo.tokenId !== P2WDB_TOKEN_ID) {
+//       throw new Error(
+//         `Token UTXO of with ID of ${P2WDB_TOKEN_ID} and quantity greater than ${PROOF_OF_BURN_QTY} could not be found in wallet.`
+//       )
+//     }
+//     // console.log(`tokenUtxo: ${JSON.stringify(tokenUtxo, null, 2)}`)
+//
+//     const result = await this.bchWallet.burnTokens(
+//       PROOF_OF_BURN_QTY,
+//       P2WDB_TOKEN_ID
+//     )
+//     // console.log('walletData.burnTokens() result: ', result)
+//
+//     return result
+//
+//     // return {
+//     //   success: true,
+//     //   txid: 'fakeTxid',
+//     // }
+//   } catch (err) {
+//     console.error('Error in burnPsf(): ', err)
+//     throw err
+//   }
+// }
 }
 
 module.exports = WalletAdapter
