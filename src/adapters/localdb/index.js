@@ -6,6 +6,7 @@
 const Users = require('./models/users')
 const Entries = require('./models/entry')
 const Order = require('./models/order')
+const Offer = require('./models/offer')
 
 class LocalDB {
   constructor () {
@@ -13,6 +14,7 @@ class LocalDB {
     this.Users = Users
     this.Entry = Entries
     this.Order = Order
+    this.Offer = Offer
   }
 }
 

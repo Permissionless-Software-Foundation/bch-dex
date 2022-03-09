@@ -47,15 +47,15 @@ These are just a brief, high-level overview. Review the [Specifications](./speci
 
 ## Writing to the Global Database
 
-Adding data to the global P2WDB is triggered by the _Client_ calling a REST API endpoint on `bch-dex`. `bch-dex` [p2wdb npm library](https://www.npmjs.com/package/p2wdb) can be leveraged for easy reading and writing to the P2WDB.
+Adding data to the global P2WDB is triggered by the _Client_ calling a REST API endpoint on `bch-dex`. The [p2wdb npm library](https://www.npmjs.com/package/p2wdb) can be leveraged for easy reading and writing to the P2WDB.
 
 Writing data follows these steps:
 
 - Tokens and BCH are held by a wallet which is under the controlled of `bch-dex`.
 - The _Client_ submits data to the POST `/offer` REST API endpoint to create a new Offer.
-- `bch-dex` will move the funds into a segregated UTXO, and will use that UTXO to create an Offer. The Offer data is written to the P2WDB.
-- `bch-dex` will receive a webhook call to its POST `/order` endpoint by the P2WDB. This event will trigger the import of the new data into the apps local Mongo database, and generate a new Order model.
-- This webhook event is mirrored by every instance of `bch-dex` on the network. Each P2WDB peer on the network will independently validate the new database entry.
+- `bch-dex` will move the funds into a segregated UTXO, and will use that UTXO to create an Offer. The Offer data is written to the P2WDB. The Offer data is also saved to the local MongoDB.
+- After submitting the data to the P2WDB, `bch-dex` will receive a webhook call to its POST `/order` endpoint by the P2WDB. This event will trigger the import of the new data into the apps local Mongo database, and generate a new Order model.
+- This webhook event is mirrored by every instance of `bch-dex` on the network. Each P2WDB peer on the network will independently validate the new database entry and create a new Order model.
 
 
 ## Reading from the Local Database

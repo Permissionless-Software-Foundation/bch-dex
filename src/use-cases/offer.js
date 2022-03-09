@@ -47,29 +47,22 @@ class OfferLib {
       // Update the offer with the new UTXO information.
       offerEntity.utxoTxid = utxoInfo.txid
       offerEntity.utxoVout = utxoInfo.vout
-
-      // Burn PSF token to pay for P2WDB write.
-      const txid = await this.adapters.wallet.burnPsf()
-      console.log('burn txid: ', txid)
-      console.log(`https://simpleledger.info/tx/${txid}`)
-
-      // generate signature.
-      const now = new Date()
-      const message = now.toISOString()
-      const signature = await this.adapters.wallet.generateSignature(message)
-      // console.log('signature: ', signature)
-
-      const p2wdbObj = {
-        txid,
-        signature,
-        message,
-        appId: this.config.p2wdbAppId,
-        data: offerEntity
-      }
+      offerEntity.hdIndex = utxoInfo.hdIndex
 
       // Add offer to P2WDB.
+      const p2wdbObj = {
+        wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
+        data: offerEntity,
+        appId: this.config.p2wdbAppId
+      }
       const hash = await this.adapters.p2wdb.write(p2wdbObj)
       // console.log('hash: ', hash)
+
+      // Create a MongoDB model to hold the Offer
+      offerEntity.p2wdbHash = hash
+      console.log(`creating new offer model: ${JSON.stringify(offerEntity, null, 2)}`)
+      const offer = new this.OfferModel(offerEntity)
+      await offer.save()
 
       return hash
     } catch (err) {
@@ -97,7 +90,8 @@ class OfferLib {
 
       const utxoInfo = {
         txid,
-        vout: 0
+        vout: 0,
+        hdIndex: keyPair.hdIndex
       }
 
       return utxoInfo
