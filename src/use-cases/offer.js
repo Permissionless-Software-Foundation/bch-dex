@@ -112,6 +112,12 @@ class OfferLib {
   async ensureFunds (offerEntity) {
     try {
       // console.log('this.adapters.wallet: ', this.adapters.wallet.bchWallet)
+      // console.log(`walletInfo: ${JSON.stringify(this.adapters.wallet.bchWallet.walletInfo, null, 2)}`)
+
+      // Ensure the app wallet has enough funds to write to the P2WDB.
+      const wif = this.adapters.wallet.bchWallet.walletInfo.privateKey
+      const canWriteToP2WDB = await this.adapters.p2wdb.checkForSufficientFunds(wif)
+      if (!canWriteToP2WDB) throw new Error('App wallet does not have funds for writing to the P2WDB.')
 
       // Get UTXOs.
       const utxos = this.adapters.wallet.bchWallet.utxos.utxoStore
@@ -129,16 +135,18 @@ class OfferLib {
         // Get the total amount of tokens in the wallet that match the token
         // in the offer.
         let totalTokenBalance = 0
-        tokenUtxos.map(x => (totalTokenBalance += parseFloat(x.tokenQty)))
+        tokenUtxos.map(x => (totalTokenBalance += parseFloat(x.qtyStr)))
         // console.log('totalTokenBalance: ', totalTokenBalance)
 
         // If there are fewer tokens in the wallet than what's in the offer,
         // throw an error.
-        if (totalTokenBalance <= offerEntity.numTokens) {
+        if (totalTokenBalance <= offerEntity.numTokens || isNaN(totalTokenBalance)) {
           throw new Error(
             'App wallet does not have enough tokens to satisfy the SELL offer.'
           )
         }
+
+      //
       } else {
         // Buy Offer
         throw new Error('Buy orders are not supported yet.')
