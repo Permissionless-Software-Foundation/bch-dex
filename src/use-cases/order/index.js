@@ -43,6 +43,9 @@ class OrderUseCases {
       console.log('utxoStatus: ', utxoStatus)
       if (utxoStatus === null) return false
 
+      // A new order gets a status of 'posted'
+      orderObj.data.orderStatus = 'posted'
+
       const orderEntity = this.orderEntity.validate(orderObj)
       console.log('orderEntity: ', orderEntity)
 

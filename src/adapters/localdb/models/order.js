@@ -17,7 +17,8 @@ const Order = new mongoose.Schema({
   timestamp: { type: String },
   localTimestamp: { type: String },
   p2wdbTxid: { type: String },
-  p2wdbHash: { type: String }
+  p2wdbHash: { type: String },
+  orderStatus: { type: String }
 })
 
 module.exports = mongoose.model('order', Order)
