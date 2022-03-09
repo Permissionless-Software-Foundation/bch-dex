@@ -16,7 +16,7 @@ class OrderEntity {
       )
     }
 
-    const {messageType, messageClass, tokenId, buyOrSell, rateInSats, minSatsToExchange, numTokens, utxoTxid, utxoVout, orderStatus} = orderData.data
+    const { messageType, messageClass, tokenId, buyOrSell, rateInSats, minSatsToExchange, numTokens, utxoTxid, utxoVout, orderStatus } = orderData.data
 
     // Input Validation
     if (!messageType || typeof messageType !== 'number') {
