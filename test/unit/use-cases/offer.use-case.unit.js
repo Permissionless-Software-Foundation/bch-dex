@@ -90,7 +90,7 @@ describe('#offer-use-case', () => {
       assert.property(result, 'vout')
 
       assert.equal(result.txid, 'fakeTxid')
-      assert.equal(result.vout, 0)
+      assert.equal(result.vout, 1)
     })
   })
 
