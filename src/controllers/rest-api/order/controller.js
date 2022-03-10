@@ -61,6 +61,27 @@ class OrderRESTControllerLib {
     }
   }
 
+  // Currently only supports 'sell' orders, and will only buy the 'numTokens'
+  // listed in the order.
+  async takeOrder (ctx) {
+    try {
+      console.log('body: ', ctx.request.body)
+
+      const orderCid = ctx.request.body.orderCid
+
+      // Find the Order.
+      // const orderEntity = await _this.useCases.order.findOrder(orderId)
+
+      // 'Take' the Order.
+      const hash = await _this.useCases.order.takeOrder(orderCid)
+
+      ctx.body = { hash }
+    } catch (err) {
+      console.log('Error in takeOrder REST API handler.')
+      _this.handleError(ctx, err)
+    }
+  }
+
   // DRY error handler
   handleError (ctx, err) {
     console.log('err', err.message)
