@@ -63,6 +63,7 @@
   },
   "devDependencies": {
     "apidoc": "0.26.0",
+    "bch-token-sweep": "1.5.16",
     "chai": "4.3.0",
     "coveralls": "2.11.4",
     "eslint": "7.19.0",
