@@ -10,16 +10,16 @@ There are three major pieces of software behind the bch-dex concept. They work t
 
 ![bch-dex major subcomponents](./diagrams/software-interaction.png)
 
-- _Client_ could be a web browser, or a command-line client like [psf-bch-wallet](https://github.com/Permissionless-Software-Foundation/psf-bch-wallet) or [psf-avax-wallet](https://github.com/Permissionless-Software-Foundation/psf-avax-wallet).
+- _Client_ could be a web browser like [wallet.fullstack.cash](https://bchn-wallet.fullstack.cash), or a command-line client like [psf-bch-wallet](https://github.com/Permissionless-Software-Foundation/psf-bch-wallet) or [psf-avax-wallet](https://github.com/Permissionless-Software-Foundation/psf-avax-wallet).
 - [bch-dex](https://github.com/Permissionless-Software-Foundation/bch-dex) is the back end REST API that maintains a local database of information that the client reads from.
 - [P2WDB](https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service) is the pay-to-write global database with a REST API for interfacing with the other two pieces of software.
 
 The arrows in the image represent the information flow between the three pieces of software:
 
 - The _Client_ is essentially a 'dummy terminal' with a bidirectional interface to bch-dex. bch-dex does the heavy lifting, and the _Client_ is a 'thin' UI wrapper.
-- `bch-dex` imports data from the global P2WDB database into its local database, using a [webhook](https://en.wikipedia.org/wiki/Webhook) (dashed line). It can also custody funds, pay transaction fees, and create an _Offer_ by submitting the data to the P2WDB to generate an _Order_ (solid line).
+- `bch-dex` imports data from the global P2WDB database into its local database, using a [webhook](https://en.wikipedia.org/wiki/Webhook) (dashed line). It can also custody funds, pay transaction fees, and create an _Order_ by submitting the data to the P2WDB to generate an _Offer_ (solid line).
 
-This architecture keeps the global database highly censorship resistant, while allowing local installations to maintain tight control over the user experience. The goal is to have many redundant copies of `bch-dex` on the network, and to empower individual traders to run their own, private copy.
+This architecture keeps the global database highly censorship resistant, while allowing local installations to maintain tight control over the user experience. The goal is to have many redundant copies of `bch-dex` on the network, and to empower individual traders to run their own, private copy, while maintaining a single source of truth via the P2WDB.
 
 # Back End
 

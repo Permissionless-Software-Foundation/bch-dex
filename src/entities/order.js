@@ -4,6 +4,10 @@
   It's destroyed when the UTXO described in the Signal has been detected as spent.
 */
 class OrderEntity {
+  constructor () {
+    this.orderStatus = ['posted', 'taken', 'completed']
+  }
+
   validate (orderData = {}) {
     // Throw an error if input object does not have a data property
     if (!orderData.data) {
@@ -12,17 +16,7 @@ class OrderEntity {
       )
     }
 
-    const {
-      messageType,
-      messageClass,
-      tokenId,
-      buyOrSell,
-      rateInSats,
-      minSatsToExchange,
-      numTokens,
-      utxoTxid,
-      utxoVout
-    } = orderData.data
+    const { messageType, messageClass, tokenId, buyOrSell, rateInSats, minSatsToExchange, numTokens, utxoTxid, utxoVout, orderStatus } = orderData.data
 
     // Input Validation
     if (!messageType || typeof messageType !== 'number') {
@@ -52,6 +46,9 @@ class OrderEntity {
     if (typeof utxoVout !== 'number') {
       throw new Error("Property 'utxoVout' must be an integer number.")
     }
+    if (orderStatus && !this.orderStatus.includes(orderStatus)) {
+      throw new Error("Property 'orderStatus' must be a valid string")
+    }
 
     const validatedOrderData = {
       messageType,
@@ -66,7 +63,8 @@ class OrderEntity {
       timestamp: orderData.timestamp,
       localTimestamp: orderData.localTimeStamp,
       txid: orderData.txid,
-      p2wdbHash: orderData.hash
+      p2wdbHash: orderData.hash,
+      orderStatus: orderStatus || this.orderStatus[0]
     }
 
     return validatedOrderData

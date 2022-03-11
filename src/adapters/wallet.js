@@ -178,63 +178,131 @@ class WalletAdapter {
     }
   }
 
-// Burn enough PSF to generate a valide proof-of-burn for writing to the P2WDB.
-// async burnPsf () {
-//   try {
-//     // TODO: Throw error if this.bchWallet has not been instantiated.
-//
-//     // console.log('walletData: ', walletData)
-//     // console.log(
-//     //   `walletData.utxos.utxoStore.slpUtxos: ${JSON.stringify(
-//     //     walletData.utxos.utxoStore.slpUtxos,
-//     //     null,
-//     //     2,
-//     //   )}`,
-//     // )
-//
-//     // Get token UTXOs held by the wallet.
-//     const tokenUtxos = this.bchWallet.utxos.utxoStore.slpUtxos.type1.tokens
-//     // console.log(`tokenUtxos: ${JSON.stringify(tokenUtxos, null, 2)}`)
-//
-//     // Find a token UTXO that contains PSF with a quantity higher than needed
-//     // to generate a proof-of-burn.
-//     let tokenUtxo = {}
-//     for (let i = 0; i < tokenUtxos.length; i++) {
-//       const thisUtxo = tokenUtxos[i]
-//
-//       // If token ID matches.
-//       if (thisUtxo.tokenId === P2WDB_TOKEN_ID) {
-//         if (parseFloat(thisUtxo.qtyStr) >= PROOF_OF_BURN_QTY) {
-//           tokenUtxo = thisUtxo
-//           break
-//         }
-//       }
-//     }
-//
-//     if (tokenUtxo.tokenId !== P2WDB_TOKEN_ID) {
-//       throw new Error(
-//         `Token UTXO of with ID of ${P2WDB_TOKEN_ID} and quantity greater than ${PROOF_OF_BURN_QTY} could not be found in wallet.`
-//       )
-//     }
-//     // console.log(`tokenUtxo: ${JSON.stringify(tokenUtxo, null, 2)}`)
-//
-//     const result = await this.bchWallet.burnTokens(
-//       PROOF_OF_BURN_QTY,
-//       P2WDB_TOKEN_ID
-//     )
-//     // console.log('walletData.burnTokens() result: ', result)
-//
-//     return result
-//
-//     // return {
-//     //   success: true,
-//     //   txid: 'fakeTxid',
-//     // }
-//   } catch (err) {
-//     console.error('Error in burnPsf(): ', err)
-//     throw err
-//   }
-// }
+  // Generate a partial transcation to *take* a 'sell' order.
+  async generatePartialTx (orderInfo) {
+    try {
+      console.log(`orderInfo: ${JSON.stringify(orderInfo, null, 2)}`)
+
+      const bchjs = this.bchWallet.bchjs
+
+      // instance of transaction builder
+      const transactionBuilder = new bchjs.TransactionBuilder()
+
+      // Get a payment UTXO.
+      // TODO: Create a segregated UTXO.
+      const bchUtxos = this.bchWallet.utxos.utxoStore.bchUtxos
+      const paymentUtxo = await bchjs.Utxo.findBiggestUtxo(bchUtxos)
+      console.log('paymentUtxo: ', paymentUtxo)
+
+      // Get token info on the offered UTXO
+      const txData = await this.bchWallet.getTxData([orderInfo.utxoTxid])
+      console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
+
+      // Construct the UTXO being offered for sale.
+      const offeredUtxo = {
+        txid: orderInfo.utxoTxid,
+        vout: orderInfo.utxoVout,
+        tokenId: orderInfo.tokenId,
+        decimals: txData[0].tokenDecimals,
+        tokenQty: orderInfo.numTokens.toString()
+      }
+      console.log(`offeredUtxo: ${JSON.stringify(offeredUtxo, null, 2)}`)
+
+      // Build First part of the collaborative Tx a.k.a. Alice
+      // Generate the OP_RETURN code.
+      const slpSendObj = bchjs.SLP.TokenType1.generateSendOpReturn(
+        [offeredUtxo],
+        orderInfo.numTokens.toString()
+      )
+      const slpData = slpSendObj.script
+      console.log(`slpOutputs: ${slpSendObj.outputs}`)
+
+      // Currently this app only supports a single SLP token UTXO for exact
+      // token quantities (no token change). e.g. 1 UTXO representing the
+      // exact number of 'numTokens'
+      if (slpSendObj.outputs > 1) {
+        console.log('WARNING: choose one UTXO with all tokens to exchange')
+        return
+      }
+
+      // Calculate sats needed to pay the offer.
+      const satsNeeded = orderInfo.numTokens * parseInt(orderInfo.rateInSats)
+
+      // Calculate miner fees.
+      // Get byte count (minimum 2 inputs, 3 outputs)
+      const opReturnBufLength = slpData.byteLength + 32 // add padding
+      const byteCount =
+      bchjs.BitcoinCash.getByteCount({ P2PKH: 2 }, { P2PKH: 4 }) +
+        opReturnBufLength
+      const totalSatsNeeded = byteCount + satsNeeded
+      // console.log(`satoshis needed: ${satsNeeded}`)
+
+      // One last check to ensure the app wallet has enough BCH to complete
+      // the trade.
+      if (totalSatsNeeded > paymentUtxo.value) {
+        console.log(`Selected payment UTXO is not big enough. Sats needed: ${totalSatsNeeded}, UTXO value: ${paymentUtxo.value}`)
+      }
+
+      // add UTXO for sell(STILL CANNOT SPEND - not signed yet)
+      transactionBuilder.addInput(orderInfo.utxoTxid, orderInfo.utxoVout)
+
+      // add payment UTXO
+      transactionBuilder.addInput(paymentUtxo.tx_hash, paymentUtxo.tx_pos)
+
+      const originalAmount = paymentUtxo.value
+      const dust = 546
+      const remainder = originalAmount - satsNeeded - dust // exchange fee + token UTXO dust
+
+      // Add the SLP OP_RETURN data as the first output.
+      transactionBuilder.addOutput(slpData, 0)
+
+      const buyerAddr = this.bchWallet.walletInfo.legacyAddress
+      // console.log(`buyAddr: ${JSON.stringify(buyAddr, null, 2)}`)
+
+      // Send dust transaction representing tokens being sent.
+      transactionBuilder.addOutput(
+        buyerAddr,
+        dust
+      )
+
+      // Get seller address
+      // TODO: Seller should explicitly define the address to send to in the
+      // orderInfo object. Right now it retrieves the address from the UTXO
+      // for sale, which is not ideal.
+      const sellerAddr = txData[0].vout[1].scriptPubKey.addresses[0]
+
+      // Send payment to the offer side
+      transactionBuilder.addOutput(sellerAddr, satsNeeded)
+
+      // Send the BCH change back to the buyer
+      if (remainder > 550) {
+        transactionBuilder.addOutput(buyerAddr, remainder)
+      }
+
+      const buyerECPair = bchjs.ECPair.fromWIF(this.bchWallet.walletInfo.privateKey)
+
+      // Sign the buyers input UTXO for spending.
+      transactionBuilder.sign(
+        1,
+        buyerECPair,
+        null,
+        transactionBuilder.hashTypes.SIGHASH_ALL,
+        originalAmount
+      )
+
+      const tx = transactionBuilder.transaction.buildIncomplete()
+
+      const hex = tx.toHex()
+      console.log('hex: ', hex)
+
+      return hex
+    } catch (err) {
+      console.error('Error in wallet.js/generatePartialTx(): ', err)
+      throw err
+    }
+
+  // return true
+  }
 }
 
 module.exports = WalletAdapter

@@ -90,7 +90,7 @@ class OfferLib {
 
       const utxoInfo = {
         txid,
-        vout: 0,
+        vout: 1,
         hdIndex: keyPair.hdIndex
       }
 
