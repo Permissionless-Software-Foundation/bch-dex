@@ -107,11 +107,11 @@ class OrderUseCases {
 
       // Create a partially signed transaction.
       // https://github.com/Permissionless-Software-Foundation/bch-js-examples/blob/master/bch/applications/collaborate/sell-slp/e2e-exchange/step2-purchase-tx.js#L59
-      // const partialTxHex = await this.adapaters.wallet.generatePartialTx(orderInfo)
+      const partialTxHex = await this.adapters.wallet.generatePartialTx(orderInfo)
 
-      // return partialTxHex
+      return partialTxHex
 
-      return true
+    // return true
     } catch (err) {
       console.error('Error in use-cases/order/takeOrder()')
       throw err
