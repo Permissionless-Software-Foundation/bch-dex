@@ -13,6 +13,43 @@ This reflects the [Clean Architecture](https://bafybeiajggd4zju7oen627bcy5l32hrx
 
 Entities make up the core business concepts. If these entities change, they fundamentally change the entire app.
 
+### Order
+
+An Order Entity is nearly the same as an Offer. The Order is generated first, but is always internal to the bch-dex system. Most of the data in an Order is submitted to the P2WDB, which generates an Offer (external) Entity.
+
+The Order tracks the [HD index address](https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch05.asciidoc#hd-wallets-bip-32bip-44) used to hold tokens or BCH for sale. This is the part of the app concerned with the custody of the funds. It creates a segregated [UTXO](https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch06.asciidoc#transaction-outputs-and-inputs) to hold the offered asset. The Order is automatically destroyed if the UTXO is spent.
+
+Order entities have the following properties:
+
+- Token Data:
+  - _tokenId_ - The unique ID that identifies the class of token being offered for sale.
+  - _utxoTxid_ - The TXID of the UTXO representing the token or BCH being offered for sale.
+  - _utxoVout_ - The vout of the UTXO representing the token or BCH being offered for sale.
+
+  - Trade Data:
+    - _buyOrSell_ - A string with a value `buy` or `sell` indicating which type of offer this is.
+    - _numTokens_ - The maximum number of tokens offered for sale.
+    - _rateInBaseUnit_ - The rate in terms of currency-unit-per-token. Ex: 1000 = 1000 sats per token
+      - For Bitcoin, the min currency is sats.
+      - For AVAX, the min currency is nano-Avax.
+      - for eCash, the min currency is bits.
+    - _minUnitsToExchange_ - The minimum order size accepted.
+
+  - Authentication Data:
+    - _signature_ - A message signed by the address which created the order.
+    - _sigMsg_ - The clear-text message used to generate the signature.
+    - _offerBchAddr_ - The BCH address controlling the offer.
+    - _offerPubKey_ - The public key used to generate the BCH address, used for encryption.
+
+  - Wallet Data:
+    - _hdIndex_ - The HD index of the wallet used to generate the keypair to store the UTXO being offered for sale.
+
+  - SWaP Protocol properties:
+    - _lokadId_ - Not used. Provided for future functionality.
+    - _messageType_ - Not used. Provided for future functionality.
+    - _messageClass_ - Not used. Provided for future functionality.
+
+
 ### Offer
 
 An offer is created from data passed to the app by the P2WDB webhook.
@@ -20,58 +57,37 @@ It is destroyed when the UTXO described in the Signal has been detected as spent
 
 Offer entities have the following properties:
 
-- _tokenId_ - The unique ID that identifies the class of token being offered for sale.
-- _buyOrSell_ - A string with a value `buy` or `sell` indicating which type of offer this is.
-- _rateInSats_ - The rate in terms of tokens-per-currency-unit.
-  - For Bitcoin, the min currency is sats.
-  - For AVAX, the min currency is nano-Avax.
-  - for eCash, the min currency is bits.
-- _minSatsToExchange_ - The minimum order size accepted.
-- _signature_ - A message signed by the address which created the order.
-- _sigMsg_ - The clear-text message used to generate the signature.
-- _utxoTxid_ - The TXID of the UTXO used in the order.
-- _utxoVout_ - The vout of the UTXO used in the order.
-- _numTokens_ - The maximum number of tokens offered for sale.
-- _timestamp_ - The ISO time when the order was created.
-- _localTimestamp_ - The localized time when the order was created.
-- _p2wdbTxid_ - The TXID proof-of-burn used to add the order to the P2WDB.
-- _p2wdbHash_ - The hash used to identify the order entry in the P2WDB.
-- _lokadId_ - Not used. Provided for future functionality.
-- _messageType_ - Not used. Provided for future functionality.
-- _messageClass_ - Not used. Provided for future functionality.
+- Token Data:
+  - _tokenId_ - The unique ID that identifies the class of token being offered for sale.
+  - _utxoTxid_ - The TXID of the UTXO representing the token or BCH being offered for sale.
+  - _utxoVout_ - The vout of the UTXO representing the token or BCH being offered for sale.
 
-### Order
+- Trade Data:
+  - _buyOrSell_ - A string with a value `buy` or `sell` indicating which type of offer this is.
+  - _numTokens_ - The maximum number of tokens offered for sale.
+  - _rateInBaseUnit_ - The rate in terms of currency-unit-per-token. Ex: 1000 = 1000 sats per token
+    - For Bitcoin, the min currency is sats.
+    - For AVAX, the min currency is nano-Avax.
+    - for eCash, the min currency is bits.
+  - _minUnitsToExchange_ - The minimum order size accepted.
+  - _p2wdbTxid_ - The TXID proof-of-burn used to add the order to the P2WDB.
+  - _p2wdbHash_ - The CID used to identify the order entry in the P2WDB.
 
-An Order Entity is nearly the same as an Offer. But while an Offer is generated
-by a webhook from P2WDB, the Order Entity is created internally. It is used
-to track an 'Offer' generated and managed by this application.
+- Authentication Data:
+  - _signature_ - A message signed by the address which created the order.
+  - _sigMsg_ - The clear-text message used to generate the signature.
+  - _offerBchAddr_ - The BCH address controlling the offer.
+  - _offerPubKey_ - The public key used to generate the BCH address, used for encryption.
 
-The Order tracks the [HD index address](https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch05.asciidoc#hd-wallets-bip-32bip-44) used to hold tokens or BCH for sale. This is the part of the app concerned with the custody of the funds. It creates a segregated [UTXO](https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch06.asciidoc#transaction-outputs-and-inputs) to hold the offered asset. The Order is automatically destroyed if the UTXO is spent.
+- Utility Data:
+  - _timestamp_ - The ISO time when the order was created.
+  - _localTimestamp_ - The localized time when the order was created.
 
-Order entities have the following properties:
+- SWaP Protocol properties:
+  - _lokadId_ - Not used. Provided for future functionality.
+  - _messageType_ - Not used. Provided for future functionality.
+  - _messageClass_ - Not used. Provided for future functionality.
 
-- _offerIpfsId_ - The IPFS ID of the instance of `ipfs-swap-service` that is managing the offer.
-- _offerBchAddr_ - The BCH address controlling the offer.
-- _offerPubKey_ - The public key used to generate the BCH address, used for encryption.
-- _tokenId_ - The unique ID that identifies the class of token being offered for sale.
-- _buyOrSell_ - A string with a value `buy` or `sell` indicating which type of offer this is.
-- _rateInSats_ - The rate in terms of tokens-per-currency-unit.
-  - For Bitcoin, the min currency is sats.
-  - For AVAX, the min currency is nano-Avax.
-  - for eCash, the min currency is bits.
-- _minSatsToExchange_ - The minimum order size accepted.
-- _signature_ - A message signed by the address which created the order.
-- _sigMsg_ - The clear-text message used to generate the signature.
-- _utxoTxid_ - The TXID of the UTXO used in the order.
-- _utxoVout_ - The vout of the UTXO used in the order.
-- _numTokens_ - The maximum number of tokens offered for sale.
-- _timestamp_ - The ISO time when the order was created.
-- _localTimestamp_ - The localized time when the order was created.
-- _p2wdbTxid_ - The TXID proof-of-burn used to add the order to the P2WDB.
-- _p2wdbHash_ - The hash used to identify the order entry in the P2WDB.
-- _lokadId_ - Not used. Provided for future functionality.
-- _messageType_ - Not used. Provided for future functionality.
-- _messageClass_ - Not used. Provided for future functionality.
 
 ### Counter Offer
 

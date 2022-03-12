@@ -1,25 +1,33 @@
 const mongoose = require('mongoose')
 
 const Offer = new mongoose.Schema({
+
+  // Token data
+  tokenId: { type: String },
+  utxoTxid: { type: String },
+  utxoVout: { type: Number },
+
+  // Trade data
+  buyOrSell: { type: String },
+  numTokens: { type: Number },
+  rateInBaseUnit: { type: String },
+  minUnitsToExchange: { type: String },
+  p2wdbTxid: { type: String },
+  p2wdbHash: { type: String },
+
+  // Authentication data
+  signature: { type: String },
+  sigMsg: { type: String },
+
+  // Utility data
+  timestamp: { type: String },
+  localTimestamp: { type: String },
+
   // SWaP Protocol Properties
   lokadId: { type: String },
   messageType: { type: Number },
-  messageClass: { type: Number },
-  tokenId: { type: String },
-  buyOrSell: { type: String },
-  rateInSats: { type: String },
-  minSatsToExchange: { type: String },
-  signature: { type: String },
-  sigMsg: { type: String },
-  utxoTxid: { type: String },
-  utxoVout: { type: Number },
-  numTokens: { type: Number },
-  hdIndex: { type: Number }, // HD index address holding the UTXO for this offer.
+  messageClass: { type: Number }
 
-  //
-  offerIpfsId: { type: String },
-  offerBchAddr: { type: String },
-  offerPubKey: { type: String }
 })
 
 module.exports = mongoose.model('offer', Offer)
