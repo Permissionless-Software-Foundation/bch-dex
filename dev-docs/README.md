@@ -91,4 +91,8 @@ Users can browse the Offers tracked by a local `bch-dex` by using a *Client*. Wh
 This part of the process is automated and does not require input from the user.
 
 - When a *Counter Offer* is received that matches an *Order* tracked by the local copy of `bch-dex`, it will trigger the *Acceptance* phase.
-- In the *Acceptance* phase, the transaction will be checked to see if it matches the original *Order*. If all checks pass, `bch-dex` will sign the transaction and broadcast it, completing the trade.
+- In the *Acceptance* phase, the transaction will be checked to see if it matches the conditions in the original *Order*. If all checks pass, `bch-dex` will sign the transaction and broadcast it, completing the trade.
+
+## Maintenance
+
+Occasional maintenance functions will be called by an interval timer. The primary purpose of these functions is to check the UTXOs in the Order, Offer, and Counter Offer entities. If any of these UTXOs are spent, the entity is deleted from the local Mongo database.
