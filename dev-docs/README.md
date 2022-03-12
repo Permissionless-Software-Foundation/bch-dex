@@ -61,19 +61,34 @@ This section describes the protocols for the database interactions between the t
 
 These are just a brief, high-level overview. Review the [Specifications](./specification.md) for more details.
 
-## Writing to the Global Database
+## Reading from the Local Database
+
+The *Client* reads data from the local database stored by `bch-dex`, and does not read the P2WDB global database directly. This gives `bch-dex` the opportunity to filter and modify the data locally, for a more controlled user experience.
+
+## Making an Offer
 
 Adding data to the global P2WDB is triggered by the _Client_ calling a REST API endpoint on `bch-dex`. The [p2wdb npm library](https://www.npmjs.com/package/p2wdb) can be leveraged for easy reading and writing to the P2WDB.
 
 Writing data follows these steps:
 
 - Tokens and BCH are held by a wallet which is under the controlled of `bch-dex`.
-- The _Client_ submits data to the POST `/offer` REST API endpoint to create a new Offer.
-- `bch-dex` will move the funds into a segregated UTXO, and will use that UTXO to create an Offer. The Offer data is written to the P2WDB. The Offer data is also saved to the local MongoDB.
-- After submitting the data to the P2WDB, `bch-dex` will receive a webhook call to its POST `/order` endpoint by the P2WDB. This event will trigger the import of the new data into the apps local Mongo database, and generate a new Order model.
-- This webhook event is mirrored by every instance of `bch-dex` on the network. Each P2WDB peer on the network will independently validate the new database entry and create a new Order model.
+- The _Client_ submits data to the POST `/order` REST API endpoint to create a new Order.
+- `bch-dex` will move the funds into a segregated UTXO, and will use that UTXO to create an Order. The Order data is written to the P2WDB. The Order data is also saved to the local MongoDB.
+- After submitting the data to the P2WDB, `bch-dex` will receive a webhook call to its POST `/offer` endpoint by the P2WDB. This event will trigger the import of the new data into the apps local Mongo database, and generate a new Offer model.
+- This webhook event is mirrored by every instance of `bch-dex` on the network. Each P2WDB peer on the network will independently validate the new database entry and create a new Offer model.
 
+## Taking an Offer
 
-## Reading from the Local Database
+Users can browse the Offers tracked by a local `bch-dex` by using a *Client*. When they find an Offer they want to to take, they'll use some UI element that will send data to the POST `/offer/take` REST API endpoint. These series of steps happen:
 
-The *Client* reads data from the local database stored by `bch-dex`, and does not read the P2WDB global database directly. This gives `bch-dex` the opportunity to filter and modify the data locally, for a more controlled user experience.
+- The `bch-dex` checks to see if the wallet it controls has enough BCH to take the other side of the Offer. If it does, the funds for the offer are moved to a segregated UTXO.
+- The new UTXO is used to generate a *Counter Offer*, which contain a partially signed transaction saved as a hex string.
+- The *Counter Offer* is submitted to the P2WDB. This triggers a webhook event in every running instance of `bch-dex` on the network.
+- When the webhook is triggered, `bch-dex` will check to see if the *Counter Offer* matches an *Order* under its control. If a match is found, it will trigger an *Accept* event.
+
+## Accepting a Counter Offer
+
+This part of the process is automated and does not require input from the user.
+
+- When a *Counter Offer* is received that matches an *Order* tracked by the local copy of `bch-dex`, it will trigger the *Acceptance* phase.
+- In the *Acceptance* phase, the transaction will be checked to see if it matches the original *Order*. If all checks pass, `bch-dex` will sign the transaction and broadcast it, completing the trade.
