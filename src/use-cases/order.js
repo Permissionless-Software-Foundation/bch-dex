@@ -77,35 +77,6 @@ class OrderLib {
     }
   }
 
-  // Move the tokens indicated in the order to a temporary holding address.
-  // This will generate the UTXO used in the Signal message. This function
-  // moves the funds and returns the UTXO information.
-  // async moveTokens (orderEntity) {
-  //   try {
-  //     const keyPair = await this.adapters.wallet.getKeyPair()
-  //     console.log('keyPair: ', keyPair)
-  //
-  //     const receiver = {
-  //       address: keyPair.cashAddress,
-  //       tokenId: orderEntity.tokenId,
-  //       qty: orderEntity.numTokens
-  //     }
-  //
-  //     const txid = await this.adapters.wallet.bchWallet.sendTokens(receiver, 3)
-  //
-  //     const utxoInfo = {
-  //       txid,
-  //       vout: 1,
-  //       hdIndex: keyPair.hdIndex
-  //     }
-  //
-  //     return utxoInfo
-  //   } catch (err) {
-  //     console.error('Error in moveTokens(): ', err)
-  //     throw err
-  //   }
-  // }
-
   // Ensure that the wallet has enough BCH and tokens to complete the requested
   // trade.
   async ensureFunds (orderEntity) {

@@ -81,7 +81,12 @@ class OfferUseCases {
 
   // Generate phase 2 of 3 - take the other side of an Offer.
   // Based on this example:
-  // https://github.com/Permissionless-Software-Foundation/bch-js-examples/blob/master/bch/applications/collaborate/sell-slp/e2e-exchange/step2-purchase-tx.js
+  // https://github.com/Permission=less-Software-Foundation/bch-js-examples/blob/master/bch/applications/collaborate/sell-slp/e2e-exchange/step2-purchase-tx.js
+  //
+  // Dev Note: Right now this use cases takes all the tokens offered. It does not
+  // provide functionality to take less than the total amount of tokens offered
+  // (offerInfo.numTokens). Taking less than the offered amount will be added
+  // in the future.
   async takeOffer (offerCid) {
     try {
       console.log('offerCid: ', offerCid)
@@ -116,6 +121,12 @@ class OfferUseCases {
       console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
       // TODO: Move funds to create a segrated UTXO for taking the offer
+      const moveObj = {
+        tokenId: offerInfo.tokenId,
+        qty: offerInfo.numTokens
+      }
+      const utxoInfo = await this.adapters.wallet.moveTokens(moveObj)
+      console.log('utxoInfo: ', utxoInfo)
 
       // Create a partially signed transaction.
       // https://github.com/Permissionless-Software-Foundation/bch-js-examples/blob/master/bch/applications/collaborate/sell-slp/e2e-exchange/step2-purchase-tx.js#L59

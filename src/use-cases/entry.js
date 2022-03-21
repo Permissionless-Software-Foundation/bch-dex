@@ -30,10 +30,10 @@ class EntryLib {
       }
 
       // Verify psf tokens balance
-
-      const psfBalance = await this.bch.getPSFTokenBalance(
-        entryEntity.slpAddress
-      )
+      // const psfBalance = await this.bch.getPSFTokenBalance(
+      //   entryEntity.slpAddress
+      // )
+      const psfBalance = 1
 
       if (psfBalance < 10) {
         throw new Error('Insufficient psf balance')

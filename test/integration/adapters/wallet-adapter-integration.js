@@ -61,4 +61,20 @@ describe('#wallet', () => {
       assert.property(result, 'hdIndex')
     })
   })
+
+  describe('#moveBch', () => {
+    it('should move BCH to a new address in the HD wallet', async () => {
+      const walletData = await uut.openWallet()
+
+      // Force usage of FullStack.cash
+      uut.config.useFullStackCash = true
+
+      await uut.instanceWallet(walletData)
+
+      const amountSat = 1000
+
+      const result = await uut.moveBch(amountSat)
+      console.log('result: ', result)
+    })
+  })
 })

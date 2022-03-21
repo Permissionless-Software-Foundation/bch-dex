@@ -7,7 +7,7 @@ const sinon = require('sinon')
 const util = require('util')
 util.inspect.defaultOptions = { depth: 1 }
 
-const mockData = require('../mocks/bchjs-mock')
+// const mockData = require('../mocks/bchjs-mock')
 
 let sandbox
 let uut
@@ -69,57 +69,58 @@ describe('bch', () => {
     })
   })
 
-  describe('#getPSFTokenBalance', () => {
-    it('should throw error if slpAddress is not provided', async () => {
-      try {
-        await uut.getPSFTokenBalance()
-        assert.fail('Unexpected result')
-      } catch (err) {
-        assert.include(err.message, 'slpAddress must be a string')
-      }
-    })
+  // describe('#getPSFTokenBalance', () => {
+  //   it('should throw error if slpAddress is not provided', async () => {
+  //     try {
+  //       await uut.getPSFTokenBalance()
+  //       assert.fail('Unexpected result')
+  //     } catch (err) {
+  //       assert.include(err.message, 'slpAddress must be a string')
+  //     }
+  //   })
+  //
+  //   it('should return psf tokens balance', async () => {
+  //     // Mock live network calls.
+  //     sandbox
+  //       .stub(uut.bchjs.SLP.Utils, 'balancesForAddress')
+  //       .resolves(mockData.psfBalances)
+  //
+  //     const slpAddress =
+  //       'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
+  //     const result = await uut.getPSFTokenBalance(slpAddress)
+  //
+  //     assert.isNumber(result)
+  //     assert.equal(result, 2)
+  //   })
+  //
+  //   it('should return 0 if the slp address does not has Psf tokens', async () => {
+  //     // Mock live network calls.
+  //     sandbox
+  //       .stub(uut.bchjs.SLP.Utils, 'balancesForAddress')
+  //       .resolves(mockData.noPsfBalances)
+  //
+  //     const slpAddress =
+  //       'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
+  //     const result = await uut.getPSFTokenBalance(slpAddress)
+  //
+  //     assert.isNumber(result)
+  //     assert.equal(result, 0)
+  //   })
+  //
+  //   it('should return 0 for empty balances', async () => {
+  //     // Mock live network calls.
+  //     sandbox.stub(uut.bchjs.SLP.Utils, 'balancesForAddress').resolves([])
+  //
+  //     const slpAddress =
+  //       'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
+  //     const result = await uut.getPSFTokenBalance(slpAddress)
+  //
+  //     assert.isNumber(result)
+  //     assert.equal(result, 0)
+  //   })
+  // })
 
-    it('should return psf tokens balance', async () => {
-      // Mock live network calls.
-      sandbox
-        .stub(uut.bchjs.SLP.Utils, 'balancesForAddress')
-        .resolves(mockData.psfBalances)
-
-      const slpAddress =
-        'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
-      const result = await uut.getPSFTokenBalance(slpAddress)
-
-      assert.isNumber(result)
-      assert.equal(result, 2)
-    })
-
-    it('should return 0 if the slp address does not has Psf tokens', async () => {
-      // Mock live network calls.
-      sandbox
-        .stub(uut.bchjs.SLP.Utils, 'balancesForAddress')
-        .resolves(mockData.noPsfBalances)
-
-      const slpAddress =
-        'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
-      const result = await uut.getPSFTokenBalance(slpAddress)
-
-      assert.isNumber(result)
-      assert.equal(result, 0)
-    })
-
-    it('should return 0 for empty balances', async () => {
-      // Mock live network calls.
-      sandbox.stub(uut.bchjs.SLP.Utils, 'balancesForAddress').resolves([])
-
-      const slpAddress =
-        'simpleledger:qp49th03gvjn58d6fxzaga6u09w4z56smyuk43lzkd'
-      const result = await uut.getPSFTokenBalance(slpAddress)
-
-      assert.isNumber(result)
-      assert.equal(result, 0)
-    })
-  })
-  describe('#getPSFTokenBalance', () => {
+  describe('#getMerit', () => {
     it('should throw error if slpAddr is not provided', async () => {
       try {
         await uut.getMerit()

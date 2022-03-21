@@ -333,6 +333,33 @@ class WalletAdapter {
       throw err
     }
   }
+
+  // Move a quanity of BCH to an address controlled by the HD wallet, to
+  // generate a segregated UTXO.
+  async moveBch (amountSat) {
+    try {
+      const keyPair = await this.getKeyPair()
+      console.log('keyPair: ', keyPair)
+
+      const receivers = [{
+        address: keyPair.cashAddress,
+        amountSat
+      }]
+
+      const txid = await this.bchWallet.send(receivers)
+
+      const utxoInfo = {
+        txid,
+        vout: 0,
+        hdIndex: keyPair.hdIndex
+      }
+
+      return utxoInfo
+    } catch (err) {
+      console.error('Error in wallet.js/moveBch()')
+      throw err
+    }
+  }
 }
 
 module.exports = WalletAdapter

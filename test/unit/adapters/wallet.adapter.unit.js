@@ -279,6 +279,29 @@ describe('#wallet', () => {
       assert.property(result, 'hdIndex')
     })
   })
+
+  describe('#moveBch', () => {
+    it('should move BCH to a new address in the HD wallet', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'getKeyPair').resolves({
+        cashAddress: 'bitcoincash:qqsj63493jk4p05zzdgqzc29k5unqtet9vv8l4x0yt',
+        wif: 'L4qKTMCwjH9jHnYtNh9Vsrxj7Hg6zmoN8E2v7N47UKvNVEjw7FU8',
+        hdIndex: 6
+      })
+      uut.bchWallet = {
+        send: async () => 'fake-txid'
+      }
+
+      const amountSat = 1000
+
+      const result = await uut.moveBch(amountSat)
+      // console.log('result: ', result)
+
+      assert.property(result, 'txid')
+      assert.property(result, 'vout')
+      assert.property(result, 'hdIndex')
+    })
+  })
 })
 
 const deleteFile = (filepath) => {

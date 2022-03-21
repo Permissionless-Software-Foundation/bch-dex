@@ -40,30 +40,30 @@ class Bch {
   }
 
   // Gets the total psf token balance
-  async getPSFTokenBalance (slpAddress) {
-    try {
-      if (!slpAddress || typeof slpAddress !== 'string') {
-        throw new Error('slpAddress must be a string')
-      }
-      let psfBalance = 0
-      const balances = await this.bchjs.SLP.Utils.balancesForAddress(
-        slpAddress
-      )
-
-      // Sums all the balances of all tokens
-      // that match the psf token ID
-      for (let i = 0; i < balances.length; i++) {
-        if (balances[i].tokenId === this.PSF_TOKEN_ID) {
-          psfBalance += balances[i].balance
-        }
-      }
-
-      return psfBalance
-    } catch (err) {
-      console.error('Error in bch.js/getPSFTokenBalance()')
-      throw err
-    }
-  }
+  // async getPSFTokenBalance (slpAddress) {
+  //   try {
+  //     if (!slpAddress || typeof slpAddress !== 'string') {
+  //       throw new Error('slpAddress must be a string')
+  //     }
+  //     let psfBalance = 0
+  //     const balances = await this.bchjs.SLP.Utils.balancesForAddress(
+  //       slpAddress
+  //     )
+  //
+  //     // Sums all the balances of all tokens
+  //     // that match the psf token ID
+  //     for (let i = 0; i < balances.length; i++) {
+  //       if (balances[i].tokenId === this.PSF_TOKEN_ID) {
+  //         psfBalance += balances[i].balance
+  //       }
+  //     }
+  //
+  //     return psfBalance
+  //   } catch (err) {
+  //     console.error('Error in bch.js/getPSFTokenBalance()')
+  //     throw err
+  //   }
+  // }
 
   async getMerit (slpAddr) {
     try {
