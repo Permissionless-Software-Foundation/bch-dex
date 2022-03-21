@@ -65,34 +65,34 @@ describe('#order-use-case', () => {
     })
   })
 
-  describe('#moveTokens', () => {
-    it('should move tokens to the holding address', async () => {
-      // Mock dependencies
-      // sandbox
-      //   .stub(uut.adapters.wallet.bchWallet, 'sendTokens')
-      //   .resolves('fakeTxid')
-
-      const orderEntity = {
-        lokadId: 'SWP',
-        messageType: 1,
-        messageClass: 1,
-        tokenId: 'a4fb5c2da1aa064e25018a43f9165040071d9e984ba190c222a7f59053af84b2',
-        buyOrSell: 'sell',
-        rateInSats: 1000,
-        minSatsToExchange: 0,
-        numTokens: 1
-      }
-
-      const result = await uut.moveTokens(orderEntity)
-      // console.log('result: ', result)
-
-      assert.property(result, 'txid')
-      assert.property(result, 'vout')
-
-      assert.equal(result.txid, 'fakeTxid')
-      assert.equal(result.vout, 1)
-    })
-  })
+  // describe('#moveTokens', () => {
+  //   it('should move tokens to the holding address', async () => {
+  //     // Mock dependencies
+  //     // sandbox
+  //     //   .stub(uut.adapters.wallet.bchWallet, 'sendTokens')
+  //     //   .resolves('fakeTxid')
+  //
+  //     const orderEntity = {
+  //       lokadId: 'SWP',
+  //       messageType: 1,
+  //       messageClass: 1,
+  //       tokenId: 'a4fb5c2da1aa064e25018a43f9165040071d9e984ba190c222a7f59053af84b2',
+  //       buyOrSell: 'sell',
+  //       rateInBaseUnit: 1000,
+  //       minUnitsToExchange: 0,
+  //       numTokens: 1
+  //     }
+  //
+  //     const result = await uut.moveTokens(orderEntity)
+  //     // console.log('result: ', result)
+  //
+  //     assert.property(result, 'txid')
+  //     assert.property(result, 'vout')
+  //
+  //     assert.equal(result.txid, 'fakeTxid')
+  //     assert.equal(result.vout, 1)
+  //   })
+  // })
 
   describe('#createOrder', () => {
     it('should create an order and return the hash', async () => {
@@ -102,8 +102,8 @@ describe('#order-use-case', () => {
         messageClass: 1,
         tokenId: 'token-id',
         buyOrSell: 'sell',
-        rateInSats: 1000,
-        minSatsToExchange: 1250,
+        rateInBaseUnit: 1000,
+        minUnitsToExchange: 1250,
         numTokens: 1
       }
 
@@ -111,7 +111,7 @@ describe('#order-use-case', () => {
       // sandbox.stub(uut.adapters.wallet, 'burnPsf').resolves('fakeTxid')
       sandbox.stub(uut.orderEntity, 'validate').returns(entryObj)
       sandbox.stub(uut, 'ensureFunds').resolves()
-      sandbox.stub(uut, 'moveTokens').resolves({ txid: 'fakeTxid', vout: 0, hdIndex: 1 })
+      sandbox.stub(uut.adapters.wallet, 'moveTokens').resolves({ txid: 'fakeTxid', vout: 0, hdIndex: 1 })
       sandbox.stub(uut.adapters.wallet.bchWallet, 'getUtxos').resolves()
       // sandbox
       //   .stub(uut.adapters.wallet, 'generateSignature')

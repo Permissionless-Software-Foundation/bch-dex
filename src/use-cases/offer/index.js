@@ -119,28 +119,30 @@ class OfferUseCases {
 
       // Create a partially signed transaction.
       // https://github.com/Permissionless-Software-Foundation/bch-js-examples/blob/master/bch/applications/collaborate/sell-slp/e2e-exchange/step2-purchase-tx.js#L59
-      const partialTxHex = await this.adapters.wallet.generatePartialTx(offerInfo)
-      // return partialTxHex
+      // const partialTxHex = await this.adapters.wallet.generatePartialTx(offerInfo)
+      // // return partialTxHex
+      //
+      // // Create valid Offer object
+      // const takenOfferInfo = Object.assign({}, offerInfo)
+      // takenOfferInfo.patialTxHex = partialTxHex
+      // delete takenOfferInfo.p2wdbHash
+      // delete takenOfferInfo._id
+      // takenOfferInfo.offerHash = offerInfo.p2wdbHash
+      //
+      // // Write offer info to the P2WDB
+      // // TODO: This will trigger the webhook. Find some way of triggering the
+      // // webhook on new offers, but not on counteroffers
+      // const p2wdbObj = {
+      //   wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
+      //   data: takenOfferInfo,
+      //   appId: this.config.p2wdbAppId
+      // }
+      // const hash = await this.adapters.p2wdb.write(p2wdbObj)
+      //
+      // // Return the P2WDB CID
+      // return hash
 
-      // Create valid Offer object
-      const takenOfferInfo = Object.assign({}, offerInfo)
-      takenOfferInfo.patialTxHex = partialTxHex
-      delete takenOfferInfo.p2wdbHash
-      delete takenOfferInfo._id
-      takenOfferInfo.offerHash = offerInfo.p2wdbHash
-
-      // Write offer info to the P2WDB
-      // TODO: This will trigger the webhook. Find some way of triggering the
-      // webhook on new offers, but not on counteroffers
-      const p2wdbObj = {
-        wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
-        data: takenOfferInfo,
-        appId: this.config.p2wdbAppId
-      }
-      const hash = await this.adapters.p2wdb.write(p2wdbObj)
-
-      // Return the P2WDB CID
-      return hash
+      return 'fake-hash'
     } catch (err) {
       console.error('Error in use-cases/offer/takeOffer(): ', err)
       throw err
@@ -155,6 +157,7 @@ class OfferUseCases {
       // console.log(`walletInfo: ${JSON.stringify(this.adapters.wallet.bchWallet.walletInfo, null, 2)}`)
 
       await this.adapters.wallet.bchWallet.walletInfoPromise
+      // console.log(`utxos: ${JSON.stringify(this.adapters.wallet.bchWallet.utxos.utxoStore, null, 2)}`)
 
       // Ensure the app wallet has enough funds to write to the P2WDB.
       const wif = this.adapters.wallet.bchWallet.walletInfo.privateKey
@@ -164,12 +167,19 @@ class OfferUseCases {
       if (offerEntity.buyOrSell.includes('sell')) {
         // Sell Offer
 
+        // Calculate the sats needed
+        const satsNeeded = offerEntity.numTokens * parseInt(offerEntity.rateInBaseUnit)
+        if (isNaN(satsNeeded)) {
+          throw new Error('Could not calculate sats needed!')
+        }
+
         // Ensure the app wallet controlls enough BCH to pay for the tokens.
-        const satsNeeded = offerEntity.numTokens * parseInt(offerEntity.rateInSats)
         const balance = await this.adapters.wallet.bchWallet.getBalance()
         console.log(`wallet balance: ${balance}, sats needed: ${satsNeeded}`)
         const SATS_MARGIN = 5000
-        if (satsNeeded + SATS_MARGIN > balance) { throw new Error('App wallet does not control enough BCH to purchase the tokens.') }
+        if (satsNeeded + SATS_MARGIN > balance) {
+          throw new Error('App wallet does not control enough BCH to purchase the tokens.')
+        }
 
       //
       } else {

@@ -253,6 +253,32 @@ describe('#wallet', () => {
       }
     })
   })
+
+  describe('#moveTokens', () => {
+    it('should move tokens to a new address in the HD wallet', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'getKeyPair').resolves({
+        cashAddress: 'bitcoincash:qqsj63493jk4p05zzdgqzc29k5unqtet9vv8l4x0yt',
+        wif: 'L4qKTMCwjH9jHnYtNh9Vsrxj7Hg6zmoN8E2v7N47UKvNVEjw7FU8',
+        hdIndex: 6
+      })
+      uut.bchWallet = {
+        sendTokens: async () => 'fake-txid'
+      }
+
+      const inObj = {
+        tokenId: 'a4fb5c2da1aa064e25018a43f9165040071d9e984ba190c222a7f59053af84b2',
+        qty: 1
+      }
+
+      const result = await uut.moveTokens(inObj)
+      // console.log('result: ', result)
+
+      assert.property(result, 'txid')
+      assert.property(result, 'vout')
+      assert.property(result, 'hdIndex')
+    })
+  })
 })
 
 const deleteFile = (filepath) => {
