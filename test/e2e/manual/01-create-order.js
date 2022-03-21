@@ -1,5 +1,6 @@
 /*
-  A manual e2e test for creating an swap offer.
+  A manual e2e test for creating an Order, which then generates an Offer through
+  the P2WDB webhook.
 
   Ensure the REST API is up an running before running this test.
 */
@@ -10,7 +11,7 @@ const LOCALHOST = 'http://localhost:5700'
 
 async function start () {
   try {
-    const mockOffer = {
+    const mockOrder = {
       lokadId: 'SWP',
       messageType: 1,
       messageClass: 1,
@@ -24,8 +25,8 @@ async function start () {
 
     const options = {
       method: 'post',
-      url: `${LOCALHOST}/offer`,
-      data: { offer: mockOffer }
+      url: `${LOCALHOST}/order`,
+      data: { order: mockOrder }
     }
 
     const result = await axios(options)

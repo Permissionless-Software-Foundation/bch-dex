@@ -1,89 +1,89 @@
 /*
-  Offer use-case library.
+  Order use-case library.
 */
 
 // Local libraries
 const { wlogger } = require('../adapters/wlogger')
-const OfferEntity = require('../entities/offer')
+const OrderEntity = require('../entities/order')
 const config = require('../../config')
 
-class OfferLib {
+class OrderLib {
   constructor (localConfig = {}) {
     // console.log('User localConfig: ', localConfig)
     this.adapters = localConfig.adapters
     if (!this.adapters) {
       throw new Error(
-        'Instance of adapters must be passed in when instantiating Offer Use Cases library.'
+        'Instance of adapters must be passed in when instantiating Order Use Cases library.'
       )
     }
 
     // Encapsulate dependencies
-    this.offerEntity = new OfferEntity()
-    this.OfferModel = this.adapters.localdb.Offer
+    this.orderEntity = new OrderEntity()
+    this.OrderModel = this.adapters.localdb.Order
     this.bch = this.adapters.bch
     this.config = config
   }
 
-  // Create a new offer model and add it to the Mongo database.
-  async createOffer (entryObj) {
+  // Create a new order model and add it to the Mongo database.
+  async createOrder (entryObj) {
     try {
-      // console.log('createOffer(entryObj): ', entryObj)
+      // console.log('createOrder(entryObj): ', entryObj)
 
       // Input Validation
-      const offerEntity = this.offerEntity.validate(entryObj)
-      console.log('offerEntity: ', offerEntity)
+      const orderEntity = this.orderEntity.validate(entryObj)
+      console.log('orderEntity: ', orderEntity)
 
-      // Ensure sufficient tokens exist to create the offer.
-      await this.ensureFunds(offerEntity)
+      // Ensure sufficient tokens exist to create the order.
+      await this.ensureFunds(orderEntity)
 
       // Move the tokens to holding address.
-      const utxoInfo = await this.moveTokens(offerEntity)
+      const utxoInfo = await this.moveTokens(orderEntity)
       console.log('utxoInfo: ', utxoInfo)
 
       // Update the UTXO store for the wallet.
       await this.adapters.wallet.bchWallet.bchjs.Util.sleep(3000)
       await this.adapters.wallet.bchWallet.getUtxos()
 
-      // Update the offer with the new UTXO information.
-      offerEntity.utxoTxid = utxoInfo.txid
-      offerEntity.utxoVout = utxoInfo.vout
-      offerEntity.hdIndex = utxoInfo.hdIndex
+      // Update the order with the new UTXO information.
+      orderEntity.utxoTxid = utxoInfo.txid
+      orderEntity.utxoVout = utxoInfo.vout
+      orderEntity.hdIndex = utxoInfo.hdIndex
 
-      // Add offer to P2WDB.
+      // Add order to P2WDB.
       const p2wdbObj = {
         wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
-        data: offerEntity,
+        data: orderEntity,
         appId: this.config.p2wdbAppId
       }
       const hash = await this.adapters.p2wdb.write(p2wdbObj)
       // console.log('hash: ', hash)
 
-      // Create a MongoDB model to hold the Offer
-      offerEntity.p2wdbHash = hash
-      console.log(`creating new offer model: ${JSON.stringify(offerEntity, null, 2)}`)
-      const offer = new this.OfferModel(offerEntity)
-      await offer.save()
+      // Create a MongoDB model to hold the Order
+      orderEntity.p2wdbHash = hash
+      console.log(`creating new order model: ${JSON.stringify(orderEntity, null, 2)}`)
+      const order = new this.OrderModel(orderEntity)
+      await order.save()
 
       return hash
     } catch (err) {
       // console.log("Error in use-cases/entry.js/createEntry()", err.message)
-      wlogger.error('Error in use-cases/entry.js/createOffer())')
+      wlogger.error('Error in use-cases/entry.js/createOrder())')
       throw err
     }
   }
 
-  // Move the tokens indicated in the offer to a temporary holding address.
+  // Move the tokens indicated in the order to a temporary holding address.
   // This will generate the UTXO used in the Signal message. This function
   // moves the funds and returns the UTXO information.
-  async moveTokens (offerEntity) {
+  async moveTokens (orderEntity) {
     try {
       const keyPair = await this.adapters.wallet.getKeyPair()
       console.log('keyPair: ', keyPair)
 
       const receiver = {
         address: keyPair.cashAddress,
-        tokenId: offerEntity.tokenId,
-        qty: offerEntity.numTokens
+        tokenId: orderEntity.tokenId,
+        qty: orderEntity.numTokens
       }
 
       const txid = await this.adapters.wallet.bchWallet.sendTokens(receiver, 3)
@@ -103,7 +103,7 @@ class OfferLib {
 
   // Ensure that the wallet has enough BCH and tokens to complete the requested
   // trade.
-  async ensureFunds (offerEntity) {
+  async ensureFunds (orderEntity) {
     try {
       // console.log('this.adapters.wallet: ', this.adapters.wallet.bchWallet)
       // console.log(`walletInfo: ${JSON.stringify(this.adapters.wallet.bchWallet.walletInfo, null, 2)}`)
@@ -117,32 +117,32 @@ class OfferLib {
       const utxos = this.adapters.wallet.bchWallet.utxos.utxoStore
       console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
-      if (offerEntity.buyOrSell.includes('sell')) {
-        // Sell Offer
+      if (orderEntity.buyOrSell.includes('sell')) {
+        // Sell Order
 
-        // Get token UTXOs that match the token in the offer.
+        // Get token UTXOs that match the token in the order.
         const tokenUtxos = utxos.slpUtxos.type1.tokens.filter(
-          x => x.tokenId === offerEntity.tokenId
+          x => x.tokenId === orderEntity.tokenId
         )
         // console.log('tokenUtxos: ', tokenUtxos)
 
         // Get the total amount of tokens in the wallet that match the token
-        // in the offer.
+        // in the order.
         let totalTokenBalance = 0
         tokenUtxos.map(x => (totalTokenBalance += parseFloat(x.qtyStr)))
         console.log('totalTokenBalance: ', totalTokenBalance)
 
-        // If there are fewer tokens in the wallet than what's in the offer,
+        // If there are fewer tokens in the wallet than what's in the order,
         // throw an error.
-        if (totalTokenBalance <= offerEntity.numTokens || isNaN(totalTokenBalance)) {
+        if (totalTokenBalance <= orderEntity.numTokens || isNaN(totalTokenBalance)) {
           throw new Error(
-            'App wallet does not have enough tokens to satisfy the SELL offer.'
+            'App wallet does not have enough tokens to satisfy the SELL order.'
           )
         }
 
       //
       } else {
-        // Buy Offer
+        // Buy Order
         throw new Error('Buy orders are not supported yet.')
       }
 
@@ -154,4 +154,4 @@ class OfferLib {
   }
 }
 
-module.exports = OfferLib
+module.exports = OrderLib
