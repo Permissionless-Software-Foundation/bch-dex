@@ -1,3 +1,9 @@
+/*
+  Order Model. Orders are 'internal' to the system and track the HD wallet index
+  that contains funds for that Order. This is in contrast to Offers, which
+  are 'external' to the system and mirrored by every instance of bch-dex.
+*/
+
 const mongoose = require('mongoose')
 
 const Order = new mongoose.Schema({
@@ -27,7 +33,6 @@ const Order = new mongoose.Schema({
   lokadId: { type: String },
   messageType: { type: Number },
   messageClass: { type: Number }
-
 })
 
 module.exports = mongoose.model('order', Order)

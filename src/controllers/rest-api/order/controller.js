@@ -1,5 +1,5 @@
 /*
-  REST API Controller library for the /offer route
+  REST API Controller library for the /order route
 */
 
 // const { wlogger } = require('../../../adapters/wlogger')
@@ -32,15 +32,13 @@ class OrderRESTControllerLib {
   // No api-doc documentation because this wont be a public endpoint
   async createOrder (ctx) {
     try {
-      console.log('body: ', ctx.request.body)
+      // console.log('body: ', ctx.request.body)
 
-      const orderObj = ctx.request.body
+      const orderObj = ctx.request.body.order
 
-      await _this.useCases.order.createOrder(orderObj)
+      const hash = await _this.useCases.order.createOrder(orderObj)
 
-      ctx.body = {
-        success: true
-      }
+      ctx.body = { hash }
     } catch (err) {
       // console.log(`err.message: ${err.message}`)
       // console.log('err: ', err)
@@ -49,42 +47,10 @@ class OrderRESTControllerLib {
     }
   }
 
-  // curl -X GET http://localhost:5700/order/list
-  async listOrders (ctx) {
-    try {
-      const orders = await _this.useCases.order.listOrders()
-
-      ctx.body = orders
-    } catch (err) {
-      console.log('Error in listOrders REST API handler.')
-      _this.handleError(ctx, err)
-    }
-  }
-
-  // Currently only supports 'sell' orders, and will only buy the 'numTokens'
-  // listed in the order.
-  async takeOrder (ctx) {
-    try {
-      console.log('body: ', ctx.request.body)
-
-      const orderCid = ctx.request.body.orderCid
-
-      // Find the Order.
-      // const orderEntity = await _this.useCases.order.findOrder(orderId)
-
-      // 'Take' the Order.
-      const hash = await _this.useCases.order.takeOrder(orderCid)
-
-      ctx.body = { hash }
-    } catch (err) {
-      console.log('Error in takeOrder REST API handler.')
-      _this.handleError(ctx, err)
-    }
-  }
-
   // DRY error handler
   handleError (ctx, err) {
-    console.log('err', err.message)
+    console.log('err', err)
+
     // If an HTTP status is specified by the buisiness logic, use that.
     if (err.status) {
       if (err.message) {
