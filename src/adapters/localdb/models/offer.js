@@ -14,6 +14,7 @@ const Offer = new mongoose.Schema({
   minUnitsToExchange: { type: String },
   p2wdbTxid: { type: String },
   p2wdbHash: { type: String },
+  offerStatus: { type: String },
 
   // Authentication data
   signature: { type: String },

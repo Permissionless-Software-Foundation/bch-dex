@@ -6,7 +6,7 @@
 
 class OfferEntity {
   constructor () {
-    this.orderStatus = ['posted', 'taken', 'completed']
+    this.orderStatus = ['posted', 'taken', 'dead']
   }
 
   validate (orderData = {}) {
@@ -48,7 +48,7 @@ class OfferEntity {
       throw new Error("Property 'utxoVout' must be an integer number.")
     }
     if (orderStatus && !this.orderStatus.includes(orderStatus)) {
-      throw new Error("Property 'orderStatus' must be a valid string")
+      throw new Error("Property 'orderStatus' must be posted, taken, or dead")
     }
 
     const validatedOfferData = {

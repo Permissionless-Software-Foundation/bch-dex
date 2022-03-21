@@ -25,6 +25,8 @@ describe('#Offer-Entity', () => {
     it('should throw an error if data is not provided', () => {
       try {
         uut.validate()
+
+        assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(
@@ -38,6 +40,8 @@ describe('#Offer-Entity', () => {
       try {
         const orderData = { data: {} }
         uut.validate(orderData)
+
+        assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(
@@ -51,6 +55,8 @@ describe('#Offer-Entity', () => {
       try {
         const orderData = { data: { messageType: 1 } }
         uut.validate(orderData)
+
+        assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(
@@ -64,6 +70,8 @@ describe('#Offer-Entity', () => {
       try {
         const orderData = { data: { messageType: 1, messageClass: 1 } }
         uut.validate(orderData)
+
+        assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(err.message, "Property 'tokenId' must be a string.")
@@ -77,6 +85,8 @@ describe('#Offer-Entity', () => {
         }
 
         uut.validate(orderData)
+
+        assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(err.message, "Property 'buyOrSell' must be a string.")
@@ -95,6 +105,8 @@ describe('#Offer-Entity', () => {
         }
 
         uut.validate(orderData)
+
+        assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(
@@ -117,6 +129,8 @@ describe('#Offer-Entity', () => {
         }
 
         uut.validate(orderData)
+
+        assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(
@@ -139,6 +153,8 @@ describe('#Offer-Entity', () => {
           }
         }
         uut.validate(orderData)
+
+        assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(err.message, "Property 'numTokens' must be a number.")
@@ -159,6 +175,8 @@ describe('#Offer-Entity', () => {
           }
         }
         uut.validate(orderData)
+
+        assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(err.message, "Property 'utxoTxid' must be a string.")
@@ -180,11 +198,41 @@ describe('#Offer-Entity', () => {
           }
         }
         uut.validate(orderData)
+
+        assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(
           err.message,
           "Property 'utxoVout' must be an integer number."
+        )
+      }
+    })
+
+    it('should throw an error if proper status is not applied', () => {
+      try {
+        const orderData = {
+          data: {
+            messageType: 1,
+            messageClass: 1,
+            tokenId: 'fakeId',
+            buyOrSell: 'buy',
+            rateInSats: 1000,
+            minSatsToExchange: 350,
+            numTokens: 1,
+            utxoTxid: 'fakeTxid',
+            utxoVout: 0,
+            orderStatus: 'badStatus'
+          }
+        }
+        uut.validate(orderData)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log(err)
+        assert.include(
+          err.message,
+          "Property 'orderStatus' must be posted, taken, or dead"
         )
       }
     })
@@ -203,7 +251,8 @@ describe('#Offer-Entity', () => {
           numTokens: 0.02,
           utxoTxid:
             '241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87',
-          utxoVout: 0
+          utxoVout: 0,
+          orderStatus: 'posted'
         },
         timestamp: '2021-09-20T17:54:26.395Z',
         localTimeStamp: '9/20/2021, 10:54:26 AM',

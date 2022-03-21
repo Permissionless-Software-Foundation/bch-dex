@@ -72,6 +72,10 @@ Offer entities have the following properties:
   - _minUnitsToExchange_ - The minimum order size accepted.
   - _p2wdbTxid_ - The TXID proof-of-burn used to add the order to the P2WDB.
   - _p2wdbHash_ - The CID used to identify the order entry in the P2WDB.
+  - _offerStatus_ - The state of the offer. When the data is added to the P2WDB, it gets a value of 'posted', but the database model internal to bch-dex can have the following properties:
+    - *posted* - The offer is posted and can be countered by a taker.
+    - *taken* - The offer was countered and accepted.
+    - *dead* - The UTXO was spent outside the trade, which automatically makes the offer dead.
 
 - Authentication Data:
   - _signature_ - A message signed by the address which created the order.

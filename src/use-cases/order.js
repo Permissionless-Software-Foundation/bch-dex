@@ -27,7 +27,7 @@ class OrderLib {
   // Create a new order model and add it to the Mongo database.
   async createOrder (entryObj) {
     try {
-      // console.log('createOrder(entryObj): ', entryObj)
+      console.log('createOrder(entryObj): ', entryObj)
 
       // Input Validation
       const orderEntity = this.orderEntity.validate(entryObj)
@@ -47,7 +47,6 @@ class OrderLib {
       // Update the order with the new UTXO information.
       orderEntity.utxoTxid = utxoInfo.txid
       orderEntity.utxoVout = utxoInfo.vout
-      orderEntity.hdIndex = utxoInfo.hdIndex
 
       // Add order to P2WDB.
       const p2wdbObj = {
@@ -59,6 +58,7 @@ class OrderLib {
       // console.log('hash: ', hash)
 
       // Create a MongoDB model to hold the Order
+      orderEntity.hdIndex = utxoInfo.hdIndex
       orderEntity.p2wdbHash = hash
       console.log(`creating new order model: ${JSON.stringify(orderEntity, null, 2)}`)
       const order = new this.OrderModel(orderEntity)
@@ -67,7 +67,8 @@ class OrderLib {
       return hash
     } catch (err) {
       // console.log("Error in use-cases/entry.js/createEntry()", err.message)
-      wlogger.error('Error in use-cases/entry.js/createOrder())')
+      wlogger.error('Error in use-cases/createOrder())')
+      console.log('error entryObj: ', entryObj)
       throw err
     }
   }

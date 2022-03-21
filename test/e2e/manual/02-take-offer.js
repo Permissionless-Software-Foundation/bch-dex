@@ -1,5 +1,5 @@
 /*
-  Part 2 of 3: Take an order
+  Part 2 of 3: Take an offer by submiting a counter-offer.
 */
 
 const axios = require('axios')
@@ -10,9 +10,9 @@ async function start () {
   try {
     const options = {
       method: 'post',
-      url: `${LOCALHOST}/order/take`,
+      url: `${LOCALHOST}/offer/take`,
       data: {
-        orderCid: 'zdpuAkp98gTuivaNzGP31jTQi3ADXrFA6uANrceQcrQkTXy2j'
+        offerCid: 'zdpuAppDJR57Hrn1mAhsFRssSBp5qNrDT6PcSeHL5ndQqiqJc'
       }
     }
 

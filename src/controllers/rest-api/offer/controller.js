@@ -2,7 +2,7 @@
   REST API Controller library for the /offer route
 */
 
-// const { wlogger } = require('../../../adapters/wlogger')
+const { wlogger } = require('../../../adapters/wlogger')
 
 let _this
 
@@ -65,19 +65,15 @@ class OfferRESTControllerLib {
   // listed in the offer.
   async takeOffer (ctx) {
     try {
-      console.log('body: ', ctx.request.body)
+      console.log('REST API controller, body: ', ctx.request.body)
 
       const offerCid = ctx.request.body.offerCid
 
-      // Find the Offer.
-      // const offerEntity = await _this.useCases.offer.findOffer(offerId)
-
-      // 'Take' the Offer.
       const hash = await _this.useCases.offer.takeOffer(offerCid)
 
       ctx.body = { hash }
     } catch (err) {
-      console.log('Error in takeOffer REST API handler.')
+      wlogger.error('Error in takeOffer() REST API handler.')
       _this.handleError(ctx, err)
     }
   }
