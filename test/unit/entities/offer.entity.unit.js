@@ -31,15 +31,15 @@ describe('#Offer-Entity', () => {
         // console.log(err)
         assert.include(
           err.message,
-          'Input to order.validate() must be an object with a data property.'
+          'Input to offer.validate() must be an object with a data property.'
         )
       }
     })
 
     it('should throw an error if messageType is not included', () => {
       try {
-        const orderData = { data: {} }
-        uut.validate(orderData)
+        const offerData = { data: {} }
+        uut.validate(offerData)
 
         assert.fail('Unexpected code path')
       } catch (err) {
@@ -53,8 +53,8 @@ describe('#Offer-Entity', () => {
 
     it('should throw an error if messageClass is not included', () => {
       try {
-        const orderData = { data: { messageType: 1 } }
-        uut.validate(orderData)
+        const offerData = { data: { messageType: 1 } }
+        uut.validate(offerData)
 
         assert.fail('Unexpected code path')
       } catch (err) {
@@ -68,8 +68,8 @@ describe('#Offer-Entity', () => {
 
     it('should throw an error if tokenId is not included', () => {
       try {
-        const orderData = { data: { messageType: 1, messageClass: 1 } }
-        uut.validate(orderData)
+        const offerData = { data: { messageType: 1, messageClass: 1 } }
+        uut.validate(offerData)
 
         assert.fail('Unexpected code path')
       } catch (err) {
@@ -80,11 +80,11 @@ describe('#Offer-Entity', () => {
 
     it('should throw an error if buyOrSell is not included', () => {
       try {
-        const orderData = {
+        const offerData = {
           data: { messageType: 1, messageClass: 1, tokenId: 'fakeId' }
         }
 
-        uut.validate(orderData)
+        uut.validate(offerData)
 
         assert.fail('Unexpected code path')
       } catch (err) {
@@ -93,9 +93,9 @@ describe('#Offer-Entity', () => {
       }
     })
 
-    it('should throw an error if rateInSats is not included', () => {
+    it('should throw an error if rateInBaseUnit is not included', () => {
       try {
-        const orderData = {
+        const offerData = {
           data: {
             messageType: 1,
             messageClass: 1,
@@ -104,55 +104,55 @@ describe('#Offer-Entity', () => {
           }
         }
 
-        uut.validate(orderData)
+        uut.validate(offerData)
 
         assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(
           err.message,
-          "Property 'rateInSats' must be an integer number."
+          "Property 'rateInBaseUnit' must be an integer number."
         )
       }
     })
 
-    it('should throw an error if minSatsToExchange is not included', () => {
+    it('should throw an error if minUnitsToExchange is not included', () => {
       try {
-        const orderData = {
+        const offerData = {
           data: {
             messageType: 1,
             messageClass: 1,
             tokenId: 'fakeId',
             buyOrSell: 'buy',
-            rateInSats: 1000
+            rateInBaseUnit: 1000
           }
         }
 
-        uut.validate(orderData)
+        uut.validate(offerData)
 
         assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(
           err.message,
-          "Property 'minSatsToExchange' must be an integer number."
+          "Property 'minUnitsToExchange' must be an integer number."
         )
       }
     })
 
     it('should throw an error if numTokens is not included', () => {
       try {
-        const orderData = {
+        const offerData = {
           data: {
             messageType: 1,
             messageClass: 1,
             tokenId: 'fakeId',
             buyOrSell: 'buy',
-            rateInSats: 1000,
-            minSatsToExchange: 350
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350
           }
         }
-        uut.validate(orderData)
+        uut.validate(offerData)
 
         assert.fail('Unexpected code path')
       } catch (err) {
@@ -163,18 +163,18 @@ describe('#Offer-Entity', () => {
 
     it('should throw an error if utxoTxid is not included', () => {
       try {
-        const orderData = {
+        const offerData = {
           data: {
             messageType: 1,
             messageClass: 1,
             tokenId: 'fakeId',
             buyOrSell: 'buy',
-            rateInSats: 1000,
-            minSatsToExchange: 350,
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
             numTokens: 1
           }
         }
-        uut.validate(orderData)
+        uut.validate(offerData)
 
         assert.fail('Unexpected code path')
       } catch (err) {
@@ -185,19 +185,19 @@ describe('#Offer-Entity', () => {
 
     it('should throw an error if utxoVout is not included', () => {
       try {
-        const orderData = {
+        const offerData = {
           data: {
             messageType: 1,
             messageClass: 1,
             tokenId: 'fakeId',
             buyOrSell: 'buy',
-            rateInSats: 1000,
-            minSatsToExchange: 350,
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
             numTokens: 1,
             utxoTxid: 'fakeTxid'
           }
         }
-        uut.validate(orderData)
+        uut.validate(offerData)
 
         assert.fail('Unexpected code path')
       } catch (err) {
@@ -211,34 +211,34 @@ describe('#Offer-Entity', () => {
 
     it('should throw an error if proper status is not applied', () => {
       try {
-        const orderData = {
+        const offerData = {
           data: {
             messageType: 1,
             messageClass: 1,
             tokenId: 'fakeId',
             buyOrSell: 'buy',
-            rateInSats: 1000,
-            minSatsToExchange: 350,
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
             numTokens: 1,
             utxoTxid: 'fakeTxid',
             utxoVout: 0,
-            orderStatus: 'badStatus'
+            offerStatus: 'badStatus'
           }
         }
-        uut.validate(orderData)
+        uut.validate(offerData)
 
         assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
         assert.include(
           err.message,
-          "Property 'orderStatus' must be posted, taken, or dead"
+          "Property 'offerStatus' must be posted, taken, or dead"
         )
       }
     })
 
-    it('should validate a new order', () => {
-      const orderObj = {
+    it('should validate a new offer', () => {
+      const offerObj = {
         appId: 'swapTest555',
         data: {
           messageType: 1,
@@ -246,13 +246,13 @@ describe('#Offer-Entity', () => {
           tokenId:
             '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
           buyOrSell: 'sell',
-          rateInSats: 1000,
-          minSatsToExchange: 10,
+          rateInBaseUnit: 1000,
+          minUnitsToExchange: 10,
           numTokens: 0.02,
           utxoTxid:
             '241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87',
           utxoVout: 0,
-          orderStatus: 'posted'
+          offerStatus: 'posted'
         },
         timestamp: '2021-09-20T17:54:26.395Z',
         localTimeStamp: '9/20/2021, 10:54:26 AM',
@@ -260,15 +260,15 @@ describe('#Offer-Entity', () => {
         hash: 'zdpuB2X25AZCKo3wpr4sSbw44vqPWJRqcxWQRHZccK5BdtoGD'
       }
 
-      const result = uut.validate(orderObj)
+      const result = uut.validate(offerObj)
       // console.log('result: ', result)
 
       assert.property(result, 'messageType')
       assert.property(result, 'messageClass')
       assert.property(result, 'tokenId')
       assert.property(result, 'buyOrSell')
-      assert.property(result, 'rateInSats')
-      assert.property(result, 'minSatsToExchange')
+      assert.property(result, 'rateInBaseUnit')
+      assert.property(result, 'minUnitsToExchange')
       assert.property(result, 'numTokens')
       assert.property(result, 'utxoTxid')
       assert.property(result, 'utxoVout')

@@ -70,6 +70,8 @@ async function sweepFunds () {
     } while (emptyAddrCnt < 5)
 
     console.log('5 empty addresses detected. Exiting.')
+
+    console.log('\n\nDo not forget to reset the nextAddress property in the wallet.json file!\n\n')
   } catch (err) {
     console.error('Error in sweepFunds(): ', err)
   }

@@ -6,18 +6,18 @@
 
 class OfferEntity {
   constructor () {
-    this.orderStatus = ['posted', 'taken', 'dead']
+    this.offerStatus = ['posted', 'taken', 'dead']
   }
 
-  validate (orderData = {}) {
+  validate (offerData = {}) {
     // Throw an error if input object does not have a data property
-    if (!orderData.data) {
+    if (!offerData.data) {
       throw new Error(
-        'Input to order.validate() must be an object with a data property.'
+        'Input to offer.validate() must be an object with a data property.'
       )
     }
 
-    const { messageType, messageClass, tokenId, buyOrSell, rateInSats, minSatsToExchange, numTokens, utxoTxid, utxoVout, orderStatus } = orderData.data
+    const { messageType, messageClass, tokenId, buyOrSell, rateInBaseUnit, minUnitsToExchange, numTokens, utxoTxid, utxoVout, offerStatus } = offerData.data
 
     // Input Validation
     if (!messageType || typeof messageType !== 'number') {
@@ -32,11 +32,11 @@ class OfferEntity {
     if (!buyOrSell || typeof buyOrSell !== 'string') {
       throw new Error("Property 'buyOrSell' must be a string.")
     }
-    if (!rateInSats || typeof rateInSats !== 'number') {
-      throw new Error("Property 'rateInSats' must be an integer number.")
+    if (!rateInBaseUnit || typeof rateInBaseUnit !== 'number') {
+      throw new Error("Property 'rateInBaseUnit' must be an integer number.")
     }
-    if (!minSatsToExchange || typeof minSatsToExchange !== 'number') {
-      throw new Error("Property 'minSatsToExchange' must be an integer number.")
+    if (!minUnitsToExchange || typeof minUnitsToExchange !== 'number') {
+      throw new Error("Property 'minUnitsToExchange' must be an integer number.")
     }
     if (!numTokens || typeof numTokens !== 'number') {
       throw new Error("Property 'numTokens' must be a number.")
@@ -47,8 +47,8 @@ class OfferEntity {
     if (typeof utxoVout !== 'number') {
       throw new Error("Property 'utxoVout' must be an integer number.")
     }
-    if (orderStatus && !this.orderStatus.includes(orderStatus)) {
-      throw new Error("Property 'orderStatus' must be posted, taken, or dead")
+    if (offerStatus && !this.offerStatus.includes(offerStatus)) {
+      throw new Error("Property 'offerStatus' must be posted, taken, or dead")
     }
 
     const validatedOfferData = {
@@ -56,16 +56,16 @@ class OfferEntity {
       messageClass,
       tokenId,
       buyOrSell,
-      rateInSats,
-      minSatsToExchange,
+      rateInBaseUnit,
+      minUnitsToExchange,
       numTokens,
       utxoTxid,
       utxoVout,
-      timestamp: orderData.timestamp,
-      localTimestamp: orderData.localTimeStamp,
-      txid: orderData.txid,
-      p2wdbHash: orderData.hash,
-      orderStatus: orderStatus || this.orderStatus[0]
+      timestamp: offerData.timestamp,
+      localTimestamp: offerData.localTimeStamp,
+      txid: offerData.txid,
+      p2wdbHash: offerData.hash,
+      offerStatus: offerStatus || this.offerStatus[0]
     }
 
     return validatedOfferData

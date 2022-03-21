@@ -87,8 +87,8 @@ describe('#offer-use-case', () => {
           tokenId:
             '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
           buyOrSell: 'sell',
-          rateInSats: 1000,
-          minSatsToExchange: 10,
+          rateInBaseUnit: 1000,
+          minUnitsToExchange: 10,
           numTokens: 0.02,
           utxoTxid:
             '241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87',

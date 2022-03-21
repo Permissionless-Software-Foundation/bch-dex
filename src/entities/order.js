@@ -13,8 +13,8 @@ class Order {
       messageClass,
       tokenId,
       buyOrSell,
-      rateInSats,
-      minSatsToExchange,
+      rateInBaseUnit,
+      minUnitsToExchange,
       numTokens
     } = data
 
@@ -31,11 +31,11 @@ class Order {
     if (!buyOrSell || typeof buyOrSell !== 'string') {
       throw new Error("Property 'buyOrSell' must be a string.")
     }
-    if (!rateInSats || typeof rateInSats !== 'number') {
-      throw new Error("Property 'rateInSats' must be an integer number.")
+    if (!rateInBaseUnit || typeof rateInBaseUnit !== 'number') {
+      throw new Error("Property 'rateInBaseUnit' must be an integer number.")
     }
-    if (!minSatsToExchange || typeof minSatsToExchange !== 'number') {
-      throw new Error("Property 'minSatsToExchange' must be an integer number.")
+    if (!minUnitsToExchange || typeof minUnitsToExchange !== 'number') {
+      throw new Error("Property 'minUnitsToExchange' must be an integer number.")
     }
     if (!numTokens || typeof numTokens !== 'number') {
       throw new Error("Property 'numTokens' must be a number.")
@@ -46,8 +46,8 @@ class Order {
       messageClass,
       tokenId,
       buyOrSell,
-      rateInSats,
-      minSatsToExchange,
+      rateInBaseUnit,
+      minUnitsToExchange,
       numTokens
     }
 
