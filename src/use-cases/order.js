@@ -52,6 +52,9 @@ class OrderLib {
       orderEntity.utxoTxid = utxoInfo.txid
       orderEntity.utxoVout = utxoInfo.vout
 
+      // Add P2WDB specific flag for signaling that this is a new offer.
+      orderEntity.dataType = 'offer'
+
       // Add order to P2WDB.
       const p2wdbObj = {
         wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
