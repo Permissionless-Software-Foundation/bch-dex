@@ -124,41 +124,45 @@ class OfferUseCases {
       console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
       // Calculate amount of sats to generate a counter offer.
-      const satsToMove = offerInfo.numTokens * parseInt(offerInfo.rateInBaseUnit)
+      let satsToMove = offerInfo.numTokens * parseInt(offerInfo.rateInBaseUnit)
       if (isNaN(satsToMove)) {
         throw new Error('Could not calculate the amount of BCH to generate counter offer')
       }
 
-      // TODO: Move funds to create a segrated UTXO for taking the offer
+      // Add sats to cover mining fees and dust for token UTXO
+      satsToMove += 1000
+
+      // Move funds to create a segrated UTXO for taking the offer
       const utxoInfo = await this.adapters.wallet.moveBch(satsToMove)
       console.log('utxoInfo: ', utxoInfo)
 
       // Create a partially signed transaction.
       // https://github.com/Permissionless-Software-Foundation/bch-js-examples/blob/master/bch/applications/collaborate/sell-slp/e2e-exchange/step2-purchase-tx.js#L59
-      // const partialTxHex = await this.adapters.wallet.generatePartialTx(offerInfo)
-      // // return partialTxHex
-      //
-      // // Create valid Offer object
-      // const takenOfferInfo = Object.assign({}, offerInfo)
-      // takenOfferInfo.patialTxHex = partialTxHex
-      // delete takenOfferInfo.p2wdbHash
-      // delete takenOfferInfo._id
-      // takenOfferInfo.offerHash = offerInfo.p2wdbHash
-      //
-      // // Write offer info to the P2WDB
-      // // TODO: This will trigger the webhook. Find some way of triggering the
-      // // webhook on new offers, but not on counteroffers
-      // const p2wdbObj = {
-      //   wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
-      //   data: takenOfferInfo,
-      //   appId: this.config.p2wdbAppId
-      // }
-      // const hash = await this.adapters.p2wdb.write(p2wdbObj)
-      //
-      // // Return the P2WDB CID
-      // return hash
+      const partialTxHex = await this.adapters.wallet.generatePartialTx(offerInfo, utxoInfo)
+      console.log('partialTxHex: ', partialTxHex)
+      // return partialTxHex
 
-      return 'fake-hash'
+      // Create valid Offer object
+      const takenOfferInfo = Object.assign({}, offerInfo)
+      takenOfferInfo.patialTxHex = partialTxHex
+      delete takenOfferInfo.p2wdbHash
+      delete takenOfferInfo._id
+      takenOfferInfo.offerHash = offerInfo.p2wdbHash
+
+      // Write offer info to the P2WDB
+      // TODO: This will trigger the webhook. Find some way of triggering the
+      // webhook on new offers, but not on counteroffers
+      const p2wdbObj = {
+        wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
+        data: takenOfferInfo,
+        appId: this.config.p2wdbAppId
+      }
+      const hash = await this.adapters.p2wdb.write(p2wdbObj)
+
+      // Return the P2WDB CID
+      return hash
+
+      // return 'fake-hash'
     } catch (err) {
       console.error('Error in use-cases/offer/takeOffer(): ', err)
       throw err

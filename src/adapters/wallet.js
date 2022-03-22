@@ -178,10 +178,10 @@ class WalletAdapter {
     }
   }
 
-  // Generate a partial transcation to *take* a 'sell' order.
-  async generatePartialTx (orderInfo) {
+  // Generate a partial transcation to *take* a 'sell' offer.
+  async generatePartialTx (offerInfo, utxoInfo) {
     try {
-      console.log(`orderInfo: ${JSON.stringify(orderInfo, null, 2)}`)
+      console.log(`offerInfo: ${JSON.stringify(offerInfo, null, 2)}`)
 
       const bchjs = this.bchWallet.bchjs
 
@@ -190,21 +190,21 @@ class WalletAdapter {
 
       // Get a payment UTXO.
       // TODO: Create a segregated UTXO.
-      const bchUtxos = this.bchWallet.utxos.utxoStore.bchUtxos
-      const paymentUtxo = await bchjs.Utxo.findBiggestUtxo(bchUtxos)
-      console.log('paymentUtxo: ', paymentUtxo)
+      // const bchUtxos = this.bchWallet.utxos.utxoStore.bchUtxos
+      // const paymentUtxo = await bchjs.Utxo.findBiggestUtxo(bchUtxos)
+      // console.log('paymentUtxo: ', paymentUtxo)
 
       // Get token info on the offered UTXO
-      const txData = await this.bchWallet.getTxData([orderInfo.utxoTxid])
+      const txData = await this.bchWallet.getTxData([offerInfo.utxoTxid])
       console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
 
       // Construct the UTXO being offered for sale.
       const offeredUtxo = {
-        txid: orderInfo.utxoTxid,
-        vout: orderInfo.utxoVout,
-        tokenId: orderInfo.tokenId,
+        txid: offerInfo.utxoTxid,
+        vout: offerInfo.utxoVout,
+        tokenId: offerInfo.tokenId,
         decimals: txData[0].tokenDecimals,
-        tokenQty: orderInfo.numTokens.toString()
+        tokenQty: offerInfo.numTokens.toString()
       }
       console.log(`offeredUtxo: ${JSON.stringify(offeredUtxo, null, 2)}`)
 
@@ -212,7 +212,7 @@ class WalletAdapter {
       // Generate the OP_RETURN code.
       const slpSendObj = bchjs.SLP.TokenType1.generateSendOpReturn(
         [offeredUtxo],
-        orderInfo.numTokens.toString()
+        offerInfo.numTokens.toString()
       )
       const slpData = slpSendObj.script
       console.log(`slpOutputs: ${slpSendObj.outputs}`)
@@ -226,32 +226,34 @@ class WalletAdapter {
       }
 
       // Calculate sats needed to pay the offer.
-      const satsNeeded = orderInfo.numTokens * parseInt(orderInfo.rateInSats)
+      const satsNeeded = offerInfo.numTokens * parseInt(offerInfo.rateInBaseUnit)
+      if (isNaN(satsNeeded)) throw new Error('Can not calculate needed sats')
 
       // Calculate miner fees.
       // Get byte count (minimum 2 inputs, 3 outputs)
-      const opReturnBufLength = slpData.byteLength + 32 // add padding
-      const byteCount =
-      bchjs.BitcoinCash.getByteCount({ P2PKH: 2 }, { P2PKH: 4 }) +
-        opReturnBufLength
-      const totalSatsNeeded = byteCount + satsNeeded
+      // const opReturnBufLength = slpData.byteLength + 32 // add padding
+      // const byteCount =
+      // bchjs.BitcoinCash.getByteCount({ P2PKH: 2 }, { P2PKH: 4 }) +
+      //   opReturnBufLength
+      // const totalSatsNeeded = byteCount + satsNeeded
       // console.log(`satoshis needed: ${satsNeeded}`)
 
       // One last check to ensure the app wallet has enough BCH to complete
       // the trade.
-      if (totalSatsNeeded > paymentUtxo.value) {
-        console.log(`Selected payment UTXO is not big enough. Sats needed: ${totalSatsNeeded}, UTXO value: ${paymentUtxo.value}`)
-      }
+      // if (totalSatsNeeded > paymentUtxo.value) {
+      //   console.log(`Selected payment UTXO is not big enough. Sats needed: ${totalSatsNeeded}, UTXO value: ${paymentUtxo.value}`)
+      // }
 
-      // add UTXO for sell(STILL CANNOT SPEND - not signed yet)
-      transactionBuilder.addInput(orderInfo.utxoTxid, orderInfo.utxoVout)
+      // add UTXO for sale (STILL CANNOT SPEND - not signed yet)
+      transactionBuilder.addInput(offerInfo.utxoTxid, offerInfo.utxoVout)
 
       // add payment UTXO
-      transactionBuilder.addInput(paymentUtxo.tx_hash, paymentUtxo.tx_pos)
+      // transactionBuilder.addInput(paymentUtxo.tx_hash, paymentUtxo.tx_pos)
+      transactionBuilder.addInput(utxoInfo.txid, utxoInfo.vout)
 
-      const originalAmount = paymentUtxo.value
+      // const originalAmount = paymentUtxo.value
       const dust = 546
-      const remainder = originalAmount - satsNeeded - dust // exchange fee + token UTXO dust
+      // const remainder = originalAmount - satsNeeded - dust // exchange fee + token UTXO dust
 
       // Add the SLP OP_RETURN data as the first output.
       transactionBuilder.addOutput(slpData, 0)
@@ -267,7 +269,7 @@ class WalletAdapter {
 
       // Get seller address
       // TODO: Seller should explicitly define the address to send to in the
-      // orderInfo object. Right now it retrieves the address from the UTXO
+      // offerInfo object. Right now it retrieves the address from the UTXO
       // for sale, which is not ideal.
       const sellerAddr = txData[0].vout[1].scriptPubKey.addresses[0]
 
@@ -275,11 +277,12 @@ class WalletAdapter {
       transactionBuilder.addOutput(sellerAddr, satsNeeded)
 
       // Send the BCH change back to the buyer
-      if (remainder > 550) {
-        transactionBuilder.addOutput(buyerAddr, remainder)
-      }
+      // if (remainder > 550) {
+      //   transactionBuilder.addOutput(buyerAddr, remainder)
+      // }
 
-      const buyerECPair = bchjs.ECPair.fromWIF(this.bchWallet.walletInfo.privateKey)
+      // const buyerECPair = bchjs.ECPair.fromWIF(this.bchWallet.walletInfo.privateKey)
+      const buyerECPair = bchjs.ECPair.fromWIF(utxoInfo.wif)
 
       // Sign the buyers input UTXO for spending.
       transactionBuilder.sign(
@@ -287,13 +290,13 @@ class WalletAdapter {
         buyerECPair,
         null,
         transactionBuilder.hashTypes.SIGHASH_ALL,
-        originalAmount
+        satsNeeded
       )
 
       const tx = transactionBuilder.transaction.buildIncomplete()
 
       const hex = tx.toHex()
-      console.log('hex: ', hex)
+      // console.log('hex: ', hex)
 
       return hex
     } catch (err) {
@@ -352,7 +355,8 @@ class WalletAdapter {
       const utxoInfo = {
         txid,
         vout: 0,
-        hdIndex: keyPair.hdIndex
+        hdIndex: keyPair.hdIndex,
+        wif: keyPair.wif
       }
 
       return utxoInfo
