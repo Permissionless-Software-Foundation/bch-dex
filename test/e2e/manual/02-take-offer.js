@@ -12,7 +12,7 @@ async function start () {
       method: 'post',
       url: `${LOCALHOST}/offer/take`,
       data: {
-        offerCid: 'zdpuAoSeb7JxpCgeeCWvYXRc3dUmaUGyR8Yva6xBQcCBd11kc'
+        offerCid: 'zdpuB1gqwyto4hJnR2YgnttZiXifzUQ5NLRVBuXEtonwa3f4g'
       }
     }
 

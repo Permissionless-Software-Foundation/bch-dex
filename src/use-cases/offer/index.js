@@ -110,6 +110,9 @@ class OfferUseCases {
       console.log('utxoStatus: ', utxoStatus)
       if (utxoStatus === null) {
         console.log(`utxo txid: ${txid}, vout: ${vout}`)
+
+        // TODO: Mark this Offer as 'dead'
+
         throw new Error('UTXO does not exist. Aborting.')
       }
 
@@ -120,12 +123,14 @@ class OfferUseCases {
       const utxos = this.adapters.wallet.bchWallet.utxos.utxoStore
       console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
-      // TODO: Move funds to create a segrated UTXO for taking the offer
-      const moveObj = {
-        tokenId: offerInfo.tokenId,
-        qty: offerInfo.numTokens
+      // Calculate amount of sats to generate a counter offer.
+      const satsToMove = offerInfo.numTokens * parseInt(offerInfo.rateInBaseUnit)
+      if (isNaN(satsToMove)) {
+        throw new Error('Could not calculate the amount of BCH to generate counter offer')
       }
-      const utxoInfo = await this.adapters.wallet.moveTokens(moveObj)
+
+      // TODO: Move funds to create a segrated UTXO for taking the offer
+      const utxoInfo = await this.adapters.wallet.moveBch(satsToMove)
       console.log('utxoInfo: ', utxoInfo)
 
       // Create a partially signed transaction.

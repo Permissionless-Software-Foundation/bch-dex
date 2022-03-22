@@ -345,6 +345,7 @@ class WalletAdapter {
         address: keyPair.cashAddress,
         amountSat
       }]
+      console.log(`receivers: ${JSON.stringify(receivers, null, 2)}`)
 
       const txid = await this.bchWallet.send(receivers)
 
