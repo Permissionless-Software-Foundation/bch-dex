@@ -15,6 +15,7 @@ const Offer = new mongoose.Schema({
   p2wdbTxid: { type: String },
   p2wdbHash: { type: String },
   offerStatus: { type: String },
+  makerAddr: { type: String },
 
   // Authentication data
   signature: { type: String },

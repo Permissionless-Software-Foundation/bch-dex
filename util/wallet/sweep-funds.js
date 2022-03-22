@@ -13,6 +13,9 @@ const BchTokenSweep = require('bch-token-sweep/index')
 // Local libraries
 const WalletAdapter = require('../../src/adapters/wallet')
 
+// Constants
+const EMTPY_ADDR_CUTOFF = 5
+
 async function sweepFunds () {
   try {
     // Open the wallet files.
@@ -69,9 +72,9 @@ async function sweepFunds () {
       }
 
       hdIndex++
-    } while (emptyAddrCnt < 10)
+    } while (emptyAddrCnt < EMTPY_ADDR_CUTOFF)
 
-    console.log('5 empty addresses detected. Exiting.')
+    console.log(`${EMTPY_ADDR_CUTOFF} empty addresses detected. Exiting.`)
 
     console.log('\n\nDo not forget to reset the nextAddress property in the wallet.json file!\n\n')
   } catch (err) {

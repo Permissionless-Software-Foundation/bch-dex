@@ -52,6 +52,10 @@ class OrderLib {
       orderEntity.utxoTxid = utxoInfo.txid
       orderEntity.utxoVout = utxoInfo.vout
 
+      // Specify the address to send payment.
+      orderEntity.makerAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
+      console.log('orderEntity.makerAddr: ', orderEntity.makerAddr)
+
       // Add P2WDB specific flag for signaling that this is a new offer.
       orderEntity.dataType = 'offer'
 

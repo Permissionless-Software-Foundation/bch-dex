@@ -17,7 +17,19 @@ class OfferEntity {
       )
     }
 
-    const { messageType, messageClass, tokenId, buyOrSell, rateInBaseUnit, minUnitsToExchange, numTokens, utxoTxid, utxoVout, offerStatus } = offerData.data
+    const {
+      messageType,
+      messageClass,
+      tokenId,
+      buyOrSell,
+      rateInBaseUnit,
+      minUnitsToExchange,
+      numTokens,
+      utxoTxid,
+      utxoVout,
+      offerStatus,
+      makerAddr
+    } = offerData.data
 
     // Input Validation
     if (!messageType || typeof messageType !== 'number') {
@@ -50,6 +62,9 @@ class OfferEntity {
     if (offerStatus && !this.offerStatus.includes(offerStatus)) {
       throw new Error("Property 'offerStatus' must be posted, taken, or dead")
     }
+    if (!makerAddr || typeof makerAddr !== 'string') {
+      throw new Error("Property 'makerAddr' must be a string.")
+    }
 
     const validatedOfferData = {
       messageType,
@@ -65,7 +80,8 @@ class OfferEntity {
       localTimestamp: offerData.localTimeStamp,
       txid: offerData.txid,
       p2wdbHash: offerData.hash,
-      offerStatus: offerStatus || this.offerStatus[0]
+      offerStatus: offerStatus || this.offerStatus[0],
+      makerAddr
     }
 
     return validatedOfferData

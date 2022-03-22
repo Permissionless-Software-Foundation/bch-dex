@@ -2,6 +2,8 @@
   Order Model. Orders are 'internal' to the system and track the HD wallet index
   that contains funds for that Order. This is in contrast to Offers, which
   are 'external' to the system and mirrored by every instance of bch-dex.
+
+  See the dev-docs/specification.md for details on each property.
 */
 
 const mongoose = require('mongoose')
@@ -19,6 +21,7 @@ const Order = new mongoose.Schema({
   minUnitsToExchange: { type: String },
   p2wdbTxid: { type: String },
   p2wdbHash: { type: String },
+  makerAddr: { type: String },
 
   // Authentication data
   signature: { type: String },
