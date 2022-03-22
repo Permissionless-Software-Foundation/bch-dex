@@ -4,6 +4,7 @@
 
 // Public npm libraries
 const BchWallet = require('minimal-slp-wallet/index')
+const bitcoinJs = require('@psf/bitcoincashjs-lib')
 
 // Local libraries
 const JsonFiles = require('./json-files')
@@ -21,6 +22,7 @@ class WalletAdapter {
     this.WALLET_FILE = WALLET_FILE
     this.BchWallet = BchWallet
     this.config = config
+    this.bitcoinJs = bitcoinJs
   }
 
   // Open the wallet file, or create one if the file doesn't exist.
@@ -365,6 +367,46 @@ class WalletAdapter {
       return utxoInfo
     } catch (err) {
       console.error('Error in wallet.js/moveBch()')
+      throw err
+    }
+  }
+
+  // Deserialize a hex string representing a partial TX. Returns an object
+  // representing the transaction.
+  async deseralizeTx (txHex) {
+    try {
+      // console.log('txHex: ', txHex)
+      //
+      // // Convert the hex string version of the transaction into a Buffer.
+      // const paymentBuffer = Buffer.from(txHex, 'hex')
+      //
+      // // Generate a Transaction object from the transaction binary data.
+      // const csTransaction = this.bitcoinJs.Transaction.fromBuffer(paymentBuffer)
+      // // console.log(`payment tx: ${JSON.stringify(csTransaction, null, 2)}`)
+      //
+      // // Instantiate the Transaction Builder.
+      // const csTransactionBuilder = this.bitcoinJs.TransactionBuilder.fromTransaction(
+      //   csTransaction,
+      //   'mainnet'
+      // )
+      //
+      // return csTransactionBuilder
+
+      // Ensure the URL points at FullStack.cash, since the web 3 infra does not
+      // yet support this call.
+      const oldUrl = this.bchWallet.bchjs.RawTransactions.restURL
+      this.bchWallet.bchjs.RawTransactions.restURL = 'https://api.fullstack.cash/v5/'
+
+      // Use a full node to deserialize the transaction.
+      const txObj2 = await this.bchWallet.bchjs.RawTransactions.decodeRawTransaction(txHex)
+      // console.log(`txObj2: ${JSON.stringify(txObj2, null, 2)}`)
+
+      // Restore the old URL.
+      this.bchWallet.bchjs.RawTransactions.restURL = oldUrl
+
+      return txObj2
+    } catch (err) {
+      console.error('Error in wallet.js/deserializePartialTx()')
       throw err
     }
   }

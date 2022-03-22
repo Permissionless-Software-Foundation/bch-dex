@@ -26,6 +26,12 @@ class OfferUseCases {
         'Instance of adapters must be passed in when instantiating Offer Use Cases library.'
       )
     }
+    this.orderUseCase = localConfig.order
+    if (!this.orderUseCase) {
+      throw new Error(
+        'Instance of Order Use Cases must be passed in when instantiating Offer Use Cases library.'
+      )
+    }
 
     // Encapsulate dependencies
     this.config = config
@@ -144,7 +150,7 @@ class OfferUseCases {
 
       // Create valid Offer object
       const takenOfferInfo = Object.assign({}, offerInfo)
-      takenOfferInfo.patialTxHex = partialTxHex
+      takenOfferInfo.partialTxHex = partialTxHex
       delete takenOfferInfo.p2wdbHash
       delete takenOfferInfo._id
       takenOfferInfo.offerHash = offerInfo.p2wdbHash
@@ -235,6 +241,34 @@ class OfferUseCases {
       return offerObject
     } catch (err) {
       console.error('Error in findOffer(): ', err)
+      throw err
+    }
+  }
+
+  // This function is called by the P2WDB webhook REST API handler. When a
+  // Counter Offer is passed to bch-dex by the P2WDB, the data is then passed
+  // to this function. It does due dilligence on the Counter Offer, then signs
+  // and broadcasts the transaction to accept the Counter Offer.
+  async acceptCounterOffer (p2wdbData) {
+    try {
+      console.log(`acceptCounterOffer() p2wdbData: ${JSON.stringify(p2wdbData, null, 2)}`)
+
+      // See if this instance of bch-dex is managing the Order associated with
+      // the incoming Counter Offer.
+      const orderHash = p2wdbData.data.offerHash
+      const orderData = await this.orderUseCase.findOrderByHash(orderHash)
+      console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
+
+      // Deserialize the partially signed transaction.
+      const txHex = p2wdbData.data.partialTxHex
+      const txObj = await this.adapters.wallet.deseralizeTx(txHex)
+      console.log(`txObj: ${JSON.stringify(txObj, null, 2)}`)
+
+      // Ensure the TX inputs and outputs match the original Order
+
+      // Sign and broadcast the transaction.
+    } catch (err) {
+      console.error('Error in acceptCounterOffer()')
       throw err
     }
   }

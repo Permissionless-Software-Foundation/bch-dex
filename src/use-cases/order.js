@@ -131,6 +131,29 @@ class OrderLib {
       throw err
     }
   }
+
+  // Retrieve an Order model from the database. Find it by its P2WDB CID.
+  async findOrderByHash (p2wdbHash) {
+    try {
+      if (typeof p2wdbHash !== 'string' || !p2wdbHash) {
+        throw new Error('p2wdbHash must be a string')
+      }
+
+      const order = await this.OrderModel.findOne({ p2wdbHash })
+
+      if (!order) {
+        throw new Error('order not found')
+      }
+
+      const orderObject = order.toObject()
+      // return this.offerEntity.validateFromModel(offerObject)
+
+      return orderObject
+    } catch (err) {
+      console.error('Error in findOrder(): ', err)
+      throw err
+    }
+  }
 }
 
 module.exports = OrderLib

@@ -21,8 +21,9 @@ class UseCases {
     // console.log('use-cases/index.js localConfig: ', localConfig)
     this.user = new UserUseCases(localConfig)
     this.entry = new EntryUseCases(localConfig)
-    this.offer = new OfferUseCases(localConfig)
     this.order = new OrderUseCases(localConfig)
+    localConfig.order = this.order
+    this.offer = new OfferUseCases(localConfig)
   }
 }
 

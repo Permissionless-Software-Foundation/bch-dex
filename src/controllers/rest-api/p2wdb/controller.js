@@ -39,8 +39,14 @@ class P2WDBRESTControllerLib {
       const dataType = ctx.request.body.data.dataType
 
       if (dataType.includes('counter')) {
+        // Detect and handle Counter Offers
         console.log('counter-offer data detected.')
+
+        const counterOffer = ctx.request.body
+
+        await _this.useCases.offer.acceptCounterOffer(counterOffer)
       } else if (dataType.includes('offer')) {
+        // Detect and handle new Offers
         console.log('offer data detected')
 
         const offerObj = ctx.request.body
