@@ -350,6 +350,9 @@ class WalletAdapter {
       }]
       console.log(`receivers: ${JSON.stringify(receivers, null, 2)}`)
 
+      // Update the UTXO store of the wallet.
+      await this.bchWallet.getUtxos()
+
       const txid = await this.bchWallet.send(receivers)
 
       const utxoInfo = {

@@ -149,6 +149,9 @@ class OfferUseCases {
       delete takenOfferInfo._id
       takenOfferInfo.offerHash = offerInfo.p2wdbHash
 
+      // Add P2WDB specific flag for signaling that this is a new offer.
+      takenOfferInfo.dataType = 'counter-offer'
+
       // Write offer info to the P2WDB
       // TODO: This will trigger the webhook. Find some way of triggering the
       // webhook on new offers, but not on counteroffers

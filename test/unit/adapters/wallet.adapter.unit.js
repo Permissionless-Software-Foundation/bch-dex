@@ -289,7 +289,8 @@ describe('#wallet', () => {
         hdIndex: 6
       })
       uut.bchWallet = {
-        send: async () => 'fake-txid'
+        send: async () => 'fake-txid',
+        getUtxos: async () => {}
       }
 
       const amountSat = 1000

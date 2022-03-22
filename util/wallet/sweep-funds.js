@@ -35,8 +35,10 @@ async function sweepFunds () {
     do {
       // Generate a keypair from the HD wallet.
       const childNode = masterHDNode.derivePath(`m/44'/245'/0'/0/${hdIndex}`)
-      // const cashAddress = bchjs.HDNode.toCashAddress(childNode)
+      const cashAddress = bchjs.HDNode.toCashAddress(childNode)
       const wifToSweep = bchjs.HDNode.toWIF(childNode)
+
+      console.log(`\nSweeping ${cashAddress}`)
 
       try {
         // Sweep tokens from address
@@ -62,12 +64,12 @@ async function sweepFunds () {
         // Wait between loop iterations.
         await bchjs.Util.sleep(3000)
       } catch (err) {
-        console.log(`error message: ${err.message}`)
+        console.log(`error message with index ${hdIndex}: ${err.message}`)
         emptyAddrCnt++
       }
 
       hdIndex++
-    } while (emptyAddrCnt < 5)
+    } while (emptyAddrCnt < 10)
 
     console.log('5 empty addresses detected. Exiting.')
 

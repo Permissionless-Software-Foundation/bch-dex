@@ -36,6 +36,19 @@ class P2WDBRESTControllerLib {
     try {
       console.log('p2wdb REST API handler: body: ', ctx.request.body)
 
+      const dataType = ctx.request.body.data.dataType
+
+      if (dataType.includes('counter')) {
+        console.log('counter-offer data detected.')
+      } else if (dataType.includes('offer')) {
+        console.log('offer data detected')
+
+        const offerObj = ctx.request.body
+        await _this.useCases.offer.createOffer(offerObj)
+      } else {
+        console.log('Could not route P2WDB webhook data.')
+      }
+
       // const orderObj = ctx.request.body.order
       //
       // const hash = await _this.useCases.order.createOrder(orderObj)
