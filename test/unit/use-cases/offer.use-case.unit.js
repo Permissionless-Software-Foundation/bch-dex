@@ -11,6 +11,7 @@ const sinon = require('sinon')
 
 // Unit under test (uut)
 const OfferLib = require('../../../src/use-cases/offer')
+const OrderUseCase = require('../../../src/use-cases/order')
 const adapters = require('../mocks/adapters')
 
 describe('#offer-use-case', () => {
@@ -25,7 +26,8 @@ describe('#offer-use-case', () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox()
 
-    uut = new OfferLib({ adapters })
+    const order = new OrderUseCase({ adapters })
+    uut = new OfferLib({ adapters, order })
   })
 
   afterEach(() => sandbox.restore())
