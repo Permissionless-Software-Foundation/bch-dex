@@ -126,16 +126,11 @@ describe('#order-use-case', () => {
 
     it('should catch and throw an error', async () => {
       try {
-        // Force an error
-        sandbox
-          .stub(uut.orderEntity, 'validate')
-          .throws(new Error('test error'))
-
         await uut.createOrder()
 
         assert.fail('Unexpected code path')
       } catch (err) {
-        assert.include(err.message, 'test error')
+        assert.include(err.message, 'Cannot set')
       }
     })
   })
