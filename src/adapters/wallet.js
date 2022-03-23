@@ -4,7 +4,7 @@
 
 // Public npm libraries
 const BchWallet = require('minimal-slp-wallet/index')
-const bitcoinJs = require('@psf/bitcoincashjs-lib')
+const bitcoinJs = require('bitcoincashjs-lib')
 
 // Local libraries
 const JsonFiles = require('./json-files')
@@ -86,6 +86,7 @@ class WalletAdapter {
 
       // Wait for wallet to initialize.
       await this.bchWallet.walletInfoPromise
+      console.log('BCH wallet initialized.')
 
       return this.bchWallet
     } catch (err) {
@@ -124,9 +125,12 @@ class WalletAdapter {
   // and the index of the HD wallet that the key pair was generated from.
   // TODO: Allow input integer. If input is used, use that as the index. If no
   // input is provided, then call incrementNextAddress().
-  async getKeyPair () {
+  async getKeyPair (hdIndex = 0) {
     try {
-      const hdIndex = await this.incrementNextAddress()
+      if (!hdIndex) {
+        // Increment the HD index and generate a new key pair.
+        hdIndex = await this.incrementNextAddress()
+      }
 
       const mnemonic = this.bchWallet.walletInfo.mnemonic
 
@@ -198,7 +202,7 @@ class WalletAdapter {
 
       // Get token info on the offered UTXO
       const txData = await this.bchWallet.getTxData([offerInfo.utxoTxid])
-      console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
+      // console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
 
       // Construct the UTXO being offered for sale.
       const offeredUtxo = {
@@ -270,10 +274,7 @@ class WalletAdapter {
       )
 
       // Get seller address
-      // TODO: Seller should explicitly define the address to send to in the
-      // offerInfo object. Right now it retrieves the address from the UTXO
-      // for sale, which is not ideal.
-      const sellerAddr = txData[0].vout[1].scriptPubKey.addresses[0]
+      const sellerAddr = offerInfo.makerAddr
 
       // Send payment to the offer side
       transactionBuilder.addOutput(sellerAddr, satsNeeded)
@@ -292,7 +293,7 @@ class WalletAdapter {
         buyerECPair,
         null,
         transactionBuilder.hashTypes.SIGHASH_ALL,
-        satsNeeded
+        utxoInfo.sats
       )
 
       const tx = transactionBuilder.transaction.buildIncomplete()
@@ -323,6 +324,9 @@ class WalletAdapter {
         tokenId,
         qty
       }
+
+      // Update the UTXO store of the wallet.
+      await this.bchWallet.getUtxos()
 
       const txid = await this.bchWallet.sendTokens(receiver, 3)
 
@@ -375,23 +379,6 @@ class WalletAdapter {
   // representing the transaction.
   async deseralizeTx (txHex) {
     try {
-      // console.log('txHex: ', txHex)
-      //
-      // // Convert the hex string version of the transaction into a Buffer.
-      // const paymentBuffer = Buffer.from(txHex, 'hex')
-      //
-      // // Generate a Transaction object from the transaction binary data.
-      // const csTransaction = this.bitcoinJs.Transaction.fromBuffer(paymentBuffer)
-      // // console.log(`payment tx: ${JSON.stringify(csTransaction, null, 2)}`)
-      //
-      // // Instantiate the Transaction Builder.
-      // const csTransactionBuilder = this.bitcoinJs.TransactionBuilder.fromTransaction(
-      //   csTransaction,
-      //   'mainnet'
-      // )
-      //
-      // return csTransactionBuilder
-
       // Ensure the URL points at FullStack.cash, since the web 3 infra does not
       // yet support this call.
       const oldUrl = this.bchWallet.bchjs.RawTransactions.restURL
@@ -407,6 +394,77 @@ class WalletAdapter {
       return txObj2
     } catch (err) {
       console.error('Error in wallet.js/deserializePartialTx()')
+      throw err
+    }
+  }
+
+  // Complete the partially signed transaction by signing the first input,
+  // then broadcasting the transaction to the network.
+  async completeTx (hex, hdIndex) {
+    try {
+      // console.log('hex: ', hex)
+
+      const bchjs = this.bchWallet.bchjs
+
+      // instance of transaction builder
+      // const transactionBuilder = new bchjs.TransactionBuilder()
+
+      // Convert the hex string version of the transaction into a Buffer.
+      // const paymentBuffer = Buffer.from(hex, 'hex')
+
+      // Generate a Transaction object from the transaction binary data.
+      // const csTransaction = this.bitcoinJs.Transaction.fromBuffer(paymentBuffer)
+      const csTransaction = this.bitcoinJs.Transaction.fromHex(hex)
+      // console.log(`payment tx: ${JSON.stringify(csTransaction, null, 2)}`)
+
+      // Instantiate the Transaction Builder.
+      const csTransactionBuilder = this.bitcoinJs.TransactionBuilder.fromTransaction(
+        csTransaction,
+        'mainnet'
+      )
+      // const csTransactionBuilder = bchjs.TransactionBuilder.fromTransaction(
+      //   csTransaction,
+      //   'mainnet'
+      // )
+
+      // Get the keypair for the address used in the Order
+      const keyPair = await this.getKeyPair(hdIndex)
+      console.log(`maker keyPair: ${JSON.stringify(keyPair, null, 2)}`)
+      const makerECPair = bchjs.ECPair.fromWIF(keyPair.wif)
+
+      // Assumption: segregated UTXO has a value of 546 sats. It might be better
+      // to explicitly look this data up via the blockchain.
+      const dust = 546
+
+      // Coutnersign the Maker's input, representing the tokens for sale.
+      csTransactionBuilder.sign(
+        0,
+        makerECPair,
+        null,
+        this.bitcoinJs.Transaction.SIGHASH_ALL,
+        // csTransactionBuilder.hashTypes.SIGHASH_ALL,
+        dust
+      )
+
+      // build tx
+      const csTx = csTransactionBuilder.build()
+
+      // output rawhex
+      const csTxHex = csTx.toHex()
+      console.log(`Fully signed Tx hex: ${csTxHex}`)
+
+      // Debug: Display the fully signed TX
+      const txObj = await this.deseralizeTx(csTxHex)
+      console.log(`Final tx: ${JSON.stringify(txObj, null, 2)}`)
+
+      // return csTxHex
+
+      // Broadcast transaction to the network
+      const txid = await this.bchWallet.ar.sendTx(csTxHex)
+
+      return txid
+    } catch (err) {
+      console.error('Error in wallet.js/completeTx()')
       throw err
     }
   }

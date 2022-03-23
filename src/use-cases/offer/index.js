@@ -140,6 +140,7 @@ class OfferUseCases {
 
       // Move funds to create a segrated UTXO for taking the offer
       const utxoInfo = await this.adapters.wallet.moveBch(satsToMove)
+      utxoInfo.sats = satsToMove
       console.log('utxoInfo: ', utxoInfo)
 
       // Create a partially signed transaction.
@@ -147,6 +148,10 @@ class OfferUseCases {
       const partialTxHex = await this.adapters.wallet.generatePartialTx(offerInfo, utxoInfo)
       console.log('partialTxHex: ', partialTxHex)
       // return partialTxHex
+
+      // Debug: Decode the transaction for manual QA
+      const txObj = await this.adapters.wallet.deseralizeTx(partialTxHex)
+      console.log(`partially-signed transaction: ${JSON.stringify(txObj, null, 2)}`)
 
       // Create valid Offer object
       const takenOfferInfo = Object.assign({}, offerInfo)
@@ -264,9 +269,31 @@ class OfferUseCases {
       const txObj = await this.adapters.wallet.deseralizeTx(txHex)
       console.log(`txObj: ${JSON.stringify(txObj, null, 2)}`)
 
-      // Ensure the TX inputs and outputs match the original Order
+      // Ensure the 3rd output (vout=2) contains the required amount of BCH.
+      const satsToReceive = orderData.numTokens * parseInt(orderData.rateInBaseUnit)
+      if (isNaN(satsToReceive)) {
+        throw new Error('Could not calculate the amount of BCH offered in the Counter Offer')
+      }
+      const satsOut = this.adapters.wallet.bchWallet.bchjs.BitcoinCash.toSatoshi(txObj.vout[2].value)
+      const hasRequiredAmount = satsOut === satsToReceive
+      if (!hasRequiredAmount) {
+        throw new Error(`The Counter Offer has an output of ${satsOut}, which does not match the required ${satsToReceive} in the Offer.`)
+      }
+
+      // Ensure the 3rd output (vout=2) is going to the maker address specified
+      // in the Offer.
+      const addrInCounterOffer = txObj.vout[2].scriptPubKey.addresses[0]
+      const makerAddr = orderData.makerAddr
+      const hasCorrectAddr = makerAddr === addrInCounterOffer
+      if (!hasCorrectAddr) {
+        throw new Error(`The Counter Offer has an output address of ${addrInCounterOffer}, which does not match the Maker address of ${makerAddr} in the Offer.`)
+      }
 
       // Sign and broadcast the transaction.
+      const txid = await this.adapters.wallet.completeTx(txHex, orderData.hdIndex)
+      console.log('txid: ', txid)
+
+      return txid
     } catch (err) {
       console.error('Error in acceptCounterOffer()')
       throw err

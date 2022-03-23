@@ -28,10 +28,10 @@
   "repository": "Permissionless-Software-Foundation/bch-dex",
   "dependencies": {
     "@psf/bch-js": "6.2.1",
-    "@psf/bitcoincashjs-lib": "4.0.2",
     "axios": "0.21.1",
     "bch-message-lib": "2.1.4",
     "bcryptjs": "2.4.3",
+    "bitcoincashjs-lib": "3.3.3",
     "glob": "7.1.6",
     "ipfs": "0.60.0",
     "ipfs-coord": "7.1.6",
