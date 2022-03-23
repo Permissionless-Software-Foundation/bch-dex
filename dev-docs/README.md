@@ -74,7 +74,7 @@ Writing data follows these steps:
 - Tokens and BCH are held by a wallet which is under the controlled of `bch-dex`.
 - The _Client_ submits data to the POST `/order` REST API endpoint to create a new Order.
 - `bch-dex` will move the funds into a segregated UTXO, and will use that UTXO to create an Order. The Order data is written to the P2WDB. The Order data is also saved to the local MongoDB.
-- After submitting the data to the P2WDB, `bch-dex` will receive a webhook call to its POST `/offer` endpoint by the P2WDB. This event will trigger the import of the new data into the apps local Mongo database, and generate a new Offer model.
+- After submitting the data to the P2WDB, `bch-dex` will receive a webhook call to its POST `/p2wdb` endpoint by the P2WDB. This event will trigger the import of the new data into the apps local Mongo database, and generate a new Offer model.
 - This webhook event is mirrored by every instance of `bch-dex` on the network. Each P2WDB peer on the network will independently validate the new database entry and create a new Offer model.
 
 ## Taking an Offer
@@ -82,8 +82,8 @@ Writing data follows these steps:
 Users can browse the Offers tracked by a local `bch-dex` by using a *Client*. When they find an Offer they want to to take, they'll use some UI element that will send data to the POST `/offer/take` REST API endpoint. These series of steps happen:
 
 - The `bch-dex` checks to see if the wallet it controls has enough BCH to take the other side of the Offer. If it does, the funds for the offer are moved to a segregated UTXO.
-- The new UTXO is used to generate a *Counter Offer*, which contain a partially signed transaction saved as a hex string.
-- The *Counter Offer* is submitted to the P2WDB. This triggers a webhook event in every running instance of `bch-dex` on the network.
+- The new UTXO is used to generate a *Counter Offer*, which contains a partially signed transaction saved as a hex string.
+- The *Counter Offer* is uploaded to the P2WDB. This triggers a webhook event in every running instance of `bch-dex` on the network.
 - When the webhook is triggered, `bch-dex` will check to see if the *Counter Offer* matches an *Order* under its control. If a match is found, it will trigger an *Accept* event.
 
 ## Accepting a Counter Offer
@@ -92,6 +92,7 @@ This part of the process is automated and does not require input from the user.
 
 - When a *Counter Offer* is received that matches an *Order* tracked by the local copy of `bch-dex`, it will trigger the *Acceptance* phase.
 - In the *Acceptance* phase, the transaction will be checked to see if it matches the conditions in the original *Order*. If all checks pass, `bch-dex` will sign the transaction and broadcast it, completing the trade.
+- A 'garbage collection' function that runs periodically will delete Orders and Offers in bch-dex that have had their UTXO spent, automatically cleaning up stale trade data that is no longer valid.
 
 ## Maintenance
 
