@@ -15,7 +15,8 @@ class Order {
       buyOrSell,
       rateInBaseUnit,
       minUnitsToExchange,
-      numTokens
+      numTokens,
+      makerAddr
     } = data
 
     // Input Validation
@@ -40,6 +41,9 @@ class Order {
     if (!numTokens || typeof numTokens !== 'number') {
       throw new Error("Property 'numTokens' must be a number.")
     }
+    if (!makerAddr || typeof makerAddr !== 'string') {
+      throw new Error("Property 'makerAddr' must be a string.")
+    }
 
     const offerData = {
       messageType,
@@ -48,7 +52,8 @@ class Order {
       buyOrSell,
       rateInBaseUnit,
       minUnitsToExchange,
-      numTokens
+      numTokens,
+      makerAddr
     }
 
     return offerData

@@ -29,6 +29,10 @@ class OrderLib {
     try {
       console.log('createOrder(entryObj): ', entryObj)
 
+      // Specify the address to send payment.
+      entryObj.makerAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
+      console.log('entryObj.makerAddr: ', entryObj.makerAddr)
+
       // Input Validation
       const orderEntity = this.orderEntity.validate(entryObj)
       console.log('orderEntity: ', orderEntity)
@@ -51,10 +55,6 @@ class OrderLib {
       // Update the order with the new UTXO information.
       orderEntity.utxoTxid = utxoInfo.txid
       orderEntity.utxoVout = utxoInfo.vout
-
-      // Specify the address to send payment.
-      orderEntity.makerAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
-      console.log('orderEntity.makerAddr: ', orderEntity.makerAddr)
 
       // Add P2WDB specific flag for signaling that this is a new offer.
       orderEntity.dataType = 'offer'
