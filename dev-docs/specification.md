@@ -103,16 +103,16 @@ When an Offer is uploaded to the P2WDB, the following properties are added to th
 
 ### Counter Offer
 
-A Counter Offer is the other side of an Offer. It contains a partially signed transaction, created by the Taker. The Maker will review the Counter Offer before accepting and finalizing the trade.
+A Counter Offer is the other side of the trade, a mirror image to an Offer. It contains a partially signed transaction, created by the Taker. The Maker will review the Counter Offer before accepting and finalizing the trade.
 
-Counter Offers are not tracked via database models like Offers and Orders are. They are processed by `bch-dex` as soon as they are received. A garbage collection function will sweep the segregated UTXO used to generate a Counter Offer if it is not accepted after a period of time.
+Counter Offers are not tracked via database models like Offers and Orders are. They are processed by `bch-dex` as soon as they are received. A garbage collection function will be called periodically, to sweep the segregated UTXOs used to generate a Counter Offer back into the root address of the wallet, if it is not accepted after a period of time.
 
-To generate a Counter Offer, a segregated UTXO is created that matches the requirements in the Offer. A partially signed transaction is created that includes the Offered UTXO and the Counter Offer UTXO. The Taker signs the input consuming the Counter Offer UTXO. The partially signed transaction and other trade data is uploaded to P2WDB.
+To generate a Counter Offer, a segregated UTXO is created that matches the requirements in the Offer. A partially signed transaction is created that includes the Offer UTXO and the Counter Offer UTXO. The Taker signs the input consuming the Counter Offer UTXO. The partially signed transaction and other trade data is uploaded to P2WDB.
 
-When Counter Offer is uploaded to the P2WDB, the data must have the following properties:
+When the Counter Offer data is uploaded to the P2WDB, the data must have the following properties:
 
 - *partialTxHex* - A hexidecimal representation of the partially-signed transaction, which includes the UTXO in the Offer and a second UTXO for that matches the conditions in the Offer.
-- *dataType* - Must have a value of '`counter-offer`'
+- *dataType* - Must have a value of `counter-offer`
 
 
 ## Use Cases
@@ -129,7 +129,7 @@ Use cases are verbs or actions that is done _to_ an Entity or _between_ Entities
 
 - **`createOffer()`** - This method is triggered by a webhook from the P2WDB. It will take the data provided by the P2WDB and create a new Offer entity in the local database.
 - **`listOffers()`** - Returns a list of all the active Offers tracked by `bch-dex`.
-- **`takeOffer()`** - Generate a segregated UTXO and partially signed transaction and upload the Counter Offer data to the P2WDB.
+- **`takeOffer()`** - Generate a segregated UTXO and partially signed transaction, then upload the Counter Offer data to the P2WDB.
 - **`ensureFunds()`** - Ensure the wallet has enough BCH and tokens to make a Counter Offer.
 - **`findOfferByHash()`** - Given a P2WDB CID 'hash', this function will return the corresponding Offer model associated with that CID.
 - **`acceptCounterOffer()`** - This function is triggered by the P2WDB webhook REST API handler. When a Counter Offer is passed to `bch-dex` by the P2WDB, the data is then passed to this function. It does due diligence on the Counter Offer, then signs and broadcasts the transaction to accept the Counter Offer.
@@ -140,7 +140,7 @@ Controllers are inputs to the system. When a controller is activated, it causes 
 
 ### Orders
 
-- **POST /order** - This POST REST API endpoint can be triggered by the Client or a simple curl call. It passes in the data needed for `bch-dex` to generate and track a new Order, then submit the data to the P2WDB to generate an Offer that is tracked by all other instances of `bch-dex`.
+- **POST /order** - This POST REST API endpoint can be triggered by the Client or a simple curl call. It passes in the data needed for `bch-dex` to generate and track a new Order, then submits the data to the P2WDB to generate an Offer that is tracked by all other instances of `bch-dex` on the network.
 
 ### Offers
 
@@ -150,7 +150,7 @@ Controllers are inputs to the system. When a controller is activated, it causes 
 
 ### P2WDB
 
-- **POST /p2wdb** - This POST REST API endpoint will be called by a webhook generated from the P2WDB. This will notify the `bch-dex` that a new entry has been added to the P2WDB that matches the `appId` of `swap-<chain>`, where `<chain>` has a value of `avax`, `bch`, or `ecash`. It's a new entry that should be evaluated for inclusion in the `bch-dex` local database. Based on the `dataType` property, the data is routed to either create a new Offer or a new Counter Offer.
+- **POST /p2wdb** - This POST REST API endpoint will be called by a webhook generated from the P2WDB. This will notify the `bch-dex` that a new entry has been added to the P2WDB that matches the `appId` of `swap-<chain>`, where `<chain>` has a value of `avax`, `bch`, or `ecash`. It's a new entry that should be evaluated for inclusion in the `bch-dex` local database. Based on the `dataType` property, the data is routed to either create a new Offer or to process a new Counter Offer.
 
 ## Adapters
 
