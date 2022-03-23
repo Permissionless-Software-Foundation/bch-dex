@@ -263,7 +263,8 @@ describe('#wallet', () => {
         hdIndex: 6
       })
       uut.bchWallet = {
-        sendTokens: async () => 'fake-txid'
+        sendTokens: async () => 'fake-txid',
+        getUtxos: async () => {}
       }
 
       const inObj = {
