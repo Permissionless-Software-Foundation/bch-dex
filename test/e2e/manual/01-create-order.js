@@ -18,8 +18,8 @@ async function start () {
       tokenId:
         'a4fb5c2da1aa064e25018a43f9165040071d9e984ba190c222a7f59053af84b2',
       buyOrSell: 'sell',
-      rateInSats: 1000,
-      minSatsToExchange: 1000,
+      rateInBaseUnit: 5000,
+      minUnitsToExchange: 5000,
       numTokens: 1
     }
 

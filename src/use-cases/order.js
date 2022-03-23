@@ -27,7 +27,7 @@ class OrderLib {
   // Create a new order model and add it to the Mongo database.
   async createOrder (entryObj) {
     try {
-      // console.log('createOrder(entryObj): ', entryObj)
+      console.log('createOrder(entryObj): ', entryObj)
 
       // Input Validation
       const orderEntity = this.orderEntity.validate(entryObj)
@@ -37,7 +37,11 @@ class OrderLib {
       await this.ensureFunds(orderEntity)
 
       // Move the tokens to holding address.
-      const utxoInfo = await this.moveTokens(orderEntity)
+      const moveObj = {
+        tokenId: orderEntity.tokenId,
+        qty: orderEntity.numTokens
+      }
+      const utxoInfo = await this.adapters.wallet.moveTokens(moveObj)
       console.log('utxoInfo: ', utxoInfo)
 
       // Update the UTXO store for the wallet.
@@ -47,7 +51,13 @@ class OrderLib {
       // Update the order with the new UTXO information.
       orderEntity.utxoTxid = utxoInfo.txid
       orderEntity.utxoVout = utxoInfo.vout
-      orderEntity.hdIndex = utxoInfo.hdIndex
+
+      // Specify the address to send payment.
+      orderEntity.makerAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
+      console.log('orderEntity.makerAddr: ', orderEntity.makerAddr)
+
+      // Add P2WDB specific flag for signaling that this is a new offer.
+      orderEntity.dataType = 'offer'
 
       // Add order to P2WDB.
       const p2wdbObj = {
@@ -59,6 +69,7 @@ class OrderLib {
       // console.log('hash: ', hash)
 
       // Create a MongoDB model to hold the Order
+      orderEntity.hdIndex = utxoInfo.hdIndex
       orderEntity.p2wdbHash = hash
       console.log(`creating new order model: ${JSON.stringify(orderEntity, null, 2)}`)
       const order = new this.OrderModel(orderEntity)
@@ -67,36 +78,8 @@ class OrderLib {
       return hash
     } catch (err) {
       // console.log("Error in use-cases/entry.js/createEntry()", err.message)
-      wlogger.error('Error in use-cases/entry.js/createOrder())')
-      throw err
-    }
-  }
-
-  // Move the tokens indicated in the order to a temporary holding address.
-  // This will generate the UTXO used in the Signal message. This function
-  // moves the funds and returns the UTXO information.
-  async moveTokens (orderEntity) {
-    try {
-      const keyPair = await this.adapters.wallet.getKeyPair()
-      console.log('keyPair: ', keyPair)
-
-      const receiver = {
-        address: keyPair.cashAddress,
-        tokenId: orderEntity.tokenId,
-        qty: orderEntity.numTokens
-      }
-
-      const txid = await this.adapters.wallet.bchWallet.sendTokens(receiver, 3)
-
-      const utxoInfo = {
-        txid,
-        vout: 1,
-        hdIndex: keyPair.hdIndex
-      }
-
-      return utxoInfo
-    } catch (err) {
-      console.error('Error in moveTokens(): ', err)
+      wlogger.error('Error in use-cases/createOrder())')
+      console.log('error entryObj: ', entryObj)
       throw err
     }
   }
@@ -149,6 +132,29 @@ class OrderLib {
       return true
     } catch (err) {
       console.error('Error in ensureFunds()')
+      throw err
+    }
+  }
+
+  // Retrieve an Order model from the database. Find it by its P2WDB CID.
+  async findOrderByHash (p2wdbHash) {
+    try {
+      if (typeof p2wdbHash !== 'string' || !p2wdbHash) {
+        throw new Error('p2wdbHash must be a string')
+      }
+
+      const order = await this.OrderModel.findOne({ p2wdbHash })
+
+      if (!order) {
+        throw new Error('order not found')
+      }
+
+      const orderObject = order.toObject()
+      // return this.offerEntity.validateFromModel(offerObject)
+
+      return orderObject
+    } catch (err) {
+      console.error('Error in findOrder(): ', err)
       throw err
     }
   }

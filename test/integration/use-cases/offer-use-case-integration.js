@@ -24,27 +24,6 @@ describe('#offer-use-case.js', () => {
   })
 
   describe('#ensureFunds', () => {
-    it('should throw error if wallet does not have enough funds', async () => {
-      try {
-        const offerEntity = {
-          lokadId: 'SWP',
-          messageType: 1,
-          messageClass: 1,
-          tokenId: 'token-id',
-          buyOrSell: 'sell',
-          rateInSats: 1000,
-          minSatsToExchange: 1250,
-          numTokens: 1
-        }
-
-        await uut.ensureFunds(offerEntity)
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        assert.include(err.message, 'App wallet does not have enough tokens to satisfy the SELL offer.')
-      }
-    })
-
     it('should return true if wallet has enough funds', async () => {
       const offerEntity = {
         lokadId: 'SWP',
@@ -52,8 +31,8 @@ describe('#offer-use-case.js', () => {
         messageClass: 1,
         tokenId: 'a4fb5c2da1aa064e25018a43f9165040071d9e984ba190c222a7f59053af84b2',
         buyOrSell: 'sell',
-        rateInSats: 1000,
-        minSatsToExchange: 1250,
+        rateInBaseUnit: 1000,
+        minUnitsToExchange: 1250,
         numTokens: 1
       }
 

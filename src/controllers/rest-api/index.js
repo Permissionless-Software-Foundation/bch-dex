@@ -14,6 +14,7 @@ const LogsRESTController = require('./logs')
 const EntryRouter = require('./entry')
 const OfferRouter = require('./offer')
 const OrderRouter = require('./order')
+const P2WDBRouter = require('./p2wdb')
 
 class RESTControllers {
   constructor (localConfig = {}) {
@@ -65,6 +66,9 @@ class RESTControllers {
 
     const orderRouter = new OrderRouter(dependencies)
     orderRouter.attach(app)
+
+    const p2wdbRouter = new P2WDBRouter(dependencies)
+    p2wdbRouter.attach(app)
   }
 }
 

@@ -77,7 +77,7 @@ describe('#Order-Entity', () => {
       }
     })
 
-    it('should throw an error if rateInSats is not included', () => {
+    it('should throw an error if rateInBaseUnit is not included', () => {
       try {
         const data = {
           messageType: 1,
@@ -90,26 +90,26 @@ describe('#Order-Entity', () => {
         // console.log(err)
         assert.include(
           err.message,
-          "Property 'rateInSats' must be an integer number."
+          "Property 'rateInBaseUnit' must be an integer number."
         )
       }
     })
 
-    it('should throw an error if minSatsToExchange is not included', () => {
+    it('should throw an error if minUnitsToExchange is not included', () => {
       try {
         const data = {
           messageType: 1,
           messageClass: 1,
           tokenId: 'fakeId',
           buyOrSell: 'buy',
-          rateInSats: 1000
+          rateInBaseUnit: 1000
         }
         uut.validate(data)
       } catch (err) {
         // console.log(err)
         assert.include(
           err.message,
-          "Property 'minSatsToExchange' must be an integer number."
+          "Property 'minUnitsToExchange' must be an integer number."
         )
       }
     })
@@ -121,8 +121,8 @@ describe('#Order-Entity', () => {
           messageClass: 1,
           tokenId: 'fakeId',
           buyOrSell: 'buy',
-          rateInSats: 1000,
-          minSatsToExchange: 350
+          rateInBaseUnit: 1000,
+          minUnitsToExchange: 350
         }
         uut.validate(data)
       } catch (err) {

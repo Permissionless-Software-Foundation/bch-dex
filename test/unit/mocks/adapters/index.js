@@ -126,7 +126,8 @@ const wallet = {
   getKeyPair: async () => {
     return { cashAddress: 'fakeAddr', wif: 'fakeWif', hdIndex: 1 }
   },
-  bchWallet: new MockBchWallet()
+  bchWallet: new MockBchWallet(),
+  moveTokens: async () => {}
 }
 
 const p2wdb = {

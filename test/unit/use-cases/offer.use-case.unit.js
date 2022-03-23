@@ -11,6 +11,7 @@ const sinon = require('sinon')
 
 // Unit under test (uut)
 const OfferLib = require('../../../src/use-cases/offer')
+const OrderUseCase = require('../../../src/use-cases/order')
 const adapters = require('../mocks/adapters')
 
 describe('#offer-use-case', () => {
@@ -25,7 +26,8 @@ describe('#offer-use-case', () => {
   beforeEach(() => {
     sandbox = sinon.createSandbox()
 
-    uut = new OfferLib({ adapters })
+    const order = new OrderUseCase({ adapters })
+    uut = new OfferLib({ adapters, order })
   })
 
   afterEach(() => sandbox.restore())
@@ -87,12 +89,13 @@ describe('#offer-use-case', () => {
           tokenId:
             '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
           buyOrSell: 'sell',
-          rateInSats: 1000,
-          minSatsToExchange: 10,
+          rateInBaseUnit: 1000,
+          minUnitsToExchange: 10,
           numTokens: 0.02,
           utxoTxid:
             '241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87',
-          utxoVout: 0
+          utxoVout: 0,
+          makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00'
         },
         timestamp: '2021-09-20T17:54:26.395Z',
         localTimeStamp: '9/20/2021, 10:54:26 AM',
