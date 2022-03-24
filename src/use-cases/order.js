@@ -158,6 +158,50 @@ class OrderLib {
       throw err
     }
   }
+
+  // This function is called by the garbage collection timer controller. It
+  // checks the UTXO associated with each Order in the database. If the UTXO
+  // has been spent, the Order is deleted from the database.
+  async removeStaleOrders () {
+    try {
+      // Get all Orders in the database.
+      const orders = await this.OrderModel.find({})
+      console.log('orders: ', orders)
+
+      // Loop through each Order and ensure the UTXO is still valid.
+      for (let i = 0; i < orders.length; i++) {
+        const thisOrder = orders[i]
+
+        let utxoStatus = null
+        try {
+          // Get the status of the UTXO associate with this Order.
+          utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
+            thisOrder.utxoTxid,
+            thisOrder.utxoVout
+          )
+          console.log('utxoStatus: ', utxoStatus)
+        } catch (err) {
+          // Handle corner case of bad-data in the Order model.
+          if (err.message.includes('txid needs to be a proper transaction ID')) {
+            console.log(`Deleting Order with bad data: ${JSON.stringify(thisOrder, null, 2)}`)
+            await thisOrder.remove()
+            continue
+          } else {
+            throw err
+          }
+        }
+
+        // If the Order UTXO is spent, delete the Order model.
+        if (utxoStatus === null) {
+          console.log(`Spent UTXO detected. Deleting this Order: ${JSON.stringify(thisOrder, null, 2)}`)
+          await thisOrder.remove()
+        }
+      }
+    } catch (err) {
+      console.error('Error in removeStaleOrders()')
+      throw err
+    }
+  }
 }
 
 module.exports = OrderLib

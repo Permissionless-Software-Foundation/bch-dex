@@ -6,18 +6,12 @@
 
 // Public npm libraries.
 
-// Load the Clean Architecture Adapters library
+// Local libraries
 const Adapters = require('../adapters')
-
-// Load the JSON RPC Controller.
 const JSONRPC = require('./json-rpc')
-
-// Load the Clean Architecture Use Case libraries.
 const UseCases = require('../use-cases')
-// const useCases = new UseCases({ adapters })
-
-// Load the REST API Controllers.
 const RESTControllers = require('./rest-api')
+const TimerControllers = require('./timer-controllers')
 
 class Controllers {
   constructor (localConfig = {}) {
@@ -33,6 +27,7 @@ class Controllers {
     // this.attachRESTControllers(app)
 
     // this.attachRPCControllers()
+    this.timerControllers = new TimerControllers({ adapters: this.adapters, useCases: this.useCases })
   }
 
   // Top-level function for this library.
