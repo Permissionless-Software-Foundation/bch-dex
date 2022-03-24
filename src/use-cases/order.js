@@ -164,9 +164,12 @@ class OrderLib {
   // has been spent, the Order is deleted from the database.
   async removeStaleOrders () {
     try {
+      const now = new Date()
+      console.log(`Starting garbage collection for Orders at ${now.toLocaleString()}`)
+
       // Get all Orders in the database.
       const orders = await this.OrderModel.find({})
-      console.log('orders: ', orders)
+      // console.log('orders: ', orders)
 
       // Loop through each Order and ensure the UTXO is still valid.
       for (let i = 0; i < orders.length; i++) {
@@ -179,7 +182,7 @@ class OrderLib {
             thisOrder.utxoTxid,
             thisOrder.utxoVout
           )
-          console.log('utxoStatus: ', utxoStatus)
+          // console.log('utxoStatus: ', utxoStatus)
         } catch (err) {
           // Handle corner case of bad-data in the Order model.
           if (err.message.includes('txid needs to be a proper transaction ID')) {

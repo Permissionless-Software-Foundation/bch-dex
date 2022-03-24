@@ -31,7 +31,8 @@ class TimerControllers {
 
   // Start all the time-based controllers.
   startTimers () {
-    setInterval(this.gcOrders, 20000)
+    setInterval(this.gcOrders, 60000 * 5)
+    setInterval(this.gcOffers, 60000 * 5)
   }
 
   // Garbage Collect the Orders.
@@ -41,6 +42,16 @@ class TimerControllers {
     } catch (err) {
       // Do not throw an error. This is a top-level function.
       console.log('Error in timer-controllers.js/gcOrders(): ', err)
+    }
+  }
+
+  // Garbage Collect the Offers.
+  gcOffers () {
+    try {
+      _this.useCases.offer.removeStaleOffers()
+    } catch (err) {
+      // Do not throw an error. This is a top-level function.
+      console.log('Error in timer-controllers.js/gcOffers(): ', err)
     }
   }
 }
