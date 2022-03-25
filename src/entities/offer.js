@@ -28,7 +28,8 @@ class OfferEntity {
       utxoTxid,
       utxoVout,
       offerStatus,
-      makerAddr
+      makerAddr,
+      ticker
     } = offerData.data
 
     // Input Validation
@@ -65,6 +66,9 @@ class OfferEntity {
     if (!makerAddr || typeof makerAddr !== 'string') {
       throw new Error("Property 'makerAddr' must be a string.")
     }
+    if (!ticker || typeof ticker !== 'string') {
+      throw new Error("Property 'ticker' must be a string.")
+    }
 
     const validatedOfferData = {
       messageType,
@@ -81,7 +85,8 @@ class OfferEntity {
       txid: offerData.txid,
       p2wdbHash: offerData.hash,
       offerStatus: offerStatus || this.offerStatus[0],
-      makerAddr
+      makerAddr,
+      ticker
     }
 
     return validatedOfferData

@@ -6,6 +6,7 @@ const Offer = new mongoose.Schema({
   tokenId: { type: String },
   utxoTxid: { type: String },
   utxoVout: { type: Number },
+  ticker: { type: String },
 
   // Trade data
   buyOrSell: { type: String },

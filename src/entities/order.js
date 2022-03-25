@@ -16,7 +16,8 @@ class Order {
       rateInBaseUnit,
       minUnitsToExchange,
       numTokens,
-      makerAddr
+      makerAddr,
+      ticker
     } = data
 
     // Input Validation
@@ -44,6 +45,9 @@ class Order {
     if (!makerAddr || typeof makerAddr !== 'string') {
       throw new Error("Property 'makerAddr' must be a string.")
     }
+    if (!ticker || typeof ticker !== 'string') {
+      throw new Error("Property 'ticker' must be a string.")
+    }
 
     const offerData = {
       messageType,
@@ -53,7 +57,8 @@ class Order {
       rateInBaseUnit,
       minUnitsToExchange,
       numTokens,
-      makerAddr
+      makerAddr,
+      ticker
     }
 
     return offerData

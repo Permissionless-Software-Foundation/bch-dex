@@ -33,6 +33,11 @@ class OrderLib {
       entryObj.makerAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
       console.log('entryObj.makerAddr: ', entryObj.makerAddr)
 
+      // Get Ticker for token ID.
+      const tokenData = await this.adapters.wallet.bchWallet.getTxData([entryObj.tokenId])
+      // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
+      entryObj.ticker = tokenData[0].tokenTicker
+
       // Input Validation
       const orderEntity = this.orderEntity.validate(entryObj)
       console.log('orderEntity: ', orderEntity)
