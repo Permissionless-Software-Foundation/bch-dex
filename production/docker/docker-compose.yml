@@ -3,18 +3,18 @@
 version: '3.9'
 
 services:
-  mongo-ipfs-service:
+  mongo-p2wdb-service:
     image: mongo
-    container_name: mongo-ipfs-service
+    container_name: mongo-p2wdb-service
     ports:
-      - '5555:27017' # <host port>:<container port>
+      - '5666:27017' # <host port>:<container port>
     volumes:
       - ../data/database:/data/db
     command: mongod --logpath=/dev/null # -- quiet
     restart: always
 
   ipfs:
-    image: ipfs/go-ipfs:v0.11.0
+    image: ipfs/go-ipfs:v0.12.0
     container_name: ipfs
     environment:
       MY_ENV_VAR: 'placeholder'
@@ -42,9 +42,53 @@ services:
       ]
     restart: always
 
-  ipfs-service:
-    build: .
-    container_name: ipfs-service
+  p2wdb:
+    build:
+      context: ./p2wdb/
+      dockerfile: Dockerfile
+    container_name: p2wdb
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+    mem_limit: 1gb
+    links:
+      - mongo-p2wdb-service
+    ports:
+      # <host port>:<container port>
+      - 5667:5667 # REST API
+      #- 5668:5668 # IPFS TCP port
+      #- 5669:5669 # IPFS WS Port
+    volumes:
+      - ../data/ipfsdata/p2wdb:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/p2wdb
+    restart: always
+
+  bch-dex:
+    build:
+      context: ./bch-dex/
+      dockerfile: Dockerfile
+    container_name: bch-dex
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+    mem_limit: 1000mb
+    links:
+      - mongo-p2wdb-service
+      - p2wdb
+    ports:
+      - '5700:5700' # <host port>:<container port>
+    # volumes:
+    #   - ../data/ipfsdata:/home/safeuser/ipfs-service-provider/.ipfsdata
+    #restart: always
+
+  dex-ui:
+    build:
+      context: ./bch-dex-ui/
+      dockerfile: Dockerfile
+    container_name: dex-ui
     logging:
       driver: 'json-file'
       options:
@@ -52,10 +96,9 @@ services:
         max-file: '10'
     mem_limit: 500mb
     links:
-      - mongo-ipfs-service
-      - ipfs
+      - bch-dex
     ports:
-      - '5010:5010' # <host port>:<container port>
-    volumes:
-      - ../data/ipfsdata:/home/safeuser/ipfs-service-provider/.ipfsdata
-    restart: always
+      - '4500:80' # <host port>:<container port>
+    # volumes:
+    #   - ../data/ipfsdata:/home/safeuser/ipfs-service-provider/.ipfsdata
+    #restart: always
