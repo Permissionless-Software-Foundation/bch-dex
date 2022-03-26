@@ -85,7 +85,7 @@ module.exports = {
   webhookService: process.env.WEBHOOKSERVICE
     ? process.env.WEBHOOKSERVICE
     : 'http://localhost:5010/webhook', // P2WDB.
-  p2wdbAppId: process.env.APP_ID ? process.env.APP_ID : 'bch-dex-test556',
+  p2wdbAppId: process.env.APP_ID ? process.env.APP_ID : 'bch-dex-test557',
   webhookTarget: process.env.WEBHOOKTARGET
     ? process.env.WEBHOOKTARGET
     : 'http://localhost:5700/order',
