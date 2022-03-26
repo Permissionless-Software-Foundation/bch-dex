@@ -4,7 +4,7 @@ version: '3.9'
 
 services:
   mongo-p2wdb-service:
-    image: mongo
+    image: mongo:4.4
     container_name: mongo-p2wdb-service
     ports:
       - '5666:27017' # <host port>:<container port>

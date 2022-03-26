@@ -28,6 +28,7 @@ class OrderLib {
   async createOrder (entryObj) {
     try {
       console.log('createOrder(entryObj): ', entryObj)
+      // if (!entryObj) return
 
       // Specify the address to send payment.
       entryObj.makerAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
