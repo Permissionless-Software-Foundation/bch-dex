@@ -48,6 +48,13 @@ class OfferUseCases {
 
       // console.log('this.adapters.bchjs: ', this.adapters.bchjs)
 
+      // Input Validation
+      // TODO: This is a hack. Find a better way to protect against the corner-
+      // case of counter-offers getting routed here.
+      if (offerObj.data.dataType === 'counter-offer') {
+        console.log('WARN: Counter Offer innappropriately routed to createOffer()')
+      }
+
       // Verify that UTXO in offer is unspent. If it is spent, then ignore the
       // offer.
       const txid = offerObj.data.utxoTxid
