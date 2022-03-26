@@ -1,0 +1,105 @@
+# Start the service with the command 'docker-compose up -d'
+
+version: '3.9'
+
+services:
+  mongo-p2wdb-service:
+    image: mongo:4.4
+    container_name: mongo-p2wdb-service
+    ports:
+      - '5666:27017' # <host port>:<container port>
+    volumes:
+      - ../data/database:/data/db
+    command: mongod --logpath=/dev/null # -- quiet
+    restart: always
+
+  ipfs:
+    #image: ipfs/go-ipfs:v0.12.0
+    image: odanado/go-ipfs:v0.11.0
+    container_name: ipfs
+    environment:
+      MY_ENV_VAR: 'placeholder'
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+    mem_limit: 2000mb
+    ports:
+      - 4001:4001
+      - 172.17.0.1:5001:5001
+      - 172.17.0.1:8080:8080
+    volumes:
+      - ../data/go-ipfs/data:/data/ipfs
+      - ../data/go-ipfs/export:/export
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#command
+    # https://github.com/ipfs/go-ipfs/blob/91c52657166bcf86f2476926e4fe56694dc26562/Dockerfile#L115
+    command:
+      [
+        'daemon',
+        '--migrate=true',
+        '--agent-version-suffix=docker',
+        '--enable-pubsub-experiment'
+      ]
+    restart: always
+
+  p2wdb:
+    build:
+      context: ./p2wdb/
+      dockerfile: Dockerfile
+    container_name: p2wdb
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+    mem_limit: 1gb
+    links:
+      - mongo-p2wdb-service
+    ports:
+      # <host port>:<container port>
+      - 5667:5667 # REST API
+      #- 5668:5668 # IPFS TCP port
+      #- 5669:5669 # IPFS WS Port
+    volumes:
+      - ../data/ipfsdata/p2wdb:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/p2wdb
+    restart: always
+
+  bch-dex:
+    build:
+      context: ./bch-dex/
+      dockerfile: Dockerfile
+    container_name: bch-dex
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+    mem_limit: 1000mb
+    links:
+      - mongo-p2wdb-service
+      - p2wdb
+    ports:
+      - '5700:5700' # <host port>:<container port>
+    # volumes:
+    #   - ../data/ipfsdata:/home/safeuser/ipfs-service-provider/.ipfsdata
+    #restart: always
+
+  dex-ui:
+    build:
+      context: ./bch-dex-ui/
+      dockerfile: Dockerfile
+    container_name: dex-ui
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '10'
+    mem_limit: 500mb
+    links:
+      - bch-dex
+    ports:
+      - '4500:80' # <host port>:<container port>
+    # volumes:
+    #   - ../data/ipfsdata:/home/safeuser/ipfs-service-provider/.ipfsdata
+    #restart: always
