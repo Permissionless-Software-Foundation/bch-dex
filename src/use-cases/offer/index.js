@@ -29,7 +29,7 @@ class OfferUseCases {
     this.orderUseCase = localConfig.order
     if (!this.orderUseCase) {
       throw new Error(
-        'Instance of Order Use Cases must be passed in when instantiating Offer Use Cases library.'
+        'Instance of Offer Use Cases must be passed in when instantiating Offer Use Cases library.'
       )
     }
 
@@ -296,6 +296,53 @@ class OfferUseCases {
       return txid
     } catch (err) {
       console.error('Error in acceptCounterOffer()')
+      throw err
+    }
+  }
+
+  // This function is called by the garbage collection timer controller. It
+  // checks the UTXO associated with each Offer in the database. If the UTXO
+  // has been spent, the Offer is deleted from the database.
+  async removeStaleOffers () {
+    try {
+      const now = new Date()
+      console.log(`Starting garbage collection for Offers at ${now.toLocaleString()}`)
+
+      // Get all Offers in the database.
+      const offers = await this.OfferModel.find({})
+      // console.log('offers: ', offers)
+
+      // Loop through each Offer and ensure the UTXO is still valid.
+      for (let i = 0; i < offers.length; i++) {
+        const thisOffer = offers[i]
+
+        let utxoStatus = null
+        try {
+          // Get the status of the UTXO associate with this Offer.
+          utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
+            thisOffer.utxoTxid,
+            thisOffer.utxoVout
+          )
+          // console.log('utxoStatus: ', utxoStatus)
+        } catch (err) {
+          // Handle corner case of bad-data in the Offer model.
+          if (err.message.includes('txid needs to be a proper transaction ID')) {
+            console.log(`Deleting Offer with bad data: ${JSON.stringify(thisOffer, null, 2)}`)
+            await thisOffer.remove()
+            continue
+          } else {
+            throw err
+          }
+        }
+
+        // If the Offer UTXO is spent, delete the Offer model.
+        if (utxoStatus === null) {
+          console.log(`Spent UTXO detected. Deleting this Offer: ${JSON.stringify(thisOffer, null, 2)}`)
+          await thisOffer.remove()
+        }
+      }
+    } catch (err) {
+      console.error('Error in removeStaleOffers()')
       throw err
     }
   }

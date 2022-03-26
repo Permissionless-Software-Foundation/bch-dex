@@ -29,6 +29,11 @@ class MockBchWallet {
     }
     this.getUtxos = async () => {
     }
+    this.getTxData = async () => {
+      return [{
+        tokenTicker: 'TROUT'
+      }]
+    }
 
     // Environment variable is used by wallet-balance.unit.js to force an error.
     if (process.env.NO_UTXO) {

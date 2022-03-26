@@ -33,6 +33,11 @@ class OrderLib {
       entryObj.makerAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
       console.log('entryObj.makerAddr: ', entryObj.makerAddr)
 
+      // Get Ticker for token ID.
+      const tokenData = await this.adapters.wallet.bchWallet.getTxData([entryObj.tokenId])
+      // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
+      entryObj.ticker = tokenData[0].tokenTicker
+
       // Input Validation
       const orderEntity = this.orderEntity.validate(entryObj)
       console.log('orderEntity: ', orderEntity)
@@ -155,6 +160,53 @@ class OrderLib {
       return orderObject
     } catch (err) {
       console.error('Error in findOrder(): ', err)
+      throw err
+    }
+  }
+
+  // This function is called by the garbage collection timer controller. It
+  // checks the UTXO associated with each Order in the database. If the UTXO
+  // has been spent, the Order is deleted from the database.
+  async removeStaleOrders () {
+    try {
+      const now = new Date()
+      console.log(`Starting garbage collection for Orders at ${now.toLocaleString()}`)
+
+      // Get all Orders in the database.
+      const orders = await this.OrderModel.find({})
+      // console.log('orders: ', orders)
+
+      // Loop through each Order and ensure the UTXO is still valid.
+      for (let i = 0; i < orders.length; i++) {
+        const thisOrder = orders[i]
+
+        let utxoStatus = null
+        try {
+          // Get the status of the UTXO associate with this Order.
+          utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
+            thisOrder.utxoTxid,
+            thisOrder.utxoVout
+          )
+          // console.log('utxoStatus: ', utxoStatus)
+        } catch (err) {
+          // Handle corner case of bad-data in the Order model.
+          if (err.message.includes('txid needs to be a proper transaction ID')) {
+            console.log(`Deleting Order with bad data: ${JSON.stringify(thisOrder, null, 2)}`)
+            await thisOrder.remove()
+            continue
+          } else {
+            throw err
+          }
+        }
+
+        // If the Order UTXO is spent, delete the Order model.
+        if (utxoStatus === null) {
+          console.log(`Spent UTXO detected. Deleting this Order: ${JSON.stringify(thisOrder, null, 2)}`)
+          await thisOrder.remove()
+        }
+      }
+    } catch (err) {
+      console.error('Error in removeStaleOrders()')
       throw err
     }
   }

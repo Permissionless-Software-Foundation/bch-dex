@@ -253,12 +253,14 @@ describe('#Offer-Entity', () => {
             '241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87',
           utxoVout: 0,
           offerStatus: 'posted',
-          makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00'
+          makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+          ticker: 'TROUT'
         },
         timestamp: '2021-09-20T17:54:26.395Z',
         localTimeStamp: '9/20/2021, 10:54:26 AM',
         txid: '46f50f2a0cf44e3ed70dfb0618ef3ebfee57aabcf229b5d2d17c07322b54a8d7',
         hash: 'zdpuB2X25AZCKo3wpr4sSbw44vqPWJRqcxWQRHZccK5BdtoGD'
+
       }
 
       const result = uut.validate(offerObj)
