@@ -224,6 +224,12 @@ class OfferUseCases {
       return true
     } catch (err) {
       console.error('Error in ensureFunds()')
+
+      // Debugging
+      try {
+        console.error(`Error with this address: ${this.adapters.wallet.bchWallet.walletInfo.cashAddress}`)
+      } catch (err) { /* exit quietly */ }
+
       throw err
     }
   }
