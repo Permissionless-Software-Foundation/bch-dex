@@ -82,7 +82,7 @@ services:
       - '5700:5700' # <host port>:<container port>
     # volumes:
     #   - ../data/ipfsdata:/home/safeuser/ipfs-service-provider/.ipfsdata
-    #restart: always
+    restart: always
 
   dex-ui:
     build:
@@ -101,4 +101,4 @@ services:
       - '4500:80' # <host port>:<container port>
     # volumes:
     #   - ../data/ipfsdata:/home/safeuser/ipfs-service-provider/.ipfsdata
-    #restart: always
+    restart: always
