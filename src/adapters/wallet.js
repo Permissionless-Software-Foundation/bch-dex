@@ -69,6 +69,8 @@ class WalletAdapter {
   // and pass the bch-js information to the minimal-slp-wallet library.
   async instanceWallet (walletData) {
     try {
+      console.log(`instanceWallet() walletData: ${JSON.stringify(walletData, null, 2)}`)
+
       // TODO: throw error if wallet data is not passed in.
 
       const advancedConfig = {}
@@ -87,6 +89,7 @@ class WalletAdapter {
       // Wait for wallet to initialize.
       await this.bchWallet.walletInfoPromise
       console.log(`BCH wallet initialized. Wallet address: ${this.bchWallet.walletInfo.cashAddress}`)
+      console.log(`this.bchWallet.walletInfo: ${JSON.stringify(this.bchWallet.walletInfo, null, 2)}`)
 
       return this.bchWallet
     } catch (err) {
