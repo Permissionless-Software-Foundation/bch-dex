@@ -8,6 +8,11 @@ This repository contains the back end code. The user interface is contained in t
 
 **Warning**: This repository is under active development. Things will be constantly changing and breaking.
 
+## Participate
+This is an open source project, and we encourage other JavaScript developers to participate in its creation and maintenance. We have two chat rooms for the community:
+- [Telegram Channel](https://t.me/psf_dex_dev)
+- [Gitter Channel](https://gitter.im/Permissionless-Software-Foundation/psf-dex-dev)
+
 ## Installation
 Running the DEX requires composition of these different software packages:
 - bch-dex - This repository is the back end software that tracks trade data on the network, generates [Offers and Counter Offers](https://github.com/Permissionless-Software-Foundation/bch-dex/tree/ct-unstable/dev-docs#definitions), and finalizes trades by accepting Counter Offers.
@@ -34,7 +39,18 @@ Building the Docker containers and getting the app working involve these steps:
 - Wait for the P2WDB to sync and populate bch-dex with trade data. You can monitor it with `docker logs --tail 20 -f p2wdb`.
 - Open a web browser and navigate the `http://localhost:4500`. You'll be able to see new Offers as they come in and are detected by bch-dex.
 - To take the other side of the trade, click the `Take` button in the UI.
-- You can add the 12-word mnemonic from the `wallet.json` file to the the web wallet, which will mirror your wallet in the UI.
+- You can add the 12-word mnemonic from the `wallet.json` file to the the web wallet, which will mirror your wallet in the UI, and allow you to perform basic wallet functions (send and receive BCH and tokens).
+
+### Applying Software Updates
+As this is an active project, software updates will happen frequently. To apply a software update, perform these steps.
+
+- Enter the `docker` or `rpi-docker` folder, depending on your hardware target.
+- Bring down the Docker containers with `docker-compose down`.
+- Pull in the software updates with `git pull`
+- Update dependencies with `npm install`
+- Rebuild the Docker containers with `docker-compose build --no-cache`
+- Clean up disk space by deleting old Docker images with `./cleanup-images.sh`
+- Start the Docker containers with `docker-compose up -d`
 
 ## License
 
