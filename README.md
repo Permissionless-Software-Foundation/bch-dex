@@ -27,6 +27,7 @@ Instructions for setting up Node.js, Docker, and Docker Compose can be found in 
 
 Building the Docker containers and getting the app working involve these steps:
 - Follow the direction in [this Gist](https://gist.github.com/christroutner/a39f656850dc022b60f25c9663dd1cdd) to install Node.js, Docker, and Docker Compose.
+- Clone the repository with `git clone https://github.com/Permissionless-Software-Foundation/bch-dex` and enter it with `cd bch-dex`.
 - Install dependencies by running `npm install`
 - Create a wallet by executing the [create-wallet.js script](./production/scripts/create-wallet.js) with `node create-wallet.js`
 - Move the `wallet.json` file to the [x86 Docker folder](./production/docker/bch-dex) or the [RPi Docker folder](./production/rpi-docker/bch-dex/) depending on your hardware target.
