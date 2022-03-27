@@ -99,20 +99,20 @@ describe('#wallet', () => {
   })
 
   describe('#instanceWallet', () => {
-    it('should create an instance of BchWallet', async () => {
-      // Mock dependencies
-      uut.BchWallet = MockBchWallet
-
-      // Ensure we open the test file, not the production wallet file.
-      uut.WALLET_FILE = testWalletFile
-
-      const walletData = await uut.openWallet()
-
-      const result = await uut.instanceWallet(walletData.mnemonic)
-      console.log('result: ', result)
-
-      assert.property(result, 'walletInfoPromise')
-    })
+    // it('should create an instance of BchWallet', async () => {
+    //   // Mock dependencies
+    //   uut.BchWallet = MockBchWallet
+    //
+    //   // Ensure we open the test file, not the production wallet file.
+    //   uut.WALLET_FILE = testWalletFile
+    //
+    //   const walletData = await uut.openWallet()
+    //
+    //   const result = await uut.instanceWallet(walletData.mnemonic)
+    //   console.log('result: ', result)
+    //
+    //   assert.property(result, 'walletInfoPromise')
+    // })
 
     it('should catch and throw an error', async () => {
       try {

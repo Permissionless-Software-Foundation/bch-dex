@@ -46,7 +46,22 @@ class OfferUseCases {
     try {
       console.log('Use Case createOffer(offerObj): ', offerObj)
 
+      // Return if Offer already exists in database with the same P2WDB CID.
+      try {
+        await this.findOfferByHash(offerObj.hash)
+
+        console.log('Offer already found in local database.')
+        return false
+      } catch (err) { /* exit quietly */ }
+
       // console.log('this.adapters.bchjs: ', this.adapters.bchjs)
+
+      // Input Validation
+      // TODO: This is a hack. Find a better way to protect against the corner-
+      // case of counter-offers getting routed here.
+      if (offerObj.data.dataType === 'counter-offer') {
+        console.log('WARN: Counter Offer innappropriately routed to createOffer()')
+      }
 
       // Verify that UTXO in offer is unspent. If it is spent, then ignore the
       // offer.
@@ -223,7 +238,13 @@ class OfferUseCases {
 
       return true
     } catch (err) {
-      console.error('Error in ensureFunds()')
+      console.error('Error in offer/index.js/ensureFunds()')
+
+      // Debugging
+      try {
+        console.error(`Error with this address: ${this.adapters.wallet.bchWallet.walletInfo.cashAddress}`)
+      } catch (err) { /* exit quietly */ }
+
       throw err
     }
   }
@@ -261,8 +282,14 @@ class OfferUseCases {
       // See if this instance of bch-dex is managing the Order associated with
       // the incoming Counter Offer.
       const orderHash = p2wdbData.data.offerHash
-      const orderData = await this.orderUseCase.findOrderByHash(orderHash)
-      console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
+      let orderData = {}
+      try {
+        orderData = await this.orderUseCase.findOrderByHash(orderHash)
+        console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
+      } catch (err) {
+        console.log('Order matching this Counter Offer is not managed by this instance of bch-dex. Exiting.')
+        return 'N/A'
+      }
 
       // Deserialize the partially signed transaction.
       const txHex = p2wdbData.data.partialTxHex

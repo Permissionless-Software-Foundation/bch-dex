@@ -26,7 +26,7 @@ export PORT=5700
 # bch-dex specific env vars
 export BCH_ENV=production
 export WEBHOOKSERVICE=http://172.17.0.1:5667/webhook
-export WEBHOOKTARGET=http://172.17.0.1:5700/order
+export WEBHOOKTARGET=http://172.17.0.1:5700/p2wdb
 export APP_ID=bch-dex-test557
 
 npm start

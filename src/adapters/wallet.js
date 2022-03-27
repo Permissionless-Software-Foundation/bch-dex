@@ -38,7 +38,7 @@ class WalletAdapter {
         walletData = await this.jsonFiles.readJSON(this.WALLET_FILE)
       } catch (err) {
         // Create a new wallet file if one does not already exist.
-        console.warn('Wallet file not found. Creating new wallet.json file.')
+        console.log('Wallet file not found. Creating new wallet.json file.')
 
         // Create a new wallet.
         // No-Update flag creates wallet without making any network calls.
@@ -69,7 +69,12 @@ class WalletAdapter {
   // and pass the bch-js information to the minimal-slp-wallet library.
   async instanceWallet (walletData) {
     try {
+      // console.log(`instanceWallet() walletData: ${JSON.stringify(walletData, null, 2)}`)
+
       // TODO: throw error if wallet data is not passed in.
+      if (!walletData.mnemonic) {
+        throw new Error('Wallet data is not formatted correctly. Can not read mnemonic in wallet file!')
+      }
 
       const advancedConfig = {}
       if (this.config.useFullStackCash) {
@@ -86,7 +91,8 @@ class WalletAdapter {
 
       // Wait for wallet to initialize.
       await this.bchWallet.walletInfoPromise
-      console.log('BCH wallet initialized.')
+      console.log(`BCH wallet initialized. Wallet address: ${this.bchWallet.walletInfo.cashAddress}`)
+      // console.log(`this.bchWallet.walletInfo: ${JSON.stringify(this.bchWallet.walletInfo, null, 2)}`)
 
       return this.bchWallet
     } catch (err) {
