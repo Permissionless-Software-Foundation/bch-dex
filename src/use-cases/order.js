@@ -35,11 +35,15 @@ class OrderLib {
       console.log('entryObj.makerAddr: ', entryObj.makerAddr)
 
       // Get Ticker for token ID.
+      // TODO: Move this below the orderEntity.validate() call.
       const tokenData = await this.adapters.wallet.bchWallet.getTxData([entryObj.tokenId])
       // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
       entryObj.ticker = tokenData[0].tokenTicker
 
       // Input Validation
+      // TODO: Remove ticker from validation.
+      // TODO: Rename validate() to inputValidate(). Create fullValidate() that
+      // validates a fully hydrated Order entity.
       const orderEntity = this.orderEntity.validate(entryObj)
       console.log('orderEntity: ', orderEntity)
 

@@ -46,6 +46,14 @@ class OfferUseCases {
     try {
       console.log('Use Case createOffer(offerObj): ', offerObj)
 
+      // Return if Offer already exists in database with the same P2WDB CID.
+      try {
+        await this.findOfferByHash(offerObj.hash)
+
+        console.log('Offer already found in local database.')
+        return false
+      } catch (err) { /* exit quietly */ }
+
       // console.log('this.adapters.bchjs: ', this.adapters.bchjs)
 
       // Input Validation
