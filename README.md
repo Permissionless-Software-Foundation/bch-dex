@@ -23,18 +23,18 @@ Running the DEX requires composition of these different software packages:
 
 The above software is orchestrated using [Docker](https://www.docker.com/) and Docker Compose. The target operating system is Ubuntu 20+, and the target hardware is amd64 (normal desktop PCs) and the arm64 (Raspberry Pi 4). Trying to operate this software on other operating systems or hardware is possible, but not supported.
 
-Instructions for setting up Docker and Docker Compose can be found in [this Gist](https://gist.github.com/christroutner/a39f656850dc022b60f25c9663dd1cdd). Walk-through videos can also be found on the [PSF Videos page](https://psfoundation.cash/video/).
+Instructions for setting up Node.js, Docker, and Docker Compose can be found in [this Gist](https://gist.github.com/christroutner/a39f656850dc022b60f25c9663dd1cdd). Walk-through videos can also be found on the [PSF Videos page](https://psfoundation.cash/video/).
 
 Building the Docker containers and getting the app working involve these steps:
 - Follow the direction in [this Gist](https://gist.github.com/christroutner/a39f656850dc022b60f25c9663dd1cdd) to install Node.js, Docker, and Docker Compose.
 - Install dependencies by running `npm install`
 - Create a wallet by executing the [create-wallet.js script](./production/scripts/create-wallet.js) with `node create-wallet.js`
-- Move the `wallet.json` file to the [x86 Docker folder](./production/docker/bch-dex) or the [RPi Docker folder](./production/docker/rpi-docker/bch-dex/) depending on your hardware target.
+- Move the `wallet.json` file to the [x86 Docker folder](./production/docker/bch-dex) or the [RPi Docker folder](./production/rpi-docker/bch-dex/) depending on your hardware target.
 - Change directory to the `docker` or `rpi-docker` folder depending on your hardware target.
 - Build the Docker containers with `docker-compose build --no-cache`.
 - Start the Docker containers with `docker-compose up -d`
-- Wait for the containers to run for about a minute, then bring them down with `docker-compose down`. That will create the needed folders in the `production/data`.
-- Copy the `swarm.key` into the `production/data/go-ipfs/data/`. This will allow the IPFS node to connect to the PSF private network.
+- Wait for the containers to run for about a minute, then bring them down with `docker-compose down`. That will create the needed folders in `production/data`.
+- Copy the `swarm.key` into the `production/data/go-ipfs/data/` directory. This will allow the IPFS node to connect to the PSF private network.
 - Bring the containers back up with `docker-compose up -d`.
 - Wait for the P2WDB to sync and populate bch-dex with trade data. You can monitor it with `docker logs --tail 20 -f p2wdb`.
 - Open a web browser and navigate the `http://localhost:4500`. You'll be able to see new Offers as they come in and are detected by bch-dex.
@@ -51,6 +51,8 @@ As this is an active project, software updates will happen frequently. To apply 
 - Rebuild the Docker containers with `docker-compose build --no-cache`
 - Clean up disk space by deleting old Docker images with `./cleanup-images.sh`
 - Start the Docker containers with `docker-compose up -d`
+
+Sometimes it may be necessary to delete the databases before applying a software update. This can be done by stopping the Docker containers and deleting the `production/data` directory. When the Docker containers are restarted, they will recreate that directory. The P2WDB will re-sync and bch-dex will be populated with fresh trade data.
 
 ## License
 
