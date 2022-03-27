@@ -77,7 +77,7 @@ class Adapters {
 
       // Open the wallet file
       const walletData = await this.wallet.openWallet()
-      // console.log('walletData: ', walletData)
+      console.log('walletData: ', walletData)
 
       // Instance the wallet.
       await this.wallet.instanceWallet(walletData, this.bchjs)

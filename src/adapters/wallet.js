@@ -34,11 +34,11 @@ class WalletAdapter {
 
       // Try to open the wallet.json file.
       try {
-        // console.log('this.WALLET_FILE: ', this.WALLET_FILE)
+        console.log('this.WALLET_FILE: ', this.WALLET_FILE)
         walletData = await this.jsonFiles.readJSON(this.WALLET_FILE)
       } catch (err) {
         // Create a new wallet file if one does not already exist.
-        console.warn('Wallet file not found. Creating new wallet.json file.')
+        console.log('Wallet file not found. Creating new wallet.json file.')
 
         // Create a new wallet.
         // No-Update flag creates wallet without making any network calls.
