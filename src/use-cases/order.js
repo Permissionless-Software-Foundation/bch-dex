@@ -160,7 +160,7 @@ class OrderLib {
 
       return orderObject
     } catch (err) {
-      console.error('Error in findOrder(): ', err)
+      console.error('Error in findOrder()')
       throw err
     }
   }

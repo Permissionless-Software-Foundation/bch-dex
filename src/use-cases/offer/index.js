@@ -274,8 +274,14 @@ class OfferUseCases {
       // See if this instance of bch-dex is managing the Order associated with
       // the incoming Counter Offer.
       const orderHash = p2wdbData.data.offerHash
-      const orderData = await this.orderUseCase.findOrderByHash(orderHash)
-      console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
+      let orderData = {}
+      try {
+        orderData = await this.orderUseCase.findOrderByHash(orderHash)
+        console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
+      } catch (err) {
+        console.log('Order matching this Counter Offer is not managed by this instance of bch-dex. Exiting.')
+        return 'N/A'
+      }
 
       // Deserialize the partially signed transaction.
       const txHex = p2wdbData.data.partialTxHex
