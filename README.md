@@ -23,7 +23,18 @@ Instructions for setting up Docker and Docker Compose can be found in [this Gist
 Building the Docker containers and getting the app working involve these steps:
 - Follow the direction in [this Gist](https://gist.github.com/christroutner/a39f656850dc022b60f25c9663dd1cdd) to install Node.js, Docker, and Docker Compose.
 - Install dependencies by running `npm install`
-
+- Create a wallet by executing the [create-wallet.js script](./production/scripts/create-wallet.js) with `node create-wallet.js`
+- Move the `wallet.json` file to the [x86 Docker folder](./production/docker/bch-dex) or the [RPi Docker folder](./production/docker/rpi-docker/bch-dex/) depending on your hardware target.
+- Change directory to the `docker` or `rpi-docker` folder depending on your hardware target.
+- Build the Docker containers with `docker-compose build --no-cache`.
+- Start the Docker containers with `docker-compose up -d`
+- Wait for the containers to run for about a minute, then bring them down with `docker-compose down`. That will create the needed folders in the `production/data`.
+- Copy the `swarm.key` into the `production/data/go-ipfs/data/`. This will allow the IPFS node to connect to the PSF private network.
+- Bring the containers back up with `docker-compose up -d`.
+- Wait for the P2WDB to sync and populate bch-dex with trade data. You can monitor it with `docker logs --tail 20 -f p2wdb`.
+- Open a web browser and navigate the `http://localhost:4500`. You'll be able to see new Offers as they come in and are detected by bch-dex.
+- To take the other side of the trade, click the `Take` button in the UI.
+- You can add the 12-word mnemonic from the `wallet.json` file to the the web wallet, which will mirror your wallet in the UI.
 
 ## License
 
