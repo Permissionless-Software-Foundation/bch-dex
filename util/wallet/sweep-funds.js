@@ -14,7 +14,7 @@ const BchTokenSweep = require('bch-token-sweep/index')
 const WalletAdapter = require('../../src/adapters/wallet')
 
 // Constants
-const EMTPY_ADDR_CUTOFF = 5
+const EMTPY_ADDR_CUTOFF = 15
 
 async function sweepFunds () {
   try {

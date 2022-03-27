@@ -86,7 +86,7 @@ class WalletAdapter {
 
       // Wait for wallet to initialize.
       await this.bchWallet.walletInfoPromise
-      console.log('BCH wallet initialized.')
+      console.log(`BCH wallet initialized. Wallet address: ${this.bchWallet.walletInfo.cashAddress}`)
 
       return this.bchWallet
     } catch (err) {

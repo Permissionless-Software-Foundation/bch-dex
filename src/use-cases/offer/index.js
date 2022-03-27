@@ -230,7 +230,7 @@ class OfferUseCases {
 
       return true
     } catch (err) {
-      console.error('Error in ensureFunds()')
+      console.error('Error in offer/index.js/ensureFunds()')
 
       // Debugging
       try {
