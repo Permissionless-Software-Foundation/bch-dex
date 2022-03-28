@@ -250,25 +250,25 @@ class OfferUseCases {
   }
 
   async findOfferByHash (p2wdbHash) {
-    try {
-      if (typeof p2wdbHash !== 'string' || !p2wdbHash) {
-        throw new Error('p2wdbHash must be a string')
-      }
-
-      const offer = await this.OfferModel.findOne({ p2wdbHash })
-
-      if (!offer) {
-        throw new Error('offer not found')
-      }
-
-      const offerObject = offer.toObject()
-      // return this.offerEntity.validateFromModel(offerObject)
-
-      return offerObject
-    } catch (err) {
-      console.error('Error in findOffer(): ', err)
-      throw err
+    // try {
+    if (typeof p2wdbHash !== 'string' || !p2wdbHash) {
+      throw new Error('p2wdbHash must be a string')
     }
+
+    const offer = await this.OfferModel.findOne({ p2wdbHash })
+
+    if (!offer) {
+      throw new Error('offer not found')
+    }
+
+    const offerObject = offer.toObject()
+    // return this.offerEntity.validateFromModel(offerObject)
+
+    return offerObject
+    // } catch (err) {
+    //   // console.error('Error in findOffer(): ', err)
+    //   throw err
+    // }
   }
 
   // This function is called by the P2WDB webhook REST API handler. When a
