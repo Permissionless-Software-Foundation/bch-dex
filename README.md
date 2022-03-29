@@ -8,6 +8,10 @@ This repository contains the back end code. The user interface is contained in t
 
 **Warning**: This repository is under active development. Things will be constantly changing and breaking.
 
+## Media
+- [High-level Overview of bch-dex](https://youtu.be/LVX8CLi4sHw) (Video)
+- [Developer walk-through for installing and hacking on bch-dex](https://youtu.be/T5XI43-SWJo) (Video)
+
 ## Participate
 This is an open source project, and we encourage other JavaScript developers to participate in its creation and maintenance. We have two chat rooms for the community:
 - [Telegram Channel](https://t.me/psf_dex_dev)
