@@ -34,7 +34,7 @@ Building the Docker containers and getting the app working involve these steps:
 - Clone the repository with `git clone https://github.com/Permissionless-Software-Foundation/bch-dex` and enter it with `cd bch-dex`.
 - Install dependencies by running `npm install`
 - Create a wallet by executing the [create-wallet.js script](./production/scripts/create-wallet.js) with `node create-wallet.js`
-- Move the `wallet.json` file to the [x86 Docker folder](./production/docker/bch-dex) or the [RPi Docker folder](./production/rpi-docker/bch-dex/) depending on your hardware target.
+- Move the `wallet.json` file to the `bch-dex` folder in either the [x86 Docker folder](./production/docker/bch-dex) or the [RPi Docker folder](./production/rpi-docker/bch-dex/) depending on your hardware target.
 - Change directory to the `docker` or `rpi-docker` folder depending on your hardware target.
 - Build the Docker containers with `docker-compose build --no-cache`.
 - Start the Docker containers with `docker-compose up -d`
