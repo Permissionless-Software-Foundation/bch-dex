@@ -30,33 +30,37 @@ The above software is orchestrated using [Docker](https://www.docker.com/) and D
 Instructions for setting up Node.js, Docker, and Docker Compose can be found in [this Gist](https://gist.github.com/christroutner/a39f656850dc022b60f25c9663dd1cdd). Walk-through videos can also be found on the [PSF Videos page](https://psfoundation.cash/video/).
 
 Building the Docker containers and getting the app working involve these steps:
-- Follow the direction in [this Gist](https://gist.github.com/christroutner/a39f656850dc022b60f25c9663dd1cdd) to install Node.js, Docker, and Docker Compose.
-- Clone the repository with `git clone https://github.com/Permissionless-Software-Foundation/bch-dex` and enter it with `cd bch-dex`.
-- Install dependencies by running `npm install`
-- Create a wallet by executing the [create-wallet.js script](./production/scripts/create-wallet.js) with `node create-wallet.js`
-- Move the `wallet.json` file to the `bch-dex` folder in either the [x86 Docker folder](./production/docker/bch-dex) or the [RPi Docker folder](./production/rpi-docker/bch-dex/) depending on your hardware target.
-- Change directory to the `docker` or `rpi-docker` folder depending on your hardware target.
-- Build the Docker containers with `docker-compose build --no-cache`.
-- Start the Docker containers with `docker-compose up -d`
-- Wait for the containers to run for about a minute, then bring them down with `docker-compose down`. That will create the needed folders in `production/data`.
-- Copy the `swarm.key` into the `production/data/go-ipfs/data/` directory. This will allow the IPFS node to connect to the PSF private network.
-- Bring the containers back up with `docker-compose up -d`.
-- Wait for the P2WDB to sync and populate bch-dex with trade data. You can monitor it with `docker logs --tail 20 -f p2wdb`.
-- Open a web browser and navigate the `http://localhost:4500`. You'll be able to see new Offers as they come in and are detected by bch-dex.
-- To take the other side of the trade, click the `Take` button in the UI.
-- You can add the 12-word mnemonic from the `wallet.json` file to the the web wallet, which will mirror your wallet in the UI, and allow you to perform basic wallet functions (send and receive BCH and tokens).
-
+<ol>
+<li>Follow the direction in [this Gist](https://gist.github.com/christroutner/a39f656850dc022b60f25c9663dd1cdd) to install Node.js, Docker, and Docker Compose.</li>
+<li>Clone the repository with `git clone https://github.com/Permissionless-Software-Foundation/bch-dex` and enter it with `cd bch-dex`.</li>
+<li>Install dependencies by running `npm install`</li>
+<li>Create a wallet by executing the [create-wallet.js script](./production/scripts/create-wallet.js) with `node create-wallet.js`</li>
+<li>Move the `wallet.json` file to the `bch-dex` folder in either the [x86 Docker folder](./production/docker/bch-dex) or the [RPi Docker folder](./production/rpi-docker/bch-dex/) depending on your hardware target.</li>
+<li>Change directory to the `docker` or `rpi-docker` folder depending on your hardware target.</li>
+<li>Build the Docker containers with `docker-compose build --no-cache`.</li>
+<li>Start the Docker containers with `docker-compose up -d`</li>
+<li>Wait for the containers to run for about a minute, then bring them down with `docker-compose down`. That will create the needed folders in `production/data`.</li>
+<li>Copy the `swarm.key` into the `production/data/go-ipfs/data/` directory. This will allow the IPFS node to connect to the PSF private network.</li>
+<li>Bring the containers back up with `docker-compose up -d`.</li>
+<li>Wait for the P2WDB to sync and populate bch-dex with trade data. You can monitor it with `docker logs --tail 20 -f p2wdb`.</li>
+<li>Open a web browser and navigate the `http://localhost:4500`. You'll be able to see new Offers as they come in and are detected by bch-dex.</li>
+<li>To take the other side of the trade, click the `Take` button in the UI.</li>
+<li>You can add the 12-word mnemonic from the `wallet.json` file to the the web wallet, which will mirror your wallet in the UI, and allow you to perform basic wallet functions (send and receive BCH and tokens).</li>
+</ol>
+  
 ### Applying Software Updates
 As this is an active project, software updates will happen frequently. To apply a software update, perform these steps.
 
-- Enter the `docker` or `rpi-docker` folder, depending on your hardware target.
-- Bring down the Docker containers with `docker-compose down`.
-- Pull in the software updates with `git pull`
-- Update dependencies with `npm install`
-- Rebuild the Docker containers with `docker-compose build --no-cache`
-- Clean up disk space by deleting old Docker images with `./cleanup-images.sh`
-- Start the Docker containers with `docker-compose up -d`
-
+<ol>
+  <li>Enter the `docker` or `rpi-docker` folder, depending on your hardware target.</li>
+<li>Bring down the Docker containers with `docker-compose down`.</li>
+<li>Pull in the software updates with `git pull`</li>
+<li>Update dependencies with `npm install`</li>
+<li>Rebuild the Docker containers with `docker-compose build --no-cache`</li>
+<li>Clean up disk space by deleting old Docker images with `./cleanup-images.sh`</li>
+<li>Start the Docker containers with `docker-compose up -d`</li>
+</ol>
+  
 Sometimes it may be necessary to delete the databases before applying a software update. This can be done by stopping the Docker containers and deleting the `production/data` directory. When the Docker containers are restarted, they will recreate that directory. The P2WDB will re-sync and bch-dex will be populated with fresh trade data.
 
 ## License
