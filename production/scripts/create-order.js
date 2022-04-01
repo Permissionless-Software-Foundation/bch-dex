@@ -8,8 +8,8 @@
 
 const axios = require('axios')
 
-// const LOCALHOST = 'http://localhost:5700'
-const LOCALHOST = 'http://172.17.0.1:5700'
+const LOCALHOST = 'http://localhost:5700'
+// const LOCALHOST = 'http://172.17.0.1:5700'
 
 async function start () {
   try {
@@ -22,7 +22,7 @@ async function start () {
       buyOrSell: 'sell',
       rateInBaseUnit: 5000,
       minUnitsToExchange: 5000,
-      numTokens: 1
+      numTokens: 2
     }
 
     const options = {

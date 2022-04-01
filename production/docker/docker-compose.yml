@@ -89,6 +89,8 @@ services:
       context: ./bch-dex-ui/
       dockerfile: Dockerfile
     container_name: dex-ui
+    environment:
+      SERVER: 'http://192.168.2.3'
     logging:
       driver: 'json-file'
       options:
