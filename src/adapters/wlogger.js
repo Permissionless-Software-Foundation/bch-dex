@@ -49,7 +49,8 @@ class Wlogger {
   }
 
   notifyRotation (oldFilename, newFilename) {
-    this.wlogger.info('Rotating log files')
+    // this.wlogger.info('Rotating log files')
+    console.log('Rotating log files')
   }
 
   outputToConsole () {
