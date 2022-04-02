@@ -70,6 +70,10 @@ class OfferEntity {
       throw new Error("Property 'ticker' must be a string.")
     }
 
+    // Convert the timestamp to a number.
+    let timestamp = new Date(offerData.timestamp)
+    timestamp = timestamp.getTime()
+
     const validatedOfferData = {
       messageType,
       messageClass,
@@ -80,7 +84,8 @@ class OfferEntity {
       numTokens,
       utxoTxid,
       utxoVout,
-      timestamp: offerData.timestamp,
+      timestamp,
+      globaltimestamp: offerData.timestamp,
       localTimestamp: offerData.localTimeStamp,
       txid: offerData.txid,
       p2wdbHash: offerData.hash,

@@ -23,7 +23,8 @@ const Offer = new mongoose.Schema({
   sigMsg: { type: String },
 
   // Utility data
-  timestamp: { type: String },
+  timestamp: { type: Number },
+  globalTimestamp: { type: String },
   localTimestamp: { type: String },
 
   // SWaP Protocol Properties

@@ -93,7 +93,7 @@ class OfferUseCases {
 
   async listOffers () {
     try {
-      return this.OfferModel.find({})
+      return this.OfferModel.find({}).sort('-timestamp')
     } catch (error) {
       console.error('Error in use-cases/offer/listOffers()')
       throw error
