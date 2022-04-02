@@ -188,6 +188,10 @@ class OfferUseCases {
       }
       const hash = await this.adapters.p2wdb.write(p2wdbObj)
 
+      // Delete the Offer from the database, so that the user doesn't attempt
+      // to take the offer more than once.
+      offerInfo.remove()
+
       // Return the P2WDB CID
       return hash
 
@@ -261,10 +265,12 @@ class OfferUseCases {
       throw new Error('offer not found')
     }
 
-    const offerObject = offer.toObject()
+    return offer
+
+    // const offerObject = offer.toObject()
     // return this.offerEntity.validateFromModel(offerObject)
 
-    return offerObject
+    // return offerObject
     // } catch (err) {
     //   // console.error('Error in findOffer(): ', err)
     //   throw err
