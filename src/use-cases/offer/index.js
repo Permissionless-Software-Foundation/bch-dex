@@ -373,6 +373,15 @@ class OfferUseCases {
           console.log(`Spent UTXO detected. Deleting this Offer: ${JSON.stringify(thisOffer, null, 2)}`)
           await thisOffer.remove()
         }
+
+        // If the Offer is older than 7 days, delete it.
+        const nowMs = now.getTime()
+        const sevenDays = 1000 * 60 * 60 * 24 * 7
+        const sevenDaysAgo = nowMs - sevenDays
+        if (thisOffer.timestamp < sevenDaysAgo) {
+          console.log('Offer older than 7 days. Deleting.')
+          await thisOffer.remove()
+        }
       }
     } catch (err) {
       console.error('Error in removeStaleOffers()')
