@@ -2,6 +2,8 @@
 
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release) [![Join the chat at https://gitter.im/Permissionless-Software-Foundation/psf-dex-dev](https://badges.gitter.im/Permissionless-Software-Foundation/psf-dex-dev.svg)](https://gitter.im/Permissionless-Software-Foundation/psf-dex-dev?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+`bch-dex` is a decentralized exchange for permissionless trading of [SLP tokens](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md) and [NFTs](https://github.com/simpleledger/slp-specifications/blob/master/slp-nft-1.md). It's based entirely on open protocols and open source software. It's not a '.com' website that you visit, but software you run on your own computer, in the confort of your own home. So long as you have an internet connection and the technical knowledge to run this software, no one can stop you from trading tokens. `bch-dex` software is maintained by the [Permissionless Software Foundation](https://psfoundation.cash/).
+
 This is a prototype web service that monitors the [P2WDB](https://github.com/Permissionless-Software-Foundation/ipfs-p2wdb-service) for trading signals, to trade BCH and SLP tokens. It's inspired by the [SWaP Protocol](https://github.com/vinarmani/swap-protocol/blob/master/swap-protocol-spec.md).
 
 This repository contains the back end code. The user interface is contained in the [bch-dex-ui](https://github.com/Permissionless-Software-Foundation/bch-dex-ui) repository.
@@ -47,7 +49,7 @@ Building the Docker containers and getting the app working involve these steps:
 <li>To take the other side of the trade, click the `Take` button in the UI.</li>
 <li>You can add the 12-word mnemonic from the `wallet.json` file to the the web wallet, which will mirror your wallet in the UI, and allow you to perform basic wallet functions (send and receive BCH and tokens).</li>
 </ol>
-  
+
 ### Applying Software Updates
 As this is an active project, software updates will happen frequently. To apply a software update, perform these steps.
 
@@ -60,7 +62,7 @@ As this is an active project, software updates will happen frequently. To apply 
 <li>Clean up disk space by deleting old Docker images with `./cleanup-images.sh`</li>
 <li>Start the Docker containers with `docker-compose up -d`</li>
 </ol>
-  
+
 Sometimes it may be necessary to delete the databases before applying a software update. This can be done by stopping the Docker containers and deleting the `production/data` directory. When the Docker containers are restarted, they will recreate that directory. The P2WDB will re-sync and bch-dex will be populated with fresh trade data.
 
 ## License
