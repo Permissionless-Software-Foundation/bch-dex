@@ -50,6 +50,23 @@ Building the Docker containers and getting the app working involve these steps:
 <li>You can add the 12-word mnemonic from the `wallet.json` file to the the web wallet, which will mirror your wallet in the UI, and allow you to perform basic wallet functions (send and receive BCH and tokens).</li>
 </ol>
 
+1. Follow the direction in [this Gist](https://gist.github.com/christroutner/a39f656850dc022b60f25c9663dd1cdd) to install Node.js, Docker, and Docker Compose.
+1. Clone the repository with `git clone https://github.com/Permissionless-Software-Foundation/bch-dex` and enter it with `cd bch-dex`.
+1. Install dependencies by running `npm install`
+1. Create a wallet by executing the [create-wallet.js script](./production/scripts/create-wallet.js) with `node create-wallet.js`
+1. Move the `wallet.json` file to the `bch-dex` folder in either the [x86 Docker folder](./production/docker/bch-dex) or the [RPi Docker folder](./production/rpi-docker/bch-dex/) depending on your hardware target.
+1. Change directory to the `docker` or `rpi-docker` folder depending on your hardware target.
+1. Build the Docker containers with `docker-compose build --no-cache`.
+1. Start the Docker containers with `docker-compose up -d`
+1. Wait for the containers to run for about a minute, then bring them down with `docker-compose down`. That will create the needed folders in `production/data`.
+1. Copy the `swarm.key` into the `production/data/go-ipfs/data/` directory. This will allow the IPFS node to connect to the PSF private network.
+1. Bring the containers back up with `docker-compose up -d`.
+1. Wait for the P2WDB to sync and populate bch-dex with trade data. You can monitor it with `docker logs --tail 20 -f p2wdb`.
+1. Open a web browser and navigate the `http://localhost:4500`. You'll be able to see new Offers as they come in and are detected by bch-dex.
+1. To take the other side of the trade, click the `Take` button in the UI.
+1. You can add the 12-word mnemonic from the `wallet.json` file to the the web wallet, which will mirror your wallet in the UI, and allow you to perform basic wallet functions (send and receive BCH and tokens).
+
+
 ### Applying Software Updates
 As this is an active project, software updates will happen frequently. To apply a software update, perform these steps.
 
