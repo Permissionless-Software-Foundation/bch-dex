@@ -58,7 +58,7 @@ RUN git checkout ct-unstable
 # Install dependencies
 #RUN mkdir .ipfsdata
 #RUN npm install -g @mapbox/node-pre-gyp
-RUN npm install
+RUN npm install --force
 
 # Build the site
 RUN CI=true npm run build
