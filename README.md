@@ -32,6 +32,8 @@ Running the DEX requires composition of these different software packages:
 
 The above software is orchestrated using [Docker](https://www.docker.com/) and Docker Compose. The target operating system is Ubuntu 20+, and the target hardware is amd64 (normal desktop PCs) and the arm64 (Raspberry Pi 4). Trying to operate this software on other operating systems or hardware is possible, but not supported.
 
+The Raspberry Pi 4 is the primary hardware target, because this software functions best when it is always running. The Pi 4 makes a great appliance for monitoring trade signals and finalizing trades.
+
 Instructions for setting up Node.js, Docker, and Docker Compose can be found in [this Gist](https://gist.github.com/christroutner/a39f656850dc022b60f25c9663dd1cdd). Walk-through videos can also be found on the [PSF Videos page](https://psfoundation.cash/video/).
 
 Here are the steps involved in setting up bch-dex:
