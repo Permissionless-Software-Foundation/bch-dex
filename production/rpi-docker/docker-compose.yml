@@ -31,7 +31,7 @@ services:
       - 172.17.0.1:8080:8080
     volumes:
       - ../data/go-ipfs/data:/data/ipfs
-      - ../data/go-ipfs/export:/export
+      - ../../swarm.key:/data/ipfs/swarm.key
     # https://docs.docker.com/compose/compose-file/compose-file-v3/#command
     # https://github.com/ipfs/go-ipfs/blob/91c52657166bcf86f2476926e4fe56694dc26562/Dockerfile#L115
     command:
@@ -44,10 +44,13 @@ services:
     restart: always
 
   p2wdb:
-    build:
-      context: ./p2wdb/
-      dockerfile: Dockerfile
+    #build:
+    #  context: ./p2wdb/
+    #  dockerfile: Dockerfile
+    image: christroutner/pwd-bch-dex-rpi:v1.6.2
     container_name: p2wdb
+    environment:
+      CONSUMER_URL: 'https://free-bch.fullstack.cash'
     logging:
       driver: 'json-file'
       options:
@@ -66,10 +69,13 @@ services:
     restart: always
 
   bch-dex:
-    build:
-      context: ./bch-dex/
-      dockerfile: Dockerfile
+    #build:
+    #  context: ./bch-dex/
+    #  dockerfile: Dockerfile
+    image: christroutner/bch-dex-rpi:v1.6.2
     container_name: bch-dex
+    environment:
+      CONSUMER_URL: 'https://free-bch.fullstack.cash'
     logging:
       driver: 'json-file'
       options:
@@ -81,14 +87,15 @@ services:
       - p2wdb
     ports:
       - '5700:5700' # <host port>:<container port>
-    # volumes:
-    #   - ../data/ipfsdata:/home/safeuser/ipfs-service-provider/.ipfsdata
+    volumes:
+      - ../scripts/wallet.json:/home/safeuser/bch-dex/wallet.json
     restart: always
 
   dex-ui:
-    build:
-      context: ./bch-dex-ui/
-      dockerfile: Dockerfile
+    #build:
+    #  context: ./bch-dex-ui/
+    #  dockerfile: Dockerfile
+    image: christroutner/bch-dex-ui-rpi:v1.6.2
     container_name: dex-ui
     logging:
       driver: 'json-file'
