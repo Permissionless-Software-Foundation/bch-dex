@@ -80,8 +80,8 @@ services:
       - p2wdb
     ports:
       - '5700:5700' # <host port>:<container port>
-    # volumes:
-    #   - ../data/ipfsdata:/home/safeuser/ipfs-service-provider/.ipfsdata
+    volumes:
+      - ../scripts/wallet.json:/home/safeuser/bch-dex/wallet.json
     restart: always
 
   dex-ui:
