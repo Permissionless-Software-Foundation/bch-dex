@@ -64,7 +64,7 @@ RUN npm install
 RUN npm run docs
 
 # Copy the wallet files
-COPY wallet.json wallet.json
+#COPY wallet.json wallet.json
 
 #VOLUME /home/safeuser/keys
 

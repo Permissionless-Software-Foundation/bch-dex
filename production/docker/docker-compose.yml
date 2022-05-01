@@ -30,7 +30,7 @@ services:
       - 172.17.0.1:8080:8080
     volumes:
       - ../data/go-ipfs/data:/data/ipfs
-      - ../data/go-ipfs/export:/export
+      - ../../swarm.key:/data/ipfs/swarm.key
     # https://docs.docker.com/compose/compose-file/compose-file-v3/#command
     # https://github.com/ipfs/go-ipfs/blob/91c52657166bcf86f2476926e4fe56694dc26562/Dockerfile#L115
     command:
@@ -80,8 +80,8 @@ services:
       - p2wdb
     ports:
       - '5700:5700' # <host port>:<container port>
-    # volumes:
-    #   - ../data/ipfsdata:/home/safeuser/ipfs-service-provider/.ipfsdata
+    volumes:
+      - ../scripts/wallet.json:/home/safeuser/bch-dex/wallet.json
     restart: always
 
   dex-ui:
