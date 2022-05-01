@@ -50,6 +50,9 @@ Here are the steps involved in setting up bch-dex:
 1. To take the other side of the trade, click the `Take` button in the UI.
 1. You can add the 12-word mnemonic from the `wallet.json` file to the the web wallet, which will mirror your wallet in the UI, and allow you to perform basic wallet functions (send and receive BCH and tokens).
 
+## Blockchain Infrastructure
+
+The P2WDB and bch-dex containers requires a 'Global Back End' (as described in [CashStack.info](https://cashstack.info)) in order to connect to the blockchain. By default, the Docker containers connect to [free-bch.fullstack.cash](https://free-bch.fullstack.cash/). Several community-provided Global Back End servers are provided and can be [viewed here](https://gist.github.com/christroutner/63c5513782181f8b8ea3eb89f7cadeb6). The back end can be changed by setting the `CONSUMER_URL` environment variable in the `docker-compose.yml` file.
 
 ### Applying Software Updates
 As this is an active project, software updates will happen frequently. To apply a software update, perform these steps.

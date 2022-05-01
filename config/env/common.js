@@ -35,8 +35,8 @@ module.exports = {
   useFullStackCash: process.env.USE_FULLSTACKCASH ? true : false,
   consumerUrl: process.env.CONSUMER_URL
     ? process.env.CONSUMER_URL
-    // : 'https://free-bch.fullstack.cash',
-    : 'https://wa-usa-bch-consumer.fullstackcash.nl',
+    : 'https://free-bch.fullstack.cash',
+  // : 'https://wa-usa-bch-consumer.fullstackcash.nl',
 
   // P2WDB URL that will accept API calls from the p2wdb npm library.
   p2wdbUrl: process.env.P2WDB_URL ? process.env.P2WDB_URL : 'https://p2wdb.fullstack.cash',

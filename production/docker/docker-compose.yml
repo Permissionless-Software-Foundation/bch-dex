@@ -48,6 +48,8 @@ services:
     #  dockerfile: Dockerfile
     image: christroutner/p2wdb-bch-dex:v1.6.2
     container_name: p2wdb
+    environment:
+      CONSUMER_URL: 'https://free-bch.fullstack.cash'
     logging:
       driver: 'json-file'
       options:
@@ -71,6 +73,8 @@ services:
     #  dockerfile: Dockerfile
     image: christroutner/bch-dex:v1.6.2
     container_name: bch-dex
+    environment:
+      CONSUMER_URL: 'https://free-bch.fullstack.cash'
     logging:
       driver: 'json-file'
       options:
