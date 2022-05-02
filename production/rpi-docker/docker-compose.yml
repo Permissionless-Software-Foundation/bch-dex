@@ -72,7 +72,7 @@ services:
     #build:
     #  context: ./bch-dex/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-rpi:v1.6.2
+    image: christroutner/bch-dex-rpi:v1.6.4
     container_name: bch-dex
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
@@ -95,7 +95,7 @@ services:
     #build:
     #  context: ./bch-dex-ui/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-ui-rpi:v1.6.2
+    image: christroutner/bch-dex-ui-rpi:v1.6.4
     container_name: dex-ui
     logging:
       driver: 'json-file'
