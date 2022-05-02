@@ -130,7 +130,7 @@ class OrderLib {
 
         // If there are fewer tokens in the wallet than what's in the order,
         // throw an error.
-        if (totalTokenBalance <= orderEntity.numTokens || isNaN(totalTokenBalance)) {
+        if (totalTokenBalance < orderEntity.numTokens || isNaN(totalTokenBalance)) {
           throw new Error(
             'App wallet does not have enough tokens to satisfy the SELL order.'
           )
