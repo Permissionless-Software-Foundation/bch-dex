@@ -72,7 +72,7 @@ services:
     #build:
     #  context: ./bch-dex/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-rpi:v1.6.4
+    image: christroutner/bch-dex-rpi:v1.6.6
     container_name: bch-dex
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
