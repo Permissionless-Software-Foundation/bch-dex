@@ -202,6 +202,9 @@ class OrderLib {
             console.log(`Deleting Order with bad data: ${JSON.stringify(thisOrder, null, 2)}`)
             await thisOrder.remove()
             continue
+          } else if(err.isAxiosError) {
+            console.log(`Error trying to contact api.fullstack.cash`)
+            continue
           } else {
             throw err
           }
