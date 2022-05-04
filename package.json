@@ -52,7 +52,7 @@
     "koa2-ratelimit": "0.9.1",
     "libp2p": "^0.36.2",
     "line-reader": "0.4.0",
-    "minimal-slp-wallet": "4.4.7",
+    "minimal-slp-wallet": "4.5.2",
     "mongoose": "5.13.13",
     "node-fetch": "npm:@achingbrain/node-fetch@2.6.7",
     "nodemailer": "6.4.17",
@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "apidoc": "0.26.0",
-    "bch-token-sweep": "1.5.16",
+    "bch-token-sweep": "2.1.1",
     "chai": "4.3.0",
     "coveralls": "2.11.4",
     "eslint": "7.19.0",
