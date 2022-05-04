@@ -5,7 +5,7 @@
 */
 
 // Public npm libraries
-const BCHJS = require('@psf/bch-js')
+// const BCHJS = require('@psf/bch-js')
 const BchTokenSweep = require('bch-token-sweep/index')
 
 // Local libraries
@@ -17,8 +17,9 @@ const EMTPY_ADDR_CUTOFF = 10
 async function sweepFunds () {
   try {
     // Open the wallet files.
-    const wallet = new WalletAdapter()
-    const walletInfo = await wallet.openWallet()
+    const walletLib = new WalletAdapter()
+    const walletInfo = await walletLib.openWallet()
+    const wallet = await walletLib.instanceWallet(walletInfo)
     console.log('walletInfo: ', walletInfo)
 
     const rootAddr = walletInfo.cashAddress
@@ -26,7 +27,7 @@ async function sweepFunds () {
     console.log(`Sweeping all funds into root address ${rootAddr}...`)
 
     // Generate an HD tree
-    const bchjs = new BCHJS()
+    const bchjs = wallet.bchjs
     const rootSeed = await bchjs.Mnemonic.toSeed(walletInfo.mnemonic)
     const masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
 
@@ -46,7 +47,7 @@ async function sweepFunds () {
         const sweeper = new BchTokenSweep(
           wifToSweep,
           rootWif,
-          bchjs,
+          wallet,
           550,
           rootAddr
         )
@@ -66,6 +67,7 @@ async function sweepFunds () {
         await bchjs.Util.sleep(3000)
       } catch (err) {
         console.log(`error message with index ${hdIndex}: ${err.message}`)
+        // console.log(err)
         emptyAddrCnt++
       }
 

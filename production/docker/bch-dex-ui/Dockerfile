@@ -46,11 +46,11 @@ RUN npm set registry http://94.130.170.209:4873/
 
 # Clone the rest.bitcoin.com repository
 WORKDIR /home/safeuser
-RUN git clone https://github.com/Permissionless-Software-Foundation/bch-dex-ui2
+RUN git clone https://github.com/Permissionless-Software-Foundation/bch-dex-ui
 
 # Switch to the desired branch. `master` is usually stable,
 # and `stage` has the most up-to-date changes.
-WORKDIR /home/safeuser/bch-dex-ui2
+WORKDIR /home/safeuser/bch-dex-ui
 
 # For development: switch to unstable branch
 RUN git checkout ct-unstable

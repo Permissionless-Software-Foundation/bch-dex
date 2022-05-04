@@ -90,6 +90,9 @@ class Server {
 
       // MIDDLEWARE END
 
+      // Delay startup to give the P2WDB time to start first, so that it accepts the webook call
+      await sleep(5000)
+
       // Create webhook
       try {
         try {

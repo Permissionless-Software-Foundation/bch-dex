@@ -359,7 +359,7 @@ class OfferUseCases {
           // console.log('utxoStatus: ', utxoStatus)
         } catch (err) {
           // Handle corner case of bad-data in the Offer model.
-          if (err.message.includes('txid needs to be a proper transaction ID')) {
+          if (err.message && err.message.includes('txid needs to be a proper transaction ID')) {
             console.log(`Deleting Offer with bad data: ${JSON.stringify(thisOffer, null, 2)}`)
             await thisOffer.remove()
             continue
@@ -384,7 +384,7 @@ class OfferUseCases {
         }
       }
     } catch (err) {
-      console.error('Error in removeStaleOffers()')
+      console.error('Error in removeStaleOffers(): ', err)
       throw err
     }
   }

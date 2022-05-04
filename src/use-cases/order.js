@@ -198,7 +198,7 @@ class OrderLib {
           // console.log('utxoStatus: ', utxoStatus)
         } catch (err) {
           // Handle corner case of bad-data in the Order model.
-          if (err.message.includes('txid needs to be a proper transaction ID')) {
+          if (err.message && err.message.includes('txid needs to be a proper transaction ID')) {
             console.log(`Deleting Order with bad data: ${JSON.stringify(thisOrder, null, 2)}`)
             await thisOrder.remove()
             continue
