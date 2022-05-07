@@ -363,6 +363,9 @@ class OfferUseCases {
             console.log(`Deleting Offer with bad data: ${JSON.stringify(thisOffer, null, 2)}`)
             await thisOffer.remove()
             continue
+          } else if (err.isAxiosError) {
+            console.log('Error trying to contact api.fullstack.cash')
+            continue
           } else {
             throw err
           }
