@@ -208,7 +208,7 @@ class WalletAdapter {
 
       // Get token info on the offered UTXO
       const txData = await this.bchWallet.getTxData([offerInfo.utxoTxid])
-      // console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
+      console.log(`txData: ${JSON.stringify(txData, null, 2)}`)
 
       // Construct the UTXO being offered for sale.
       const offeredUtxo = {
@@ -222,12 +222,27 @@ class WalletAdapter {
 
       // Build First part of the collaborative Tx a.k.a. Alice
       // Generate the OP_RETURN code.
-      const slpSendObj = bchjs.SLP.TokenType1.generateSendOpReturn(
-        [offeredUtxo],
-        offerInfo.numTokens.toString()
-      )
+      let slpSendObj
+      if (offerInfo.tokenType === 65) {
+        // Type 65 NFT
+
+        slpSendObj = bchjs.SLP.NFT1.generateNFTChildSendOpReturn(
+          [offeredUtxo],
+          offerInfo.numTokens.toString()
+        )
+        console.log(`slpOutputs: ${slpSendObj.outputs}`)
+      } else if (offerInfo.tokenType === 1) {
+        // Type 1 fungible token
+
+        slpSendObj = bchjs.SLP.TokenType1.generateSendOpReturn(
+          [offeredUtxo],
+          offerInfo.numTokens.toString()
+        )
+        console.log(`slpOutputs: ${slpSendObj.outputs}`)
+      } else {
+        throw new Error(`Unknown token type of ${offerInfo.tokenType}. Can not create Counter Offer.`)
+      }
       const slpData = slpSendObj.script
-      console.log(`slpOutputs: ${slpSendObj.outputs}`)
 
       // Currently this app only supports a single SLP token UTXO for exact
       // token quantities (no token change). e.g. 1 UTXO representing the
@@ -334,12 +349,22 @@ class WalletAdapter {
       // Update the UTXO store of the wallet.
       await this.bchWallet.getUtxos()
 
+      // Get the token type of the token being moved.
+      // Combine Fungible and NFT token UTXOs.
+      let tokenUtxos = this.bchWallet.utxos.utxoStore.slpUtxos.type1.tokens.concat(
+        this.bchWallet.utxos.utxoStore.slpUtxos.nft.tokens)
+      // Get token UTXOs that match the token in the order.
+      tokenUtxos = tokenUtxos.filter(
+        x => x.tokenId === tokenId
+      )
+
       const txid = await this.bchWallet.sendTokens(receiver, 3)
 
       const utxoInfo = {
         txid,
         vout: 1,
-        hdIndex: keyPair.hdIndex
+        hdIndex: keyPair.hdIndex,
+        tokenType: tokenUtxos[0].tokenType
       }
 
       return utxoInfo

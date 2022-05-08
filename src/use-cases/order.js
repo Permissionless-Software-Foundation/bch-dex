@@ -65,6 +65,7 @@ class OrderLib {
       // Update the order with the new UTXO information.
       orderEntity.utxoTxid = utxoInfo.txid
       orderEntity.utxoVout = utxoInfo.vout
+      orderEntity.tokenType = utxoInfo.tokenType
 
       // Add P2WDB specific flag for signaling that this is a new offer.
       orderEntity.dataType = 'offer'
@@ -81,6 +82,7 @@ class OrderLib {
       // Create a MongoDB model to hold the Order
       orderEntity.hdIndex = utxoInfo.hdIndex
       orderEntity.p2wdbHash = hash
+
       console.log(`creating new order model: ${JSON.stringify(orderEntity, null, 2)}`)
       const order = new this.OrderModel(orderEntity)
       await order.save()
@@ -88,7 +90,7 @@ class OrderLib {
       return hash
     } catch (err) {
       // console.log("Error in use-cases/entry.js/createEntry()", err.message)
-      wlogger.error('Error in use-cases/createOrder())')
+      wlogger.error('Error in use-cases/order.js/createOrder())')
       console.log('error entryObj: ', entryObj)
       throw err
     }
@@ -116,11 +118,14 @@ class OrderLib {
       if (orderEntity.buyOrSell.includes('sell')) {
         // Sell Order
 
+        // Combine Fungible and NFT token UTXOs.
+        let tokenUtxos = utxos.slpUtxos.type1.tokens.concat(utxos.slpUtxos.nft.tokens)
+
         // Get token UTXOs that match the token in the order.
-        const tokenUtxos = utxos.slpUtxos.type1.tokens.filter(
+        tokenUtxos = tokenUtxos.filter(
           x => x.tokenId === orderEntity.tokenId
         )
-        // console.log('tokenUtxos: ', tokenUtxos)
+        console.log('tokenUtxos: ', tokenUtxos)
 
         // Get the total amount of tokens in the wallet that match the token
         // in the order.

@@ -127,9 +127,11 @@ class MockBchWallet {
               ]
             },
             nft: {
-              groupMintBatons: [],
-              groupTokens: [],
               tokens: []
+            },
+            group: {
+              tokens: [],
+              mintBatons: []
             }
           }
         }
