@@ -254,7 +254,8 @@ describe('#Offer-Entity', () => {
           utxoVout: 0,
           offerStatus: 'posted',
           makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
-          ticker: 'TROUT'
+          ticker: 'TROUT',
+          tokenType: 1
         },
         timestamp: '2021-09-20T17:54:26.395Z',
         localTimeStamp: '9/20/2021, 10:54:26 AM',
@@ -279,6 +280,7 @@ describe('#Offer-Entity', () => {
       assert.property(result, 'localTimestamp')
       assert.property(result, 'txid')
       assert.property(result, 'p2wdbHash')
+      assert.property(result, 'tokenType')
     })
   })
 })

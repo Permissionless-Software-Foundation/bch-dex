@@ -262,10 +262,11 @@ describe('#wallet', () => {
         wif: 'L4qKTMCwjH9jHnYtNh9Vsrxj7Hg6zmoN8E2v7N47UKvNVEjw7FU8',
         hdIndex: 6
       })
-      uut.bchWallet = {
-        sendTokens: async () => 'fake-txid',
-        getUtxos: async () => {}
-      }
+      uut.bchWallet = new MockBchWallet()
+      // uut.bchWallet = {
+      //   sendTokens: async () => 'fake-txid',
+      //   getUtxos: async () => {}
+      // }
 
       const inObj = {
         tokenId: 'a4fb5c2da1aa064e25018a43f9165040071d9e984ba190c222a7f59053af84b2',

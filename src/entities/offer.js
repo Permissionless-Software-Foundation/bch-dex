@@ -29,7 +29,8 @@ class OfferEntity {
       utxoVout,
       offerStatus,
       makerAddr,
-      ticker
+      ticker,
+      tokenType
     } = offerData.data
 
     // Input Validation
@@ -69,6 +70,9 @@ class OfferEntity {
     if (!ticker || typeof ticker !== 'string') {
       throw new Error("Property 'ticker' must be a string.")
     }
+    if (!tokenType || typeof tokenType !== 'number') {
+      throw new Error("Property 'tokenType' must be a number.")
+    }
 
     // Convert the timestamp to a number.
     let timestamp = new Date(offerData.timestamp)
@@ -91,7 +95,8 @@ class OfferEntity {
       p2wdbHash: offerData.hash,
       offerStatus: offerStatus || this.offerStatus[0],
       makerAddr,
-      ticker
+      ticker,
+      tokenType
     }
 
     return validatedOfferData
