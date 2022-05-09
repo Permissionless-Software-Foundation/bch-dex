@@ -51,6 +51,7 @@ services:
     container_name: p2wdb
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
+      DEBUG_LEVEL: 1
     logging:
       driver: 'json-file'
       options:
