@@ -18,7 +18,8 @@ async function sweepFunds () {
   try {
     // Open the wallet files.
     const walletLib = new WalletAdapter()
-    const walletInfo = await walletLib.openWallet()
+    // const walletInfo = await walletLib.openWallet()
+    const walletInfo = await openWallet(walletLib)
     const wallet = await walletLib.instanceWallet(walletInfo)
     console.log('walletInfo: ', walletInfo)
 
@@ -82,3 +83,18 @@ async function sweepFunds () {
   }
 }
 sweepFunds()
+
+// Open the wallet file, or create one if the file doesn't exist.
+// Does not instance the wallet. The output of this function is expected to
+// be passed to instanceWallet().
+async function openWallet (walletLib) {
+  try {
+    // console.log('this.WALLET_FILE: ', this.WALLET_FILE)
+    const walletData = await walletLib.jsonFiles.readJSON('./wallet.json')
+
+    return walletData
+  } catch (err) {
+    console.error('Error in openWallet()')
+    throw err
+  }
+}
