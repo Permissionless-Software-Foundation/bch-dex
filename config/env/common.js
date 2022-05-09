@@ -97,7 +97,7 @@ module.exports = {
   // BCH Mnemonic for generating encryption keys and payment address
   mnemonic: process.env.MNEMONIC ? process.env.MNEMONIC : '',
 
-  debugLevel: process.env.DEBUG_LEVEL ? parseInt(process.env.DEBUG_LEVEL) : 2,
+  debugLevel: process.env.DEBUG_LEVEL ? parseInt(process.env.DEBUG_LEVEL) : 1,
 
   // Settings for production, using external go-ipfs node.
   isProduction: process.env.SVC_ENV === 'production' ? true : false,
