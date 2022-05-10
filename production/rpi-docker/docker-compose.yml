@@ -47,7 +47,7 @@ services:
     #build:
     #  context: ./p2wdb/
     #  dockerfile: Dockerfile
-    image: christroutner/pwd-bch-dex-rpi:v1.6.2
+    image: christroutner/pwd-bch-dex-rpi:v1.7.1
     container_name: p2wdb
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
@@ -73,7 +73,7 @@ services:
     #build:
     #  context: ./bch-dex/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-rpi:v1.7.0
+    image: christroutner/bch-dex-rpi:v1.7.1
     container_name: bch-dex
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
