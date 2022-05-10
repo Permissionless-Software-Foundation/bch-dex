@@ -16,7 +16,8 @@ export COORD_NAME=generic-p2wdb-production
 #export CR_DOMAIN=subdomain.yourdomain.com
 
 # Debug level. 0 = minimal info. 2 = max info.
-export DEBUG_LEVEL=2
+# This value set by docker-compose.yml
+#export DEBUG_LEVEL=1
 
 # Log-in information for retrieving a JWT token from FullStack.cash.
 export FULLSTACKLOGIN=demo@demo.com

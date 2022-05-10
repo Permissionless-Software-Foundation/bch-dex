@@ -56,7 +56,10 @@ class Server {
       })
 
       console.log(`Starting environment: ${config.env}`)
-      console.log(`Debug level: ${config.debugLevel}`)
+      console.log(`Debug level: ${config.debugLevel}\n`)
+      console.log(`Using this web3 CashStack service: ${config.consumerUrl}`)
+      console.log('Alternative web services listed here: https://gist.github.com/christroutner/63c5513782181f8b8ea3eb89f7cadeb6')
+      console.log('This app is built on top of the CashStack. Find out more: https://CashStack.info\n')
 
       // MIDDLEWARE START
 
