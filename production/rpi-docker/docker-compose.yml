@@ -96,7 +96,7 @@ services:
     #build:
     #  context: ./bch-dex-ui/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-ui-rpi:v1.6.4
+    image: christroutner/bch-dex-ui-rpi:v1.7.3
     container_name: dex-ui
     logging:
       driver: 'json-file'
