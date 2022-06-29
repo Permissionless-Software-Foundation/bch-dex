@@ -32,32 +32,38 @@ const webhookLib = new WebHookLib()
 
 const errorMiddleware = require('../src/controllers/rest-api/middleware/error')
 // const { wlogger } = require('../src/adapters/wlogger')
+const Controllers = require('../src/controllers')
 
 class Server {
   constructor () {
+    // Encapsulate dependencies
     this.adminLib = new AdminLib()
+    this.controllers = new Controllers()
+    this.mongoose = mongoose
+    this.config = config
+    this.process = process
   }
 
   async startServer () {
     try {
       // Create a Koa instance.
       const app = new Koa()
-      app.keys = [config.session]
+      app.keys = [this.config.session]
 
       // Connect to the Mongo Database.
-      mongoose.Promise = global.Promise
-      mongoose.set('useCreateIndex', true) // Stop deprecation warning.
+      this.mongoose.Promise = global.Promise
+      this.mongoose.set('useCreateIndex', true) // Stop deprecation warning.
       console.log(
-        `Connecting to MongoDB with this connection string: ${config.database}`
+        `Connecting to MongoDB with this connection string: ${this.config.database}`
       )
-      await mongoose.connect(config.database, {
+      await this.mongoose.connect(this.config.database, {
         useUnifiedTopology: true,
         useNewUrlParser: true
       })
 
-      console.log(`Starting environment: ${config.env}`)
-      console.log(`Debug level: ${config.debugLevel}\n`)
-      console.log(`Using this web3 CashStack service: ${config.consumerUrl}`)
+      console.log(`Starting environment: ${this.config.env}`)
+      console.log(`Debug level: ${this.config.debugLevel}\n`)
+      console.log(`Using this web3 CashStack service: ${this.config.consumerUrl}`)
       console.log('Alternative web services listed here: https://gist.github.com/christroutner/63c5513782181f8b8ea3eb89f7cadeb6')
       console.log('This app is built on top of the CashStack. Find out more: https://CashStack.info\n')
 
@@ -84,17 +90,21 @@ class Server {
       // Dev Note: This line must come BEFORE controllers.attachRESTControllers()
       app.use(cors({ origin: '*' }))
 
-      // Attach REST API and JSON RPC controllers to the app.
-      const Controllers = require('../src/controllers')
-      const controllers = new Controllers()
-      await controllers.attachRESTControllers(app)
+      // Wait for any adapters to initialize.
+      await this.controllers.initAdapters()
 
-      app.controllers = controllers
+      // Wait for any use-libraries to initialize.
+      await this.controllers.initUseCases()
+
+      // Attach REST API and JSON RPC controllers to the app.
+      await this.controllers.attachRESTControllers(app)
+
+      app.controllers = this.controllers
 
       // MIDDLEWARE END
 
       // Delay startup to give the P2WDB time to start first, so that it accepts the webook call
-      await sleep(20000)
+      await this.sleep(20000)
 
       // Create webhook
       try {
@@ -113,7 +123,7 @@ class Server {
       }
 
       // startServer()
-      await app.listen(config.port)
+      this.server = await app.listen(config.port)
       console.log(`Server started on ${config.port}`)
 
       // Create the system admin user.
@@ -122,9 +132,15 @@ class Server {
 
       // Attach the other IPFS controllers.
       // Skip if this is a test environment.
-      if (config.env !== 'test') {
-        await controllers.attachControllers(app)
+      if (this.config.env !== 'test') {
+        await this.controllers.attachControllers(app)
       }
+
+      // Display configuration settings
+      console.log('\nConfiguration:')
+      console.log(`Circuit Relay: ${this.config.isCircuitRelay}`)
+      console.log(`IPFS TCP port: ${this.config.ipfsTcpPort}`)
+      console.log(`IPFS WS port: ${this.config.ipfsWsPort}\n`)
 
       return app
     } catch (err) {
@@ -133,14 +149,14 @@ class Server {
       console.log(
         'Exiting after 5 seconds. Depending on process manager to restart.'
       )
-      await sleep(5000)
-      process.exit(1)
+      await this.sleep(5000)
+      this.process.exit(1)
     }
   }
-}
 
-function sleep (ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  sleep (ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms))
+  }
 }
 
 module.exports = Server

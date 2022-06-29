@@ -25,6 +25,19 @@ class UseCases {
     localConfig.order = this.order
     this.offer = new OfferUseCases(localConfig)
   }
+
+  // Run any startup Use Cases at the start of the app.
+  async start () {
+    // try {
+    console.log('Async Use Cases have been started.')
+
+    return true
+    // } catch (err) {
+    //   console.error('Error in use-cases/index.js/start()')
+    //   // console.log(err)
+    //   throw err
+    // }
+  }
 }
 
 module.exports = UseCases
