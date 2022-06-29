@@ -39,8 +39,8 @@ describe('#adapters', () => {
       try {
         // Force an error
         uut.config.getJwtAtStartup = false
-        uut.config.env = 'dev'
-        sandbox.stub(uut.ipfs, 'start').rejects(new Error('test error'))
+        // uut.config.env = 'dev'
+        sandbox.stub(uut.wallet, 'openWallet').rejects(new Error('test error'))
 
         await uut.start()
 
