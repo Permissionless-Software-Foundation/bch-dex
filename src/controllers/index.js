@@ -45,13 +45,8 @@ class Controllers {
 
   // Attach any other controllers other than REST API controllers.
   async attachControllers (app) {
-    // Wait for any startup processes to complete for the Adapters libraries.
-    // await this.adapters.start()
 
-    // Attach the REST controllers to the Koa app.
-    // this.attachRESTControllers(app)
-
-    this.attachRPCControllers()
+    // this.attachRPCControllers()
   }
 
   // Add the JSON RPC router to the ipfs-coord adapter.

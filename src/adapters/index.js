@@ -54,9 +54,9 @@ class Adapters {
 
       // Start the IPFS node.
       // Do not start these adapters if this is an e2e test.
-      if (this.config.env !== 'test') {
-        await this.ipfs.start()
-      }
+      // if (this.config.env !== 'test') {
+      //   await this.ipfs.start()
+      // }
 
       // Open the wallet file
       const walletData = await this.wallet.openWallet()
