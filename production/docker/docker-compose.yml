@@ -4,7 +4,7 @@ version: '3.9'
 
 services:
   mongo-p2wdb-service:
-    image: mongo:4.4
+    image: mongo:4.4.2-bionic
     container_name: mongo-p2wdb-service
     ports:
       - '5666:27017' # <host port>:<container port>
@@ -14,7 +14,7 @@ services:
     restart: always
 
   ipfs:
-    image: ipfs/go-ipfs:v0.12.0
+    image: ipfs/go-ipfs:v0.13.0
     container_name: ipfs
     environment:
       MY_ENV_VAR: 'placeholder'
@@ -46,7 +46,7 @@ services:
     #build:
     #  context: ./p2wdb/
     #  dockerfile: Dockerfile
-    image: christroutner/p2wdb-bch-dex:v1.7.0
+    image: christroutner/ipfs-p2wdb-service:v3.0.1
     container_name: p2wdb
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
@@ -66,6 +66,7 @@ services:
       #- 5669:5669 # IPFS WS Port
     volumes:
       - ../data/ipfsdata/p2wdb:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/p2wdb
+      - ./p2wdb/start-production.sh:/home/safeuser/ipfs-p2wdb-service/start-production.sh
     restart: always
 
   bch-dex:
