@@ -85,7 +85,7 @@ module.exports = {
   webhookService: process.env.WEBHOOKSERVICE
     ? process.env.WEBHOOKSERVICE
     : 'http://localhost:5010/webhook', // P2WDB.
-  p2wdbAppId: process.env.APP_ID ? process.env.APP_ID : 'bch-dex-test557',
+  p2wdbAppId: process.env.APP_ID ? process.env.APP_ID : 'bch-dex-001',
   webhookTarget: process.env.WEBHOOKTARGET
     ? process.env.WEBHOOKTARGET
     : 'http://localhost:5700/p2wdb',
@@ -104,5 +104,7 @@ module.exports = {
   ipfsHost: process.env.IPFS_HOST ? process.env.IPFS_HOST : 'localhost',
   ipfsApiPort: process.env.IPFS_API_PORT
     ? parseInt(process.env.IPFS_API_PORT)
-    : 5001
+    : 5001,
+
+  chatPubSubChan: 'psf-ipfs-chat-001'
 }
