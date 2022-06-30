@@ -46,7 +46,7 @@ services:
     #build:
     #  context: ./p2wdb/
     #  dockerfile: Dockerfile
-    image: christroutner/ipfs-p2wdb-service:v3.0.1
+    image: christroutner/ipfs-p2wdb-service:v3.0.4
     container_name: p2wdb
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
@@ -70,10 +70,10 @@ services:
     restart: always
 
   bch-dex:
-    #build:
-    #  context: ./bch-dex/
-    #  dockerfile: Dockerfile
-    image: christroutner/bch-dex:v1.7.1
+    build:
+      context: ./bch-dex/
+      dockerfile: Dockerfile
+    #image: christroutner/bch-dex:v1.7.1
     container_name: bch-dex
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
@@ -90,6 +90,7 @@ services:
       - '5700:5700' # <host port>:<container port>
     volumes:
       - ../scripts/wallet.json:/home/safeuser/bch-dex/wallet.json
+      - ./bch-dex/start-production.sh:/home/safeuser/bch-dex/start-production.sh
     restart: always
 
   dex-ui:
