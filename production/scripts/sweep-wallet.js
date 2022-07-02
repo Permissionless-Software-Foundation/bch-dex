@@ -41,7 +41,7 @@ async function sweepFunds () {
       const cashAddress = bchjs.HDNode.toCashAddress(childNode)
       const wifToSweep = bchjs.HDNode.toWIF(childNode)
 
-      console.log(`\nSweeping ${cashAddress}`)
+      console.log(`\nSweeping ${cashAddress} with private key ${wifToSweep}`)
 
       try {
         // Sweep tokens from address
