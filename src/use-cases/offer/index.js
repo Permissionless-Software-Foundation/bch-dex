@@ -379,10 +379,10 @@ class OfferUseCases {
 
         // If the Offer is older than 7 days, delete it.
         const nowMs = now.getTime()
-        const sevenDays = 1000 * 60 * 60 * 24 * 7
-        const sevenDaysAgo = nowMs - sevenDays
-        if (thisOffer.timestamp < sevenDaysAgo) {
-          console.log('Offer older than 7 days. Deleting.')
+        const eightWeeks = 1000 * 60 * 60 * 24 * 7 * 8
+        const eightWeeksAgo = nowMs - eightWeeks
+        if (thisOffer.timestamp < eightWeeksAgo) {
+          console.log('Offer older than 8 weeks. Deleting.')
           await thisOffer.remove()
         }
       }
