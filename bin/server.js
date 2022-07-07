@@ -104,7 +104,9 @@ class Server {
       // MIDDLEWARE END
 
       // Delay startup to give the P2WDB time to start first, so that it accepts the webook call
-      await this.sleep(20000)
+      if (this.config.env !== 'test') {
+        await this.sleep(20000)
+      }
 
       // Create webhook
       try {
