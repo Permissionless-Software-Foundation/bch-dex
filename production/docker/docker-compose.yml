@@ -43,10 +43,10 @@ services:
     restart: always
 
   p2wdb:
-    #build:
-    #  context: ./p2wdb/
-    #  dockerfile: Dockerfile
-    image: christroutner/ipfs-p2wdb-service:v3.0.4
+    build:
+      context: ./p2wdb/
+      dockerfile: Dockerfile
+    #image: christroutner/ipfs-p2wdb-service:v3.0.4
     container_name: p2wdb
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'

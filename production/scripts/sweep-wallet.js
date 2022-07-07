@@ -2,6 +2,8 @@
   This script will travers the HD wallet and sweep funds and tokens back
   into the root address (index 0). That root address needs to have funds
   to pay for the transactions.
+
+  This script will sweep BCH and fungible (Type 1) tokens, but not NFTs.
 */
 
 // Public npm libraries

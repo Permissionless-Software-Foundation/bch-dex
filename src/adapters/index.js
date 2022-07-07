@@ -62,8 +62,10 @@ class Adapters {
       const walletData = await this.wallet.openWallet()
       // console.log('walletData: ', walletData)
 
-      // Instance the wallet.
-      await this.wallet.instanceWallet(walletData, this.bchjs)
+      if (this.config.env !== 'test') {
+        // Instance the wallet.
+        await this.wallet.instanceWallet(walletData, this.bchjs)
+      }
 
       console.log('Async Adapters have been started.')
 
