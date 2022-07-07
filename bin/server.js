@@ -24,8 +24,8 @@ const config = require('../config') // this first.
 const AdminLib = require('../src/adapters/admin')
 // const adminLib = new AdminLib()
 
-const WebHookLib = require('../src/adapters/webhook')
-const webhookLib = new WebHookLib()
+// const WebHookLib = require('../src/adapters/webhook')
+// const webhookLib = new WebHookLib()
 
 // const JSONRPC = require('../src/rpc')
 // const rpc = new JSONRPC()
@@ -103,26 +103,26 @@ class Server {
 
       // MIDDLEWARE END
 
+      // 7/7/22 CT: This code paragraph can be deleted
       // Delay startup to give the P2WDB time to start first, so that it accepts the webook call
-      if (this.config.env !== 'test') {
-        await this.sleep(20000)
-      }
-
+      // if (this.config.env !== 'test') {
+      //   await this.sleep(20000)
+      // }
       // Create webhook
-      try {
-        try {
-          // Delete an old webhook if it exists.
-          await webhookLib.deleteWebhook(config.webhookTarget)
-        } catch (err) {
-          /* exit quietly */
-          // console.log('err deleting webhook: ', err)
-        }
-
-        await webhookLib.createWebhook(config.webhookTarget)
-        console.log('Webhook created')
-      } catch (error) {
-        console.log('Webhook cant be created')
-      }
+      // try {
+      //   try {
+      //     // Delete an old webhook if it exists.
+      //     await webhookLib.deleteWebhook(config.webhookTarget)
+      //   } catch (err) {
+      //     /* exit quietly */
+      //     // console.log('err deleting webhook: ', err)
+      //   }
+      //
+      //   await webhookLib.createWebhook(config.webhookTarget)
+      //   console.log('Webhook created')
+      // } catch (error) {
+      //   console.log('Webhook cant be created')
+      // }
 
       // startServer()
       this.server = await app.listen(config.port)
