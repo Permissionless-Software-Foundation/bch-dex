@@ -28,7 +28,9 @@ class OrderLib {
   async createOrder (entryObj) {
     try {
       console.log('createOrder(entryObj): ', entryObj)
-      // if (!entryObj) return false
+      if (!entryObj) return false
+
+      if (!entryObj.tokenId) throw new Error('entry does not contain required properties')
 
       // Specify the address to send payment.
       entryObj.makerAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress

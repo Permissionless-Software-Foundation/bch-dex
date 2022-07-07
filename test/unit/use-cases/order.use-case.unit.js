@@ -125,12 +125,18 @@ describe('#order-use-case', () => {
 
     it('should catch and throw an error', async () => {
       try {
-        await uut.createOrder()
+        await uut.createOrder({ a: 'b' })
 
         assert.fail('Unexpected code path')
       } catch (err) {
-        assert.include(err.message, 'Cannot set')
+        assert.include(err.message, 'entry does not contain required properties')
       }
+    })
+
+    it('should exit quietly if the entry is empty', async () => {
+      const result = await uut.createOrder()
+
+      assert.equal(result, false)
     })
   })
 })
