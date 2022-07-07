@@ -59,6 +59,46 @@ class WebHook {
       throw err
     }
   }
+
+  // Returns a promise that will not resolve until a webhook has been successfully
+  // created with the P2WDB.
+  // Dev Note: This was created because establishing a webhook between bch-dex
+  // and the P2WDB at startup is critical. If it's not established, then bch-dex
+  // can not 'see' new Offers and Counter Offers.
+  async waitUntilSuccess (url) {
+    try {
+      let success = false
+
+      do {
+        try {
+          // Delete an old webhook if it exists.
+          await this.deleteWebhook(this.config.webhookTarget)
+        } catch (err) {
+          /* exit quietly */
+          // console.log('err deleting webhook: ', err)
+        }
+
+        try {
+          await this.createWebhook(this.config.webhookTarget)
+          console.log('Webhook created')
+          success = true
+        } catch (err) {
+          const now = new Date()
+          console.log(`${now.toLocaleString()}: Error trying to create webhook with P2WDB. Trying again...`)
+          await sleep(2000)
+        }
+      } while (!success)
+
+      return true
+    } catch (err) {
+      console.error('Error in webhook.js/waitUntilSuccess()')
+      throw err
+    }
+  }
+}
+
+function sleep (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
 
 module.exports = WebHook

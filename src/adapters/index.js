@@ -19,6 +19,7 @@ const FullStackJWT = require('./fullstack-jwt')
 const BCHAdapter = require('./bch')
 const WalletAdapter = require('./wallet')
 const P2wdbAdapter = require('./p2wdb-adapter')
+const Webhook = require('./webhook')
 
 const config = require('../../config')
 
@@ -37,6 +38,7 @@ class Adapters {
     this.config = config
     this.wallet = new WalletAdapter()
     this.p2wdb = new P2wdbAdapter(localConfig)
+    this.webhook = new Webhook()
 
     // Get a valid JWT API key and instance bch-js.
     this.fullStackJwt = new FullStackJWT(config)
@@ -65,6 +67,9 @@ class Adapters {
       if (this.config.env !== 'test') {
         // Instance the wallet.
         await this.wallet.instanceWallet(walletData, this.bchjs)
+
+        // Wait until a webhook is established with the P2WDB
+        await this.webhook.waitUntilSuccess(this.config.webhookTarget)
       }
 
       console.log('Async Adapters have been started.')
