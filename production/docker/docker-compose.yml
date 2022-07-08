@@ -30,7 +30,7 @@ services:
       - 172.17.0.1:8080:8080
     volumes:
       - ../data/go-ipfs/data:/data/ipfs
-      - ../../swarm.key:/data/ipfs/swarm.key
+      #- ../../swarm.key:/data/ipfs/swarm.key
     # https://docs.docker.com/compose/compose-file/compose-file-v3/#command
     # https://github.com/ipfs/go-ipfs/blob/91c52657166bcf86f2476926e4fe56694dc26562/Dockerfile#L115
     command:
@@ -73,7 +73,7 @@ services:
     #build:
     #  context: ./bch-dex/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex:v1.9.0
+    image: christroutner/bch-dex:v1.9.1
     container_name: bch-dex
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
