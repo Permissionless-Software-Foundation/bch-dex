@@ -74,7 +74,7 @@ async function sweepNfts () {
 
             // Wait for indexers to update.
             console.log('Waiting for indexers to update...')
-            await bchjs.Util.sleep(20000)
+            await bchjs.Util.sleep(120000)
 
             // Send NFT to root address.
             const receiver2 = [{

@@ -42,6 +42,6 @@ export IPFS_API_PORT=5001
 export IPFS_TCP_PORT=4001
 
 # P2WDB specific env vars
-export ORBITDB_NAME=/orbitdb/zdpuAm4fPafpjs5mgbBUJV8Az7kd8Xj1ttD6M1JaAxF8RMRrw/psf-bch-p2wdb-keyvalue-v1.0.0-0004
+export ORBITDB_NAME=/orbitdb/zdpuAqNiwLiJBfbRK7uihV2hAbNSXj78ufzv5VyQb8GuvRwDh/psf-bch-p2wdb-keyvalue-v3.0.0-0001
 
 npm start
