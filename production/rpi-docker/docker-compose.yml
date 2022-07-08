@@ -3,9 +3,9 @@
 version: '3.9'
 
 services:
-  mongo-p2wdb-service:
-    image: mongo:4.4
-    container_name: mongo-p2wdb-service
+  mongo-bch-dex:
+    image: mongo:4.2.0
+    container_name: mongo-bch-dex
     ports:
       - '5666:27017' # <host port>:<container port>
     volumes:
@@ -14,7 +14,7 @@ services:
     restart: always
 
   ipfs:
-    #image: ipfs/go-ipfs:v0.12.0
+    #image: ipfs/go-ipfs:v0.13.0
     image: odanado/go-ipfs:v0.11.0
     container_name: ipfs
     environment:
@@ -31,7 +31,7 @@ services:
       - 172.17.0.1:8080:8080
     volumes:
       - ../data/go-ipfs/data:/data/ipfs
-      - ../../swarm.key:/data/ipfs/swarm.key
+    #  - ../../swarm.key:/data/ipfs/swarm.key
     # https://docs.docker.com/compose/compose-file/compose-file-v3/#command
     # https://github.com/ipfs/go-ipfs/blob/91c52657166bcf86f2476926e4fe56694dc26562/Dockerfile#L115
     command:
@@ -47,7 +47,7 @@ services:
     #build:
     #  context: ./p2wdb/
     #  dockerfile: Dockerfile
-    image: christroutner/pwd-bch-dex-rpi:v1.7.1
+    image: christroutner/p2wdb-rpi-v3.0.6
     container_name: p2wdb
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
@@ -59,7 +59,7 @@ services:
         max-file: '10'
     mem_limit: 1gb
     links:
-      - mongo-p2wdb-service
+      - mongo-bch-dex
     ports:
       # <host port>:<container port>
       - 5667:5667 # REST API
@@ -67,13 +67,14 @@ services:
       #- 5669:5669 # IPFS WS Port
     volumes:
       - ../data/ipfsdata/p2wdb:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/p2wdb
+      - ./p2wdb/start-production.sh:/home/safeuser/ipfs-p2wdb-service/start-production.sh
     restart: always
 
   bch-dex:
     #build:
     #  context: ./bch-dex/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-rpi:v1.7.1
+    image: christroutner/bch-dex-rpi:v1.8.2
     container_name: bch-dex
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
@@ -84,19 +85,20 @@ services:
         max-file: '10'
     mem_limit: 1000mb
     links:
-      - mongo-p2wdb-service
+      - mongo-bch-dex
       - p2wdb
     ports:
       - '5700:5700' # <host port>:<container port>
     volumes:
       - ../scripts/wallet.json:/home/safeuser/bch-dex/wallet.json
+      - ./bch-dex/start-production.sh:/home/safeuser/bch-dex/start-production.sh
     restart: always
 
   dex-ui:
     #build:
     #  context: ./bch-dex-ui/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-ui-rpi:v1.7.3
+    image: christroutner/bch-dex-ui-rpi:v1.7.4
     container_name: dex-ui
     logging:
       driver: 'json-file'
