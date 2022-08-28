@@ -14,40 +14,36 @@ services:
     restart: always
 
   ipfs:
-    #image: ipfs/go-ipfs:v0.13.0
-    image: odanado/go-ipfs:v0.11.0
+    image: christroutner/trickle-ipfs-rpi:v1.0.1
+    #image: odanado/go-ipfs:v0.11.0
     container_name: ipfs
     environment:
-      MY_ENV_VAR: 'placeholder'
+      IPFS_DAEMON_ARGUMENTS: '--enable-pubsub-experiment --migrate=true --agent-version-suffix=docker --routing=dhtclient'
+      UPLOAD_KBPS: '25'
+      DOWNLOAD_KBPS: '25'
     logging:
       driver: 'json-file'
       options:
         max-size: '10m'
         max-file: '10'
-    mem_limit: 2000mb
+    mem_limit: 1000mb
     ports:
       - 4001:4001
+      - 4003:4003
       - 172.17.0.1:5001:5001
       - 172.17.0.1:8080:8080
     volumes:
-      - ../data/go-ipfs/data:/data/ipfs
-    #  - ../../swarm.key:/data/ipfs/swarm.key
-    # https://docs.docker.com/compose/compose-file/compose-file-v3/#command
-    # https://github.com/ipfs/go-ipfs/blob/91c52657166bcf86f2476926e4fe56694dc26562/Dockerfile#L115
-    command:
-      [
-        'daemon',
-        '--migrate=true',
-        '--agent-version-suffix=docker',
-        '--enable-pubsub-experiment'
-      ]
+      - ./data/go-ipfs:/root/.ipfs
+    command: [
+      './start-ipfs.sh'
+    ]
     restart: always
 
   p2wdb:
     #build:
     #  context: ./p2wdb/
     #  dockerfile: Dockerfile
-    image: christroutner/p2wdb-rpi-v3.0.6
+    image: christroutner/p2wdb-rpi:v3.0.10
     container_name: p2wdb
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
@@ -72,9 +68,9 @@ services:
 
   bch-dex:
     #build:
-    #  context: ./bch-dex/
+    # context: ./bch-dex/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-rpi:v1.8.2
+    image: christroutner/bch-dex-rpi:v1.8.3
     container_name: bch-dex
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
@@ -98,7 +94,7 @@ services:
     #build:
     #  context: ./bch-dex-ui/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-ui-rpi:v1.7.4
+    image: christroutner/bch-dex-ui-rpi:v1.7.5
     container_name: dex-ui
     logging:
       driver: 'json-file'
