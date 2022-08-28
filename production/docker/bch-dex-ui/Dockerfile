@@ -37,7 +37,7 @@ WORKDIR /home/safeuser
 RUN npm install -g npm
 
 # npm mirror to prevent direct dependency on npm.
-RUN npm set registry http://94.130.170.209:4873/
+#RUN npm set registry http://94.130.170.209:4873/
 
 # Switch to user account.
 #USER safeuser
@@ -46,11 +46,11 @@ RUN npm set registry http://94.130.170.209:4873/
 
 # Clone the rest.bitcoin.com repository
 WORKDIR /home/safeuser
-RUN git clone https://github.com/Permissionless-Software-Foundation/bch-dex-ui
+RUN git clone https://github.com/Permissionless-Software-Foundation/bch-dex-ui-v2
 
 # Switch to the desired branch. `master` is usually stable,
 # and `stage` has the most up-to-date changes.
-WORKDIR /home/safeuser/bch-dex-ui
+WORKDIR /home/safeuser/bch-dex-ui-v2
 
 # For development: switch to unstable branch
 RUN git checkout ct-unstable
@@ -58,7 +58,7 @@ RUN git checkout ct-unstable
 # Install dependencies
 #RUN mkdir .ipfsdata
 #RUN npm install -g @mapbox/node-pre-gyp
-RUN npm install --force
+RUN npm install
 
 # Build the site
 RUN CI=true npm run build
@@ -68,6 +68,6 @@ FROM nginx
 EXPOSE 80
 
 # Copy the files built in the first container to the new NGINX container.
-COPY --from=builder /home/safeuser/bch-dex-ui/public /usr/share/nginx/html
+COPY --from=builder /home/safeuser/bch-dex-ui-v2/build /usr/share/nginx/html
 
 #USER safeuser

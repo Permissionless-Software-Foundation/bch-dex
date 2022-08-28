@@ -73,7 +73,7 @@ services:
     #build:
     #  context: ./bch-dex/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex:v1.9.1
+    image: christroutner/bch-dex:v1.9.2
     container_name: bch-dex
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
@@ -97,7 +97,7 @@ services:
     #build:
     #  context: ./bch-dex-ui/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-ui:v1.6.5
+    image: christroutner/bch-dex-ui:v1.6.6
     container_name: dex-ui
     environment:
       SERVER: 'http://192.168.2.3'
