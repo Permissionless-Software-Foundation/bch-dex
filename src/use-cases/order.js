@@ -198,10 +198,17 @@ class OrderLib {
         let utxoStatus = null
         try {
           // Get the status of the UTXO associate with this Order.
-          utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
-            thisOrder.utxoTxid,
-            thisOrder.utxoVout
-          )
+          // utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
+          //   thisOrder.utxoTxid,
+          //   thisOrder.utxoVout
+          // )
+
+          // Get the status of the UTXO associate with this Order.
+          const utxo = {
+            tx_hash: thisOrder.utxoTxid,
+            tx_pos: thisOrder.utxoVout
+          }
+          utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
           // console.log('utxoStatus: ', utxoStatus)
         } catch (err) {
           // Handle corner case of bad-data in the Order model.
@@ -210,7 +217,7 @@ class OrderLib {
             await thisOrder.remove()
             continue
           } else if (err.isAxiosError) {
-            console.log('Error trying to contact api.fullstack.cash')
+            console.log('Error trying to contact wallet service: ', err)
             continue
           } else {
             throw err
