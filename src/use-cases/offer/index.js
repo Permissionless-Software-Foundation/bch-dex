@@ -352,10 +352,17 @@ class OfferUseCases {
         let utxoStatus = null
         try {
           // Get the status of the UTXO associate with this Offer.
-          utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
-            thisOffer.utxoTxid,
-            thisOffer.utxoVout
-          )
+          // utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
+          //   thisOffer.utxoTxid,
+          //   thisOffer.utxoVout
+          // )
+
+          // Get the status of the UTXO associate with this Offer.
+          const utxo = {
+            tx_hash: thisOffer.utxoTxid,
+            tx_pos: thisOffer.utxoVout
+          }
+          utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
           // console.log('utxoStatus: ', utxoStatus)
         } catch (err) {
           // Handle corner case of bad-data in the Offer model.
@@ -364,7 +371,7 @@ class OfferUseCases {
             await thisOffer.remove()
             continue
           } else if (err.isAxiosError) {
-            console.log('Error trying to contact api.fullstack.cash')
+            console.log('Error trying to contact wallet service: ', err)
             continue
           } else {
             throw err
