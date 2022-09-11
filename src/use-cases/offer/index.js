@@ -146,15 +146,21 @@ class OfferUseCases {
       }
 
       // Verify that UTXO for sale is unspent. Abort if it's been spent.
-      const txid = offerInfo.utxoTxid
-      const vout = offerInfo.utxoVout
-      const utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
-        txid,
-        vout
-      )
+      // const txid = offerInfo.utxoTxid
+      // const vout = offerInfo.utxoVout
+
+      const utxo = {
+        tx_hash: offerInfo.utxoTxid,
+        tx_pos: offerInfo.utxoVout
+      }
+      const utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
+      // const utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
+      //   txid,
+      //   vout
+      // )
       console.log('utxoStatus: ', utxoStatus)
-      if (utxoStatus === null) {
-        console.log(`utxo txid: ${txid}, vout: ${vout}`)
+      if (!utxoStatus) {
+        console.log(`utxo txid: ${offerInfo.utxoTxid}, vout: ${offerInfo.utxoVout}`)
 
         // TODO: Mark this Offer as 'dead'
 
@@ -235,6 +241,9 @@ class OfferUseCases {
 
       await this.adapters.wallet.bchWallet.walletInfoPromise
       // console.log(`utxos: ${JSON.stringify(this.adapters.wallet.bchWallet.utxos.utxoStore, null, 2)}`)
+
+      // Refresh the wallet UTXOs
+      await this.adapters.wallet.bchWallet.initialize()
 
       // Ensure the app wallet has enough funds to write to the P2WDB.
       const wif = this.adapters.wallet.bchWallet.walletInfo.privateKey
