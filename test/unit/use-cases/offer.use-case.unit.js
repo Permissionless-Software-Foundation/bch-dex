@@ -13,6 +13,7 @@ const sinon = require('sinon')
 const OfferLib = require('../../../src/use-cases/offer')
 const OrderUseCase = require('../../../src/use-cases/order')
 const adapters = require('../mocks/adapters')
+const mockData = require('../mocks/use-cases/offer-mock-data.js')
 
 describe('#offer-use-case', () => {
   let uut
@@ -118,11 +119,47 @@ describe('#offer-use-case', () => {
         },
         coinbase: false
       })
+      sandbox.stub(uut, 'categorizeToken').resolves('fungible')
 
       const result = await uut.createOffer(offerObj)
       // console.log('result: ', result)
 
       assert.equal(result, true)
+    })
+  })
+
+  describe('#categorizeToken', () => {
+    it('should categorize an NFT', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves(mockData.nftTokenData01)
+
+      const offerData = mockData.nftOffer01
+
+      const result = await uut.categorizeToken(offerData)
+
+      assert.equal(result, 'nft')
+    })
+
+    it('should categorize a simple NFT', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves(mockData.simpleNftTokenData01)
+
+      const offerData = mockData.simpleNftOffer01
+
+      const result = await uut.categorizeToken(offerData)
+
+      assert.equal(result, 'simple-nft')
+    })
+
+    it('should categorize a fungible token', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves(mockData.fungibleTokenData01)
+
+      const offerData = mockData.fungibleOffer01
+
+      const result = await uut.categorizeToken(offerData)
+
+      assert.equal(result, 'fungible')
     })
   })
 })

@@ -34,6 +34,7 @@ class MockBchWallet {
         tokenTicker: 'TROUT'
       }]
     }
+    this.getTokenData = async () => {}
 
     // Environment variable is used by wallet-balance.unit.js to force an error.
     if (process.env.NO_UTXO) {
