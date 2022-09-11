@@ -27,6 +27,7 @@ const Offer = new mongoose.Schema({
   timestamp: { type: Number },
   globalTimestamp: { type: String },
   localTimestamp: { type: String },
+  displayCategory: { type: String },
 
   // SWaP Protocol Properties
   lokadId: { type: String },

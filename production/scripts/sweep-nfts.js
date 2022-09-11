@@ -64,6 +64,8 @@ async function sweepNfts () {
           if (thisToken.tokenType === 65) {
             console.log(`NFT ${thisToken.ticker} (${thisToken.name}) found. Sweeping to ${rootAddr}`)
 
+            await walletRoot.initialize()
+
             // Send BCH to the child address, to pay for transaction fees.
             const receiver1 = [{
               address: cashAddress,
@@ -75,6 +77,8 @@ async function sweepNfts () {
             // Wait for indexers to update.
             console.log('Waiting for indexers to update...')
             await bchjs.Util.sleep(120000)
+
+            await walletChild.initialize()
 
             // Send NFT to root address.
             const receiver2 = [{

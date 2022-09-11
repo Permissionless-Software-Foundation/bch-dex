@@ -80,8 +80,11 @@ class OfferUseCases {
       const offerEntity = this.offerEntity.validate(offerObj)
       console.log('offerEntity: ', offerEntity)
 
-      // const displayCategory = await this.categorizeToken(offerEntity)
-      // console.log('displayCategory: ', displayCategory)
+      // Generate a 'display category' for the token. This will allow the
+      // front end UI to figure out how to display the token.
+      const displayCategory = await this.categorizeToken(offerEntity)
+      console.log('displayCategory: ', displayCategory)
+      offerEntity.displayCategory = displayCategory
 
       // Add offer to the local database.
       const offerModel = new this.OfferModel(offerEntity)
@@ -105,14 +108,35 @@ class OfferUseCases {
   // with a quantity of 1, decimals of 0, and no minting baton. Categorizing this
   // type of token is the main reason why this function exists.
   async categorizeToken (offerData) {
-    console.log(`categorizeToken(): ${JSON.stringify(offerData, null, 2)}`)
+    try {
+      console.log(`categorizeToken(): ${JSON.stringify(offerData, null, 2)}`)
 
-    const tokenId = offerData.tokenId
+      const tokenId = offerData.tokenId
 
-    const tokenData = await this.adapters.wallet.bchWallet.getTokenData(tokenId)
-    console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
+      const tokenData = await this.adapters.wallet.bchWallet.getTokenData(tokenId)
+      console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
 
-    return 'placeholder'
+      if (tokenData.genesisData.type === 65) {
+        return 'nft'
+      }
+
+      // Create a set of checks to detect a simple NFT
+      const isType1 = tokenData.genesisData.type === 1
+      const hasNoMintingBaton = !tokenData.genesisData.mintBatonIsActive
+      const hasNoDecimals = !tokenData.genesisData.decimals
+      const hasQtyOfOne = parseInt(tokenData.genesisData.tokensInCirculationStr) === 1
+
+      if (isType1 && hasNoMintingBaton && hasNoDecimals && hasQtyOfOne) {
+        return 'simple-nft'
+      }
+
+      if (isType1) return 'fungible'
+
+      throw new Error(`Unknown token type: ${tokenData.genesisData.type}`)
+    } catch (err) {
+      console.error('Error in use-cases/offer/index.js categorizeToken(): ', err)
+      throw err
+    }
   }
 
   async listOffers () {
