@@ -71,6 +71,10 @@ class Adapters {
 
         // Wait until a webhook is established with the P2WDB
         await this.webhook.waitUntilSuccess(this.config.webhookTarget)
+
+        // Overwrite instances of wallet used by P2WDB lib.
+        this.p2wdb.bchWallet = this.wallet.bchWallet
+        this.p2wdb.bchjs = this.wallet.bchWallet.bchjs
       }
 
       console.log('Async Adapters have been started.')
