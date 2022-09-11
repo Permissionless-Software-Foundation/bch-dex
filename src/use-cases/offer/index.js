@@ -80,6 +80,9 @@ class OfferUseCases {
       const offerEntity = this.offerEntity.validate(offerObj)
       console.log('offerEntity: ', offerEntity)
 
+      // const displayCategory = await this.categorizeToken(offerEntity)
+      // console.log('displayCategory: ', displayCategory)
+
       // Add offer to the local database.
       const offerModel = new this.OfferModel(offerEntity)
       await offerModel.save()
@@ -89,6 +92,27 @@ class OfferUseCases {
       console.error('Error in createOffer()')
       throw err
     }
+  }
+
+  // Categorize the token for display purposes. This will categorize a token
+  // into one of these categories:
+  // - nft
+  // - group
+  // - fungible
+  // - simple-nft
+  //
+  // The first three are easy to categorize. The simple-nft is a fungible token
+  // with a quantity of 1, decimals of 0, and no minting baton. Categorizing this
+  // type of token is the main reason why this function exists.
+  async categorizeToken (offerData) {
+    console.log(`categorizeToken(): ${JSON.stringify(offerData, null, 2)}`)
+
+    const tokenId = offerData.tokenId
+
+    const tokenData = await this.adapters.wallet.bchWallet.getTokenData(tokenId)
+    console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
+
+    return 'placeholder'
   }
 
   async listOffers () {
@@ -362,6 +386,8 @@ class OfferUseCases {
             tx_hash: thisOffer.utxoTxid,
             tx_pos: thisOffer.utxoVout
           }
+          // console.log(`Checking this UTXO: ${JSON.stringify(utxo, null, 2)}`)
+
           utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
           // console.log('utxoStatus: ', utxoStatus)
         } catch (err) {
@@ -379,7 +405,7 @@ class OfferUseCases {
         }
 
         // If the Offer UTXO is spent, delete the Offer model.
-        if (utxoStatus === null) {
+        if (!utxoStatus) {
           console.log(`Spent UTXO detected. Deleting this Offer: ${JSON.stringify(thisOffer, null, 2)}`)
           await thisOffer.remove()
         }
