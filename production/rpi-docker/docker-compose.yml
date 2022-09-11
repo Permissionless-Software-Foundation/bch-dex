@@ -67,10 +67,10 @@ services:
     restart: always
 
   bch-dex:
-    #build:
-    # context: ./bch-dex/
-    #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-rpi:v1.9.6
+    build:
+     context: ./bch-dex/
+     dockerfile: Dockerfile
+    #image: christroutner/bch-dex-rpi:v1.9.8
     container_name: bch-dex
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
