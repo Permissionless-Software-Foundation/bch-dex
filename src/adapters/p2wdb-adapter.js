@@ -12,9 +12,9 @@ const config = require('../../config')
 class P2wdbAdapter {
   constructor (localConfig = {}) {
     // Dependency injection
-    this.bchjs = localConfig.bchjs
-    if (!this.bchjs) {
-      throw new Error('Must pass an instance of bch-js when instantiating p2wdb.js adapter.')
+    this.bchWallet = localConfig.bchWallet
+    if (!this.bchWallet) {
+      throw new Error('Must pass an instance of minimal-slp-wallet as bchWallet when instantiating p2wdb.js adapter.')
     }
 
     // Encapsulate dependencies
@@ -22,6 +22,7 @@ class P2wdbAdapter {
     this.config = config
     this.Write = Write
     this.Read = Read
+    this.bchjs = this.bchWallet.bchjs
 
     // Allow the localConfig to overwrite the config file values.
     this.p2wdbURL = localConfig.p2wdbURL || config.p2wdbUrl
@@ -51,6 +52,10 @@ class P2wdbAdapter {
   // settings.
   instantiateWriteLib (wif) {
     try {
+      if (!wif) {
+        throw new Error('WIF input required when calling instantiateWriteLib()')
+      }
+
       // Object used to configure the Write library.
       let configObj = {}
 
@@ -62,7 +67,8 @@ class P2wdbAdapter {
           wif,
           serverURL: this.p2wdbURL,
           restURL: this.bchjs.restURL,
-          apiToken: this.bchjs.apiToken
+          apiToken: this.bchjs.apiToken,
+          bchWallet: this.bchWallet
         }
       } else {
         // Use web 3 infrastructure.
@@ -72,7 +78,8 @@ class P2wdbAdapter {
           wif,
           serverURL: this.p2wdbURL,
           interface: 'consumer-api',
-          restURL: this.config.consumerUrl
+          restURL: this.config.consumerUrl,
+          bchWallet: this.bchWallet
         }
       }
 

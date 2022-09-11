@@ -37,6 +37,7 @@ class Adapters {
     this.bch = new BCHAdapter()
     this.config = config
     this.wallet = new WalletAdapter()
+    localConfig.bchWallet = this.wallet.bchWallet
     this.p2wdb = new P2wdbAdapter(localConfig)
     this.webhook = new Webhook()
 

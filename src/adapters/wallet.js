@@ -20,9 +20,10 @@ class WalletAdapter {
     // Encapsulate dependencies
     this.jsonFiles = new JsonFiles()
     this.WALLET_FILE = WALLET_FILE
-    this.BchWallet = BchWallet
     this.config = config
     this.bitcoinJs = bitcoinJs
+    this.BchWallet = BchWallet
+    this.bchWallet = {} // Will be replaced when initialized.
   }
 
   // Open the wallet file, or create one if the file doesn't exist.
@@ -91,6 +92,7 @@ class WalletAdapter {
 
       // Wait for wallet to initialize.
       await this.bchWallet.walletInfoPromise
+      await this.bchWallet.initialize()
       console.log(`BCH wallet initialized. Wallet address: ${this.bchWallet.walletInfo.cashAddress}`)
       // console.log(`this.bchWallet.walletInfo: ${JSON.stringify(this.bchWallet.walletInfo, null, 2)}`)
 

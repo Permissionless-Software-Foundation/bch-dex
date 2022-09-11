@@ -5,31 +5,34 @@
 // Public npm libraries.
 const assert = require('chai').assert
 const sinon = require('sinon')
-const BCHJS = require('@psf/bch-js')
+// const BCHJS = require('@psf/bch-js')
+const BchWallet = require('minimal-slp-wallet/index.js')
 
 // Local libraries.
 const P2wdbAdapter = require('../../../src/adapters/p2wdb-adapter')
 
 describe('#P2wdbAdapter', () => {
-  let uut, sandbox
+  let uut, sandbox, bchWallet
 
-  beforeEach(() => {
-    const bchjs = new BCHJS()
+  beforeEach(async () => {
+    // const bchjs = new BCHJS()
+    bchWallet = new BchWallet()
+    await bchWallet.walletInfoPromise
 
-    uut = new P2wdbAdapter({ bchjs })
+    uut = new P2wdbAdapter({ bchWallet })
     sandbox = sinon.createSandbox()
   })
 
   afterEach(() => sandbox.restore())
 
   describe('#constructor', () => {
-    it('should throw error if bch-js is not passed in', () => {
+    it('should throw error if bchWallet is not passed in', () => {
       try {
         uut = new P2wdbAdapter()
 
         assert.fail('Unexpected coded path')
       } catch (err) {
-        assert.include(err.message, 'Must pass an instance of bch-js when instantiating p2wdb.js adapter.')
+        assert.include(err.message, 'Must pass an instance of minimal-slp-wallet as bchWallet when instantiating p2wdb.js adapter.')
       }
     })
   })
@@ -82,7 +85,7 @@ describe('#P2wdbAdapter', () => {
         assert.fail('Unexpected code path')
       } catch (err) {
         // console.log(err)
-        assert.include(err.message, 'WIF private key required')
+        assert.include(err.message, 'WIF input required when calling instantiateWriteLib()')
       }
     })
   })

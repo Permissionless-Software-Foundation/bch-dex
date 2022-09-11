@@ -80,6 +80,9 @@ class OfferUseCases {
       const offerEntity = this.offerEntity.validate(offerObj)
       console.log('offerEntity: ', offerEntity)
 
+      const displayCategory = this.categorizeToken(offerEntity)
+      console.log('displayCategory: ', displayCategory)
+
       // Add offer to the local database.
       const offerModel = new this.OfferModel(offerEntity)
       await offerModel.save()
@@ -89,6 +92,21 @@ class OfferUseCases {
       console.error('Error in createOffer()')
       throw err
     }
+  }
+
+  // Categorize the token for display purposes. This will categorize a token
+  // into one of these categories:
+  // - nft
+  // - group
+  // - fungible
+  // - simple-nft
+  //
+  // The first three are easy to categorize. The simple-nft is a fungible token
+  // with a quantity of 1, decimals of 0, and no minting baton. Categorizing this
+  // type of token is the main reason why this function exists.
+  categorizeToken (offerData) {
+    console.log(`categorizeToken(): ${JSON.stringify(offerData, null, 2)}`)
+    return 'placeholder'
   }
 
   async listOffers () {
