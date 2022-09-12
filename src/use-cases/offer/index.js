@@ -17,6 +17,10 @@
 const OfferEntity = require('../../entities/offer')
 const config = require('../../../config')
 
+const DEFAULT_ENTRIES_PER_PAGE = 20
+const NFT_ENTRIES_PER_PAGE = 6
+const FUNGIBLE_ENTRIES_PER_PAGE = 20
+
 class OfferUseCases {
   constructor (localConfig = {}) {
     // console.log('User localConfig: ', localConfig)
@@ -139,11 +143,57 @@ class OfferUseCases {
     }
   }
 
-  async listOffers () {
+  async listOffers (page = 0) {
     try {
-      return this.OfferModel.find({}).sort('-timestamp')
+      const data = await this.OfferModel.find({})
+      // Sort entries so newest entries show first.
+        .sort('-timestamp')
+      // Skip to the start of the selected page.
+        .skip(page * DEFAULT_ENTRIES_PER_PAGE)
+      // Only return 20 results.
+        .limit(DEFAULT_ENTRIES_PER_PAGE)
+
+      return data
     } catch (error) {
       console.error('Error in use-cases/offer/listOffers()')
+      throw error
+    }
+  }
+
+  async listNftOffers (page = 0) {
+    try {
+      const data = await this.OfferModel.find({ displayCategory: { $ne: 'fungible' } })
+      // Sort entries so newest entries show first.
+        .sort('-timestamp')
+      // Skip to the start of the selected page.
+        .skip(page * NFT_ENTRIES_PER_PAGE)
+      // Only return 20 results.
+        .limit(NFT_ENTRIES_PER_PAGE)
+
+      // console.log('listNftOffers() returning this data: ', data)
+
+      return data
+    } catch (error) {
+      console.error('Error in use-cases/offer/listNftOffers()')
+      throw error
+    }
+  }
+
+  async listFungibleOffers (page = 0) {
+    try {
+      const data = await this.OfferModel.find({ displayCategory: 'fungible' })
+      // Sort entries so newest entries show first.
+        .sort('-timestamp')
+      // Skip to the start of the selected page.
+        .skip(page * FUNGIBLE_ENTRIES_PER_PAGE)
+      // Only return 20 results.
+        .limit(FUNGIBLE_ENTRIES_PER_PAGE)
+
+      // console.log('listFungibleOffers() returning this data: ', data)
+
+      return data
+    } catch (error) {
+      console.error('Error in use-cases/offer/listFungibleOffers()')
       throw error
     }
   }
