@@ -49,14 +49,47 @@ class OfferRESTControllerLib {
     }
   }
 
-  // curl -X GET http://localhost:5700/offer/list
+  // curl -X GET http://localhost:5700/offer/list/all/0
   async listOffers (ctx) {
     try {
-      const offers = await _this.useCases.offer.listOffers()
+      let page = ctx.params.page
+      if (!page) page = 0
+
+      const offers = await _this.useCases.offer.listOffers(page)
 
       ctx.body = offers
     } catch (err) {
-      console.log('Error in listOffers REST API handler.')
+      console.log('Error in listOffers REST API handler: ', err)
+      _this.handleError(ctx, err)
+    }
+  }
+
+  // curl -X GET http://localhost:5700/offer/list/nft/0
+  async listNftOffers (ctx) {
+    try {
+      let page = ctx.params.page
+      if (!page) page = 0
+
+      const offers = await _this.useCases.offer.listNftOffers(page)
+
+      ctx.body = offers
+    } catch (err) {
+      console.log('Error in listNftOffers REST API handler: ', err)
+      _this.handleError(ctx, err)
+    }
+  }
+
+  // curl -X GET http://localhost:5700/offer/list/fungible/0
+  async listFungibleOffers (ctx) {
+    try {
+      let page = ctx.params.page
+      if (!page) page = 0
+
+      const offers = await _this.useCases.offer.listFungibleOffers(page)
+
+      ctx.body = offers
+    } catch (err) {
+      console.log('Error in Fungible REST API handler: ', err)
       _this.handleError(ctx, err)
     }
   }
