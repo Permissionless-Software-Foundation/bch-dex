@@ -28,6 +28,8 @@ const Offer = new mongoose.Schema({
   globalTimestamp: { type: String },
   localTimestamp: { type: String },
   displayCategory: { type: String },
+  nsfw: { type: Boolean, default: false },
+  flags: { type: Array },
 
   // SWaP Protocol Properties
   lokadId: { type: String },
