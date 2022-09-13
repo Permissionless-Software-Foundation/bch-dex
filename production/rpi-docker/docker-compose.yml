@@ -46,7 +46,7 @@ services:
     image: christroutner/p2wdb-rpi:v3.0.10
     container_name: p2wdb
     environment:
-      CONSUMER_URL: 'https://free-bch.fullstack.cash'
+      CONSUMER_URL: 'https://wa-usa-bch-consumer.fullstackcash.nl'
       DEBUG_LEVEL: 1
     logging:
       driver: 'json-file'
@@ -67,13 +67,14 @@ services:
     restart: always
 
   bch-dex:
-    build:
-     context: ./bch-dex/
-     dockerfile: Dockerfile
-    #image: christroutner/bch-dex-rpi:v1.9.8
+    #build:
+    # context: ./bch-dex/
+    # dockerfile: Dockerfile
+    image: christroutner/bch-dex-rpi:v1.13.0
     container_name: bch-dex
     environment:
-      CONSUMER_URL: 'https://free-bch.fullstack.cash'
+      #CONSUMER_URL: 'https://free-bch.fullstack.cash'
+      CONSUMER_URL: 'https://wa-usa-bch-consumer.fullstackcash.nl'
     logging:
       driver: 'json-file'
       options:
@@ -94,7 +95,7 @@ services:
     #build:
     #  context: ./bch-dex-ui/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-ui-rpi:v1.7.5
+    image: christroutner/bch-dex-ui-rpi:v1.30.0
     container_name: dex-ui
     logging:
       driver: 'json-file'
