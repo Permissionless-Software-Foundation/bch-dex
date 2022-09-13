@@ -160,9 +160,12 @@ class OfferUseCases {
     }
   }
 
-  async listNftOffers (page = 0) {
+  async listNftOffers (page = 0, nsfw = false) {
     try {
-      const data = await this.OfferModel.find({ displayCategory: { $ne: 'fungible' } })
+      const data = await this.OfferModel.find({
+        displayCategory: { $ne: 'fungible' },
+        nsfw
+      })
       // Sort entries so newest entries show first.
         .sort('-timestamp')
       // Skip to the start of the selected page.
@@ -506,6 +509,34 @@ class OfferUseCases {
       console.error('Error in removeStaleOffers(): ', err)
       throw err
     }
+  }
+
+  async flagOffer (flagData) {
+    console.log(`flagData: ${JSON.stringify(flagData, null, 2)}`)
+
+    const p2wdbHash = flagData.data.p2wdbHash
+
+    // Get the offer from the database.
+    const offer = await this.findOfferByHash(p2wdbHash)
+    console.log(`Flagging this offer: ${JSON.stringify(offer, null, 2)}`)
+
+    if (!offer) {
+      throw new Error(`Offer ${p2wdbHash} not found in the database.`)
+    }
+
+    // Add the raw flag data to the database model.
+    offer.flags.push(flagData)
+
+    // If flag count is 3 or more, mark the Offer as NSFW
+    const flagCnt = offer.flags.length
+    if (flagCnt >= 3) {
+      offer.nsfw = true
+    }
+
+    // Save the updated offer data to the database.
+    await offer.save()
+
+    return true
   }
 }
 
