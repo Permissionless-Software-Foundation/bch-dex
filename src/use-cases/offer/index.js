@@ -13,6 +13,9 @@
   a partially signed transaction.
  */
 
+// Global npm libraries
+const axios = require('axios')
+
 // Local libraries
 const OfferEntity = require('../../entities/offer')
 const config = require('../../../config')
@@ -39,6 +42,7 @@ class OfferUseCases {
 
     // Encapsulate dependencies
     this.config = config
+    this.axios = axios
 
     this.offerEntity = new OfferEntity()
     this.OfferModel = this.adapters.localdb.Offer
@@ -84,11 +88,21 @@ class OfferUseCases {
       const offerEntity = this.offerEntity.validate(offerObj)
       console.log('offerEntity: ', offerEntity)
 
+      // Get data about the token.
+      const tokenId = offerEntity.tokenId
+      const tokenData = await this.adapters.wallet.bchWallet.getTokenData(tokenId)
+      console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
+
       // Generate a 'display category' for the token. This will allow the
       // front end UI to figure out how to display the token.
-      const displayCategory = await this.categorizeToken(offerEntity)
+      const displayCategory = await this.categorizeToken(offerEntity, tokenData)
       console.log('displayCategory: ', displayCategory)
       offerEntity.displayCategory = displayCategory
+
+      // Detect if user set the NSFW flag.
+      let nsfw = false
+      nsfw = await this.detectNsfw(tokenData)
+      offerEntity.nsfw = nsfw
 
       // Add offer to the local database.
       const offerModel = new this.OfferModel(offerEntity)
@@ -97,6 +111,39 @@ class OfferUseCases {
       return true
     } catch (err) {
       console.error('Error in createOffer()')
+      throw err
+    }
+  }
+
+  // By default this function returns false, to indicate the NFT is safe for work.
+  // If the user who created the token sets the nsfw property in the mutable data,
+  // this function will return true.
+  async detectNsfw (tokenData) {
+    try {
+      let nsfw = false
+
+      const cid = tokenData.mutableData.substring(7)
+
+      // Retrieve the mutable data from Filecoin/IPFS.
+      const url = `https://${cid}.ipfs.w3s.link/data.json`
+      const result = await axios.get(url)
+      const mutableData = result.data
+      console.log(`mutableData: ${JSON.stringify(mutableData, null, 2)}`)
+
+      // Logical tests
+      const hasNsfw = !!mutableData.nsfw
+      const nsfwSetTrue = mutableData.nsfw === true
+      const nsfwStringTrue = mutableData.nsfw === 'true'
+      const nsfwDetected = hasNsfw && (nsfwSetTrue || nsfwStringTrue)
+
+      if (nsfwDetected) {
+        console.log('NSFW flag set as true')
+        nsfw = true
+      }
+
+      return nsfw
+    } catch (err) {
+      console.error('Error in detectNsfw(): ', err)
       throw err
     }
   }
@@ -111,14 +158,14 @@ class OfferUseCases {
   // The first three are easy to categorize. The simple-nft is a fungible token
   // with a quantity of 1, decimals of 0, and no minting baton. Categorizing this
   // type of token is the main reason why this function exists.
-  async categorizeToken (offerData) {
+  async categorizeToken (offerData, tokenData) {
     try {
-      console.log(`categorizeToken(): ${JSON.stringify(offerData, null, 2)}`)
+      // console.log(`categorizeToken(): ${JSON.stringify(offerData, null, 2)}`)
 
-      const tokenId = offerData.tokenId
-
-      const tokenData = await this.adapters.wallet.bchWallet.getTokenData(tokenId)
-      console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
+      // const tokenId = offerData.tokenId
+      //
+      // const tokenData = await this.adapters.wallet.bchWallet.getTokenData(tokenId)
+      // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
 
       if (tokenData.genesisData.type === 65) {
         return 'nft'
