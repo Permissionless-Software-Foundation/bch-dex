@@ -74,6 +74,9 @@ describe('#offer-use-case', () => {
 
       // Mock dependencies
       sandbox.stub(uut.adapters.bchjs.Blockchain, 'getTxOut').resolves(null)
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves({})
+      sandbox.stub(uut, 'categorizeToken').resolves('nft')
+      sandbox.stub(uut, 'detectNsfw').resolves(false)
 
       const result = await uut.createOffer(offerObj)
       // console.log('result: ', result)
@@ -120,6 +123,8 @@ describe('#offer-use-case', () => {
         coinbase: false
       })
       sandbox.stub(uut, 'categorizeToken').resolves('fungible')
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves({})
+      sandbox.stub(uut, 'detectNsfw').resolves(false)
 
       const result = await uut.createOffer(offerObj)
       // console.log('result: ', result)
@@ -131,33 +136,36 @@ describe('#offer-use-case', () => {
   describe('#categorizeToken', () => {
     it('should categorize an NFT', async () => {
       // Mock dependencies
-      sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves(mockData.nftTokenData01)
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves(mockData.nftTokenData01)
 
       const offerData = mockData.nftOffer01
+      const tokenData = mockData.nftTokenData01
 
-      const result = await uut.categorizeToken(offerData)
+      const result = await uut.categorizeToken(offerData, tokenData)
 
       assert.equal(result, 'nft')
     })
 
     it('should categorize a simple NFT', async () => {
       // Mock dependencies
-      sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves(mockData.simpleNftTokenData01)
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves(mockData.simpleNftTokenData01)
 
       const offerData = mockData.simpleNftOffer01
+      const tokenData = mockData.simpleNftTokenData01
 
-      const result = await uut.categorizeToken(offerData)
+      const result = await uut.categorizeToken(offerData, tokenData)
 
       assert.equal(result, 'simple-nft')
     })
 
     it('should categorize a fungible token', async () => {
       // Mock dependencies
-      sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves(mockData.fungibleTokenData01)
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves(mockData.fungibleTokenData01)
 
       const offerData = mockData.fungibleOffer01
+      const tokenData = mockData.fungibleTokenData01
 
-      const result = await uut.categorizeToken(offerData)
+      const result = await uut.categorizeToken(offerData, tokenData)
 
       assert.equal(result, 'fungible')
     })
