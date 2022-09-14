@@ -122,7 +122,13 @@ class OfferUseCases {
     try {
       let nsfw = false
 
-      const cid = tokenData.mutableData.substring(7)
+      const mutableCid = tokenData.mutableData
+
+      // If there is no mutable IPFS CID, then skip this token.
+      if (!mutableCid.includes('ipfs://')) return nsfw
+
+      // Revove the ipfs:// prefix.
+      const cid = mutableCid.substring(7)
 
       // Retrieve the mutable data from Filecoin/IPFS.
       const url = `https://${cid}.ipfs.w3s.link/data.json`
@@ -144,7 +150,7 @@ class OfferUseCases {
       return nsfw
     } catch (err) {
       console.error('Error in detectNsfw(): ', err)
-      throw err
+      return false
     }
   }
 
