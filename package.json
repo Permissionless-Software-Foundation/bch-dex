@@ -1,6 +1,6 @@
 {
   "name": "bch-dex",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A DEX on BCH for trading SLP tokens.",
   "main": "index.js",
   "type": "module",
