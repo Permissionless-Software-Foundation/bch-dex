@@ -3,8 +3,9 @@
 */
 
 // Public NPM libraries
-const BchWallet = require('minimal-slp-wallet/index')
-const fs = require('fs').promises
+import BchWallet from 'minimal-slp-wallet/index'
+
+import { promises as fs } from 'fs'
 
 async function createWallet () {
   try {
