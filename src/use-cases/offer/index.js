@@ -17,9 +17,9 @@
 import axios from 'axios'
 
 // Local libraries
-import OfferEntity from '../../entities/offer'
+import OfferEntity from '../../entities/offer.js'
 
-import config from '../../../config'
+import config from '../../../config/index.js'
 
 const DEFAULT_ENTRIES_PER_PAGE = 20
 const NFT_ENTRIES_PER_PAGE = 6

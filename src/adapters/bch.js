@@ -6,7 +6,7 @@
 import BCHJS from '@psf/bch-js'
 
 import MsgLib from 'bch-message-lib'
-import BchWallet from 'minimal-slp-wallet/index'
+import BchWallet from 'minimal-slp-wallet/index.js'
 
 class Bch {
   constructor () {

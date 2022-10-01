@@ -3,10 +3,10 @@
 */
 
 // Local libraries
-import { wlogger } from '../adapters/wlogger'
+import wlogger from '../adapters/wlogger.js'
 
-import OrderEntity from '../entities/order'
-import config from '../../config'
+import OrderEntity from '../entities/order.js'
+import config from '../../config/index.js'
 
 class OrderLib {
   constructor (localConfig = {}) {

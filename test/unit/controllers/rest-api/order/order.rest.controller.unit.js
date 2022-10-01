@@ -4,19 +4,14 @@
 
 // Public npm libraries
 import { assert } from 'chai'
-
 import sinon from 'sinon'
 
 // Local support libraries
-import adapters from '../../../mocks/adapters'
+import adapters from '../../../mocks/adapters/index.js'
+import UseCasesMock from '../../../mocks/use-cases/index.js'
+import OrderRESTController from '../../../../../src/controllers/rest-api/order/controller.js'
 
-import UseCasesMock from '../../../mocks/use-cases'
-
-// const app = require('../../../mocks/app-mock')
-
-import OrderRESTController from '../../../../../src/controllers/rest-api/order/controller'
-
-import { context as mockContext } from '../../../../unit/mocks/ctx-mock'
+import { context as mockContext } from '../../../../unit/mocks/ctx-mock.js'
 
 let uut
 let sandbox

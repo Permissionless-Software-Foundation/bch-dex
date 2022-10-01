@@ -3,7 +3,7 @@
   orders from the datatabase.
 */
 
-import Order from './models/order'
+import Order from './models/order.js'
 
 // let _this
 

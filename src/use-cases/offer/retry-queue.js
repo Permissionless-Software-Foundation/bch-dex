@@ -9,8 +9,8 @@
   pay-to-write-access-controller.js depends on this library.
 */
 
+// Global npm libraries
 import PQueue from 'p-queue'
-
 import pRetry from 'p-retry'
 
 let _this

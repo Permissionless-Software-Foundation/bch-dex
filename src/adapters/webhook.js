@@ -2,7 +2,7 @@
   The (Clean Architecture) Adapter for manageing a webhook connection to P2WDB.
 */
 
-import config from '../../config'
+import config from '../../config/index.js'
 
 import axios from 'axios'
 

@@ -12,10 +12,10 @@ import sinon from 'sinon'
 import mongoose from 'mongoose'
 
 // Local libraries.
-import OrderPagination from '../../../src/adapters/localdb/order-pagination'
+import OrderPagination from '../../../src/adapters/localdb/order-pagination.js'
 
-import Order from '../../../src/adapters/localdb/models/order'
-import config from '../../../config'
+import Order from '../../../src/adapters/localdb/models/order.js'
+import config from '../../../config/index.js'
 
 describe('#OrderPagination', () => {
   let uut, sandbox

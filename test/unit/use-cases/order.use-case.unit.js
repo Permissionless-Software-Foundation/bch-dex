@@ -4,16 +4,13 @@
 
 // Public npm libraries
 import { assert } from 'chai'
-
 import sinon from 'sinon'
 
-// Local support libraries
-// const testUtils = require('../../utils/test-utils')
-
 // Unit under test (uut)
-import OrderLib from '../../../src/use-cases/order'
+import OrderLib from '../../../src/use-cases/order.js'
 
-import adapters from '../mocks/adapters'
+// Local support libraries
+import adapters from '../mocks/adapters/index.js'
 
 describe('#order-use-case', () => {
   let uut

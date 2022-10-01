@@ -8,7 +8,7 @@
 import Router from 'koa-router'
 
 // Local libraries.
-import P2WDBRESTControllerLib from './controller'
+import P2WDBRESTControllerLib from './controller.js'
 
 let _this
 

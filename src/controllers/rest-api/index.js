@@ -11,10 +11,10 @@ import AuthRESTController from './auth/index.js'
 import UserRouter from './users/index.js'
 import ContactRESTController from './contact/index.js'
 import LogsRESTController from './logs/index.js'
-import EntryRouter from './entry.js'
-import OfferRouter from './offer.js'
-import OrderRouter from './order.js'
-import P2WDBRouter from './p2wdb.js'
+import EntryRouter from './entry/index.js'
+import OfferRouter from './offer/index.js'
+import OrderRouter from './order/index.js'
+import P2WDBRouter from './p2wdb/index.js'
 
 class RESTControllers {
   constructor (localConfig = {}) {

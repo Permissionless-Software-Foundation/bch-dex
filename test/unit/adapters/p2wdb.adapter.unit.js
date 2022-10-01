@@ -11,7 +11,7 @@ import sinon from 'sinon'
 import BchWallet from 'minimal-slp-wallet/index.js'
 
 // Local libraries.
-import P2wdbAdapter from '../../../src/adapters/p2wdb-adapter'
+import P2wdbAdapter from '../../../src/adapters/p2wdb-adapter.js'
 
 describe('#P2wdbAdapter', () => {
   let uut, sandbox, bchWallet

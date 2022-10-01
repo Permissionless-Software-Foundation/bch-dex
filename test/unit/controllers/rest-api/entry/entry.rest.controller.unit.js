@@ -8,12 +8,12 @@ import { assert } from 'chai'
 import sinon from 'sinon'
 
 // Local support libraries
-import adapters from '../../../mocks/adapters'
+import adapters from '../../../mocks/adapters/index.js'
 
-import UseCasesMock from '../../../mocks/use-cases'
-import EntryController from '../../../../../src/controllers/rest-api/entry/controller'
+import UseCasesMock from '../../../mocks/use-cases/index.js'
+import EntryController from '../../../../../src/controllers/rest-api/entry/controller.js'
 
-import { context as mockContext } from '../../../../unit/mocks/ctx-mock'
+import { context as mockContext } from '../../../../unit/mocks/ctx-mock.js'
 let uut
 let sandbox
 let ctx

@@ -6,7 +6,7 @@
 import Router from 'koa-router'
 
 // Local libraries.
-import OfferRESTControllerLib from './controller'
+import OfferRESTControllerLib from './controller.js'
 
 let _this
 

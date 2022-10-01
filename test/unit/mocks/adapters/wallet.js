@@ -141,4 +141,4 @@ class MockBchWallet {
   }
 }
 
-export default { MockBchWallet, mockWallet};
+export { MockBchWallet, mockWallet};

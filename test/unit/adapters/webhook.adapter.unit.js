@@ -3,10 +3,9 @@
 */
 
 import { assert } from 'chai'
-
 import sinon from 'sinon'
 
-import WebHook from '../../../src/adapters/webhook'
+import WebHook from '../../../src/adapters/webhook.js'
 
 // Set the environment variable to signal this is a test.
 process.env.TORLIST_ENV = 'test'

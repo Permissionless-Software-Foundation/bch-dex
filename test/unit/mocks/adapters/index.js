@@ -130,7 +130,7 @@ const bch = {
 //   burnPsf: async () => {},
 //   generateSignature: async () => {}
 // }
-import { MockBchWallet } from './wallet';
+import { MockBchWallet } from './wallet.js';
 
 const wallet = {
   burnPsf: async () => {

@@ -3,14 +3,19 @@
 */
 
 // Public npm libraries
-import BchWallet from 'minimal-slp-wallet/index'
+import BchWallet from 'minimal-slp-wallet/index.js'
 
 import bitcoinJs from 'bitcoincashjs-lib'
 
 // Local libraries
-import JsonFiles from './json-files'
+import JsonFiles from './json-files.js'
 
-import config from '../../config'
+import config from '../../config/index.js'
+
+// Hack to get __dirname back.
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+import * as url from 'url'
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 const WALLET_FILE = `${__dirname.toString()}/../../wallet.json`
 // const PROOF_OF_BURN_QTY = 0.01

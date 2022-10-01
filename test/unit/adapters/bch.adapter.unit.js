@@ -1,5 +1,5 @@
 import { assert } from 'chai'
-import BCHJS from '../../../src/adapters/bch'
+import BCHJS from '../../../src/adapters/bch.js'
 import sinon from 'sinon'
 import util from 'util'
 util.inspect.defaultOptions = { depth: 1 }

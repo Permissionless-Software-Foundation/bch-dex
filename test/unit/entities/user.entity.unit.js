@@ -3,8 +3,8 @@
 */
 
 import { assert } from 'chai'
-
 import sinon from 'sinon'
+
 import User from '../../../src/entities/user.js'
 
 let sandbox

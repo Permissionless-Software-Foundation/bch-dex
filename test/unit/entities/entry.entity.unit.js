@@ -3,9 +3,9 @@
 */
 
 import { assert } from 'chai'
-
 import sinon from 'sinon'
-import Entry from '../../../src/entities/entry'
+
+import Entry from '../../../src/entities/entry.js'
 
 let sandbox
 let uut

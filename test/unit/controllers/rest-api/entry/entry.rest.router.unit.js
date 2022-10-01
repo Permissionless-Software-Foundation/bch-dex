@@ -4,17 +4,15 @@
 
 // Public npm libraries
 import { assert } from 'chai'
-
 import sinon from 'sinon'
 
 // Local support libraries
-import adapters from '../../../mocks/adapters'
-
-import UseCasesMock from '../../../mocks/use-cases'
+import adapters from '../../../mocks/adapters/index.js'
+import UseCasesMock from '../../../mocks/use-cases/index.js'
 
 // const app = require('../../../mocks/app-mock')
 
-import EntryRouter from '../../../../../src/controllers/rest-api/entry'
+import EntryRouter from '../../../../../src/controllers/rest-api/entry/index.js'
 
 let uut
 let sandbox

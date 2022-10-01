@@ -2,7 +2,7 @@
   REST API Controller library for the /offer route
 */
 
-import { wlogger } from '../../../adapters/wlogger'
+import wlogger from '../../../adapters/wlogger.js'
 
 let _this
 

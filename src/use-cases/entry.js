@@ -1,5 +1,8 @@
-import { wlogger } from '../adapters/wlogger'
-import EntryEntiy from '../entities/entry'
+
+// local libraries
+import wlogger from '../adapters/wlogger.js'
+import EntryEntiy from '../entities/entry.js'
+
 class EntryLib {
   constructor (localConfig = {}) {
     // console.log('User localConfig: ', localConfig)

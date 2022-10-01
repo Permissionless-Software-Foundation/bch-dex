@@ -6,7 +6,7 @@
 
 import UserUseCases from './user.js'
 import EntryUseCases from './entry.js'
-import OfferUseCases from './offer.js'
+import OfferUseCases from './offer/index.js'
 import OrderUseCases from './order.js'
 
 class UseCases {

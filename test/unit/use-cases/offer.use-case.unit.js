@@ -4,17 +4,16 @@
 
 // Public npm libraries
 import { assert } from 'chai'
-
 import sinon from 'sinon'
 
 // Local support libraries
 // const testUtils = require('../../utils/test-utils')
 
 // Unit under test (uut)
-import OfferLib from '../../../src/use-cases/offer'
+import OfferLib from '../../../src/use-cases/offer/index.js'
 
-import OrderUseCase from '../../../src/use-cases/order'
-import adapters from '../mocks/adapters'
+import OrderUseCase from '../../../src/use-cases/order.js'
+import adapters from '../mocks/adapters/index.js'
 import mockData from '../mocks/use-cases/offer-mock-data.js'
 
 describe('#offer-use-case', () => {
