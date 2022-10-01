@@ -6,12 +6,12 @@
 */
 
 // Public npm libraries
-import { assert } from 'chai';
+import { assert } from 'chai'
 
 // Local npm libraries
-import Adapters from '../../../src/adapters';
+import Adapters from '../../../src/adapters'
 
-import Offer from '../../../src/use-cases/offer';
+import Offer from '../../../src/use-cases/offer'
 
 describe('#offer-use-case.js', () => {
   let uut

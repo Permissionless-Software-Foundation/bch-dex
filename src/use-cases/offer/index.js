@@ -14,12 +14,12 @@
  */
 
 // Global npm libraries
-import axios from 'axios';
+import axios from 'axios'
 
 // Local libraries
-import OfferEntity from '../../entities/offer';
+import OfferEntity from '../../entities/offer'
 
-import config from '../../../config';
+import config from '../../../config'
 
 const DEFAULT_ENTRIES_PER_PAGE = 20
 const NFT_ENTRIES_PER_PAGE = 6
@@ -594,4 +594,4 @@ class OfferUseCases {
   }
 }
 
-export default OfferUseCases;
+export default OfferUseCases

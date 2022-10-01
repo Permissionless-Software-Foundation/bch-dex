@@ -3,10 +3,10 @@
 */
 
 // Local libraries
-import { wlogger } from '../adapters/wlogger';
+import { wlogger } from '../adapters/wlogger'
 
-import OrderEntity from '../entities/order';
-import config from '../../config';
+import OrderEntity from '../entities/order'
+import config from '../../config'
 
 class OrderLib {
   constructor (localConfig = {}) {
@@ -238,4 +238,4 @@ class OrderLib {
   }
 }
 
-export default OrderLib;
+export default OrderLib

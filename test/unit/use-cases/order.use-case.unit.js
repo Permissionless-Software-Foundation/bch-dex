@@ -3,17 +3,17 @@
 */
 
 // Public npm libraries
-import { assert } from 'chai';
+import { assert } from 'chai'
 
-import sinon from 'sinon';
+import sinon from 'sinon'
 
 // Local support libraries
 // const testUtils = require('../../utils/test-utils')
 
 // Unit under test (uut)
-import OrderLib from '../../../src/use-cases/order';
+import OrderLib from '../../../src/use-cases/order'
 
-import adapters from '../mocks/adapters';
+import adapters from '../mocks/adapters'
 
 describe('#order-use-case', () => {
   let uut

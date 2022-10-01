@@ -5,7 +5,7 @@
   Ensure the REST API is up an running before running this test.
 */
 
-import axios from 'axios';
+import axios from 'axios'
 
 const LOCALHOST = 'http://localhost:5700'
 

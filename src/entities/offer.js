@@ -103,4 +103,4 @@ class OfferEntity {
   }
 }
 
-export default OfferEntity;
+export default OfferEntity

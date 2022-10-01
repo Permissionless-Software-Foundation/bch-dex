@@ -3,10 +3,10 @@
 */
 
 // Public npm libraries
-import BCHJS from '@psf/bch-js';
+import BCHJS from '@psf/bch-js'
 
-import MsgLib from 'bch-message-lib';
-import BchWallet from 'minimal-slp-wallet/index';
+import MsgLib from 'bch-message-lib'
+import BchWallet from 'minimal-slp-wallet/index'
 
 class Bch {
   constructor () {
@@ -80,4 +80,4 @@ class Bch {
   }
 }
 
-export default Bch;
+export default Bch

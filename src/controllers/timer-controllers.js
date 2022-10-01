@@ -56,4 +56,4 @@ class TimerControllers {
   }
 }
 
-export default TimerControllers;
+export default TimerControllers

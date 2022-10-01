@@ -2,7 +2,7 @@
   REST API Controller library for the /offer route
 */
 
-import { wlogger } from '../../../adapters/wlogger';
+import { wlogger } from '../../../adapters/wlogger'
 
 let _this
 
@@ -128,4 +128,4 @@ class OfferRESTControllerLib {
   }
 }
 
-export default OfferRESTControllerLib;
+export default OfferRESTControllerLib

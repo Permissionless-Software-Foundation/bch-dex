@@ -64,4 +64,4 @@ class EntryRESTControllerLib {
   }
 }
 
-export default EntryRESTControllerLib;
+export default EntryRESTControllerLib

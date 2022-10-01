@@ -38,4 +38,4 @@ class Entry {
   }
 }
 
-export default Entry;
+export default Entry

@@ -10,10 +10,10 @@
 */
 
 // Public npm libraries
-import BCHJS from '@psf/bch-js';
+import BCHJS from '@psf/bch-js'
 
 // Local libraries
-import P2wdbAdapter from '../../../src/adapters/p2wdb-adapter';
+import P2wdbAdapter from '../../../src/adapters/p2wdb-adapter'
 
 const wif = process.env.WIF
 if (!wif) {

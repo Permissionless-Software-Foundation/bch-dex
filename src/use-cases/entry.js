@@ -1,5 +1,5 @@
-import { wlogger } from '../adapters/wlogger';
-import EntryEntiy from '../entities/entry';
+import { wlogger } from '../adapters/wlogger'
+import EntryEntiy from '../entities/entry'
 class EntryLib {
   constructor (localConfig = {}) {
     // console.log('User localConfig: ', localConfig)
@@ -62,4 +62,4 @@ class EntryLib {
   }
 }
 
-export default EntryLib;
+export default EntryLib

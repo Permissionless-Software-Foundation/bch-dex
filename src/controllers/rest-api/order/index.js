@@ -3,10 +3,10 @@
 */
 
 // Public npm libraries.
-import Router from 'koa-router';
+import Router from 'koa-router'
 
 // Local libraries.
-import OrderRESTControllerLib from './controller';
+import OrderRESTControllerLib from './controller'
 
 let _this
 
@@ -57,4 +57,4 @@ class OrderRouter {
   }
 }
 
-export default OrderRouter;
+export default OrderRouter

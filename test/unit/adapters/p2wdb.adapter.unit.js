@@ -3,15 +3,15 @@
 */
 
 // Public npm libraries.
-import { assert } from 'chai';
+import { assert } from 'chai'
 
-import sinon from 'sinon';
+import sinon from 'sinon'
 
 // const BCHJS = require('@psf/bch-js')
-import BchWallet from 'minimal-slp-wallet/index.js';
+import BchWallet from 'minimal-slp-wallet/index.js'
 
 // Local libraries.
-import P2wdbAdapter from '../../../src/adapters/p2wdb-adapter';
+import P2wdbAdapter from '../../../src/adapters/p2wdb-adapter'
 
 describe('#P2wdbAdapter', () => {
   let uut, sandbox, bchWallet

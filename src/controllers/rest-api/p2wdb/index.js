@@ -5,10 +5,10 @@
 */
 
 // Public npm libraries.
-import Router from 'koa-router';
+import Router from 'koa-router'
 
 // Local libraries.
-import P2WDBRESTControllerLib from './controller';
+import P2WDBRESTControllerLib from './controller'
 
 let _this
 
@@ -59,4 +59,4 @@ class P2WDBRouter {
   }
 }
 
-export default P2WDBRouter;
+export default P2WDBRouter

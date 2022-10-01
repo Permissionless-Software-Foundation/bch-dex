@@ -101,4 +101,4 @@ class P2WDBRESTControllerLib {
   }
 }
 
-export default P2WDBRESTControllerLib;
+export default P2WDBRESTControllerLib

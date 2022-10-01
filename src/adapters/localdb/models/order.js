@@ -6,7 +6,7 @@
   See the dev-docs/specification.md for details on each property.
 */
 
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 const Order = new mongoose.Schema({
   // Token data
@@ -40,4 +40,4 @@ const Order = new mongoose.Schema({
   messageClass: { type: Number }
 })
 
-export default mongoose.model('order', Order);
+export default mongoose.model('order', Order)

@@ -2,14 +2,14 @@
   Unit tests for the webhook adapter.
 */
 
-import { assert } from 'chai';
+import { assert } from 'chai'
 
-import sinon from 'sinon';
+import sinon from 'sinon'
+
+import WebHook from '../../../src/adapters/webhook'
 
 // Set the environment variable to signal this is a test.
 process.env.TORLIST_ENV = 'test'
-
-import WebHook from '../../../src/adapters/webhook';
 
 describe('#Webhook-Adapter', () => {
   let uut

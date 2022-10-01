@@ -65,4 +65,4 @@ class OrderRESTControllerLib {
   }
 }
 
-export default OrderRESTControllerLib;
+export default OrderRESTControllerLib

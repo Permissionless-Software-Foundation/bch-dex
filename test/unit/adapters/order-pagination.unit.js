@@ -6,16 +6,16 @@
 */
 
 // Public npm libraries.
-import { assert } from 'chai';
+import { assert } from 'chai'
 
-import sinon from 'sinon';
-import mongoose from 'mongoose';
+import sinon from 'sinon'
+import mongoose from 'mongoose'
 
 // Local libraries.
-import OrderPagination from '../../../src/adapters/localdb/order-pagination';
+import OrderPagination from '../../../src/adapters/localdb/order-pagination'
 
-import Order from '../../../src/adapters/localdb/models/order';
-import config from '../../../config';
+import Order from '../../../src/adapters/localdb/models/order'
+import config from '../../../config'
 
 describe('#OrderPagination', () => {
   let uut, sandbox

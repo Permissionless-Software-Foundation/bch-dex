@@ -3,7 +3,7 @@
   orders from the datatabase.
 */
 
-import Order from './models/order';
+import Order from './models/order'
 
 // let _this
 
@@ -39,4 +39,4 @@ class OrderPagination {
   }
 }
 
-export default OrderPagination;
+export default OrderPagination

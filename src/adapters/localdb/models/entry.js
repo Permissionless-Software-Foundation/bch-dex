@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 const Entry = new mongoose.Schema({
   entry: { type: String },
@@ -10,4 +10,4 @@ const Entry = new mongoose.Schema({
   merit: { type: Number }
 })
 
-export default mongoose.model('entry', Entry);
+export default mongoose.model('entry', Entry)
