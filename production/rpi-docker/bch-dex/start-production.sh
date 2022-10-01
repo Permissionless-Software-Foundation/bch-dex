@@ -24,7 +24,7 @@ export DBURL=mongodb://172.17.0.1:5666/bch-swap-service-prod
 export PORT=5700
 
 # bch-dex specific env vars
-export BCH_DEX=production
+export BCH_DEX=prod
 export WEBHOOKSERVICE=http://172.17.0.1:5667/webhook
 export WEBHOOKTARGET=http://172.17.0.1:5700/p2wdb
 export APP_ID=bch-dex-001
