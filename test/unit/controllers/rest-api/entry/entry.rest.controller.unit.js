@@ -3,19 +3,20 @@
 */
 
 // Public npm libraries
-const assert = require('chai').assert
-const sinon = require('sinon')
+import { assert } from 'chai';
+
+import sinon from 'sinon';
 
 // Local support libraries
-const adapters = require('../../../mocks/adapters')
-const UseCasesMock = require('../../../mocks/use-cases')
+import adapters from '../../../mocks/adapters';
 
-const EntryController = require('../../../../../src/controllers/rest-api/entry/controller')
+import UseCasesMock from '../../../mocks/use-cases';
+import EntryController from '../../../../../src/controllers/rest-api/entry/controller';
 let uut
 let sandbox
 let ctx
 
-const mockContext = require('../../../../unit/mocks/ctx-mock').context
+import { context as mockContext } from '../../../../unit/mocks/ctx-mock';
 
 describe('#Entry-REST-Controller', () => {
   // const testUser = {}

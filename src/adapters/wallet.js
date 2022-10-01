@@ -3,12 +3,14 @@
 */
 
 // Public npm libraries
-const BchWallet = require('minimal-slp-wallet/index')
-const bitcoinJs = require('bitcoincashjs-lib')
+import BchWallet from 'minimal-slp-wallet/index';
+
+import bitcoinJs from 'bitcoincashjs-lib';
 
 // Local libraries
-const JsonFiles = require('./json-files')
-const config = require('../../config')
+import JsonFiles from './json-files';
+
+import config from '../../config';
 
 const WALLET_FILE = `${__dirname.toString()}/../../wallet.json`
 // const PROOF_OF_BURN_QTY = 0.01
@@ -503,4 +505,4 @@ class WalletAdapter {
   }
 }
 
-module.exports = WalletAdapter
+export default WalletAdapter;

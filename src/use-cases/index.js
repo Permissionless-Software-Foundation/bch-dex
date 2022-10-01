@@ -4,10 +4,10 @@
   https://troutsblog.com/blog/clean-architecture
 */
 
-const UserUseCases = require('./user')
-const EntryUseCases = require('./entry')
-const OfferUseCases = require('./offer')
-const OrderUseCases = require('./order')
+import UserUseCases from './user.js'
+import EntryUseCases from './entry.js'
+import OfferUseCases from './offer.js'
+import OrderUseCases from './order.js'
 
 class UseCases {
   constructor (localConfig = {}) {
@@ -40,4 +40,4 @@ class UseCases {
   }
 }
 
-module.exports = UseCases
+export default UseCases

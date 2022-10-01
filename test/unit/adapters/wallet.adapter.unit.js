@@ -3,14 +3,17 @@
 */
 
 // Public npm libraries.
-const assert = require('chai').assert
-const sinon = require('sinon')
-const fs = require('fs')
+import { assert } from 'chai';
+
+import sinon from 'sinon';
+import fs from 'fs';
+
 // const BCHJS = require('@psf/bch-js')
 
 // Local libraries.
-const WalletAdapter = require('../../../src/adapters/wallet')
-const { MockBchWallet } = require('../mocks/adapters/wallet')
+import WalletAdapter from '../../../src/adapters/wallet';
+
+import { MockBchWallet } from '../mocks/adapters/wallet';
 
 // Global constants
 const testWalletFile = `${__dirname.toString()}/test-wallet.json`

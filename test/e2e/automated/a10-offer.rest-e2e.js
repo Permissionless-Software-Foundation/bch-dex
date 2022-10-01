@@ -6,7 +6,7 @@
 // const assert = require('chai').assert
 
 // const axios = require('axios').default
-const sinon = require('sinon')
+import sinon from 'sinon';
 
 // const LOCALHOST = `http://localhost:${config.port}`
 

@@ -3,11 +3,12 @@
 */
 
 // Public npm libraries.
-const axios = require('axios')
-const { Write, Read } = require('p2wdb/index')
+import axios from 'axios';
+
+import { Write, Read } from 'p2wdb/index';
 
 // Local libraries
-const config = require('../../config')
+import config from '../../config';
 
 class P2wdbAdapter {
   constructor (localConfig = {}) {
@@ -111,4 +112,4 @@ class P2wdbAdapter {
   }
 }
 
-module.exports = P2wdbAdapter
+export default P2wdbAdapter;

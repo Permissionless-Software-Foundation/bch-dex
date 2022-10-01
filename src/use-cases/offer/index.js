@@ -14,11 +14,12 @@
  */
 
 // Global npm libraries
-const axios = require('axios')
+import axios from 'axios';
 
 // Local libraries
-const OfferEntity = require('../../entities/offer')
-const config = require('../../../config')
+import OfferEntity from '../../entities/offer';
+
+import config from '../../../config';
 
 const DEFAULT_ENTRIES_PER_PAGE = 20
 const NFT_ENTRIES_PER_PAGE = 6
@@ -593,4 +594,4 @@ class OfferUseCases {
   }
 }
 
-module.exports = OfferUseCases
+export default OfferUseCases;

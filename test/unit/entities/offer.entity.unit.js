@@ -2,10 +2,10 @@
   Unit tests for the Offer entity library.
 */
 
-const assert = require('chai').assert
-const sinon = require('sinon')
+import { assert } from 'chai';
 
-const Offer = require('../../../src/entities/offer')
+import sinon from 'sinon';
+import Offer from '../../../src/entities/offer';
 
 let sandbox
 let uut

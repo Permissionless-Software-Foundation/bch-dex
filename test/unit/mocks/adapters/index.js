@@ -1,7 +1,8 @@
 /*
   Mocks for the Adapter library.
 */
-const BCHJS = require('@psf/bch-js')
+import BCHJS from '@psf/bch-js';
+
 const bchjs = new BCHJS()
 
 class IpfsAdapter {
@@ -129,7 +130,8 @@ const bch = {
 //   burnPsf: async () => {},
 //   generateSignature: async () => {}
 // }
-const { MockBchWallet } = require('./wallet')
+import { MockBchWallet } from './wallet';
+
 const wallet = {
   burnPsf: async () => {
   },
@@ -148,4 +150,4 @@ const p2wdb = {
   checkForSufficientFunds: async () => true
 }
 
-module.exports = { ipfs, localdb, bch, wallet, p2wdb, bchjs}
+export default { ipfs, localdb, bch, wallet, p2wdb, bchjs}

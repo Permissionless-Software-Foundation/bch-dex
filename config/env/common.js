@@ -5,15 +5,22 @@
 
 /* eslint  no-unneeded-ternary:0 */
 
+// Hack to get __dirname back.
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+import * as url from 'url'
+
 // Get the version from the package.json file.
-const pkgInfo = require('../../package.json')
+import { readFileSync } from 'fs'
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+const pkgInfo = JSON.parse(readFileSync(`${__dirname.toString()}/../../package.json`))
+
 const version = pkgInfo.version
 
 const ipfsCoordName = process.env.COORD_NAME
   ? process.env.COORD_NAME
   : 'ipfs-torlist-service-generic'
 
-module.exports = {
+export default {
   // Configure TCP port.
   port: process.env.PORT || 5700,
 

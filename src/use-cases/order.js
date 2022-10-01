@@ -3,9 +3,10 @@
 */
 
 // Local libraries
-const { wlogger } = require('../adapters/wlogger')
-const OrderEntity = require('../entities/order')
-const config = require('../../config')
+import { wlogger } from '../adapters/wlogger';
+
+import OrderEntity from '../entities/order';
+import config from '../../config';
 
 class OrderLib {
   constructor (localConfig = {}) {
@@ -237,4 +238,4 @@ class OrderLib {
   }
 }
 
-module.exports = OrderLib
+export default OrderLib;

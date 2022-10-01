@@ -1,6 +1,5 @@
-const { wlogger } = require('../adapters/wlogger')
-
-const EntryEntiy = require('../entities/entry')
+import { wlogger } from '../adapters/wlogger';
+import EntryEntiy from '../entities/entry';
 class EntryLib {
   constructor (localConfig = {}) {
     // console.log('User localConfig: ', localConfig)
@@ -63,4 +62,4 @@ class EntryLib {
   }
 }
 
-module.exports = EntryLib
+export default EntryLib;

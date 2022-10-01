@@ -3,10 +3,10 @@
 */
 
 // Public npm libraries.
-const Router = require('koa-router')
+import Router from 'koa-router';
 
 // Local libraries.
-const OfferRESTControllerLib = require('./controller')
+import OfferRESTControllerLib from './controller';
 
 let _this
 
@@ -61,4 +61,4 @@ class OfferRouter {
   }
 }
 
-module.exports = OfferRouter
+export default OfferRouter;

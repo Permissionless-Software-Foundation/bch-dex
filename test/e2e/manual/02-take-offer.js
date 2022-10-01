@@ -2,7 +2,7 @@
   Part 2 of 3: Take an offer by submiting a counter-offer.
 */
 
-const axios = require('axios')
+import axios from 'axios';
 
 const LOCALHOST = 'http://localhost:5700'
 

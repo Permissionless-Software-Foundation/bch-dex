@@ -3,10 +3,10 @@
 */
 
 // Public npm libraries.
-const Router = require('koa-router')
+import Router from 'koa-router';
 
 // Local libraries.
-const EntryRESTControllerLib = require('./controller')
+import EntryRESTControllerLib from './controller';
 
 let _this
 
@@ -57,4 +57,4 @@ class UserRouter {
   }
 }
 
-module.exports = UserRouter
+export default UserRouter;
