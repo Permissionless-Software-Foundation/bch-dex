@@ -3,14 +3,21 @@
 */
 
 // Public npm libraries.
-const assert = require('chai').assert
-const sinon = require('sinon')
-const fs = require('fs')
+import { assert } from 'chai'
+import sinon from 'sinon'
+import fs from 'fs'
+
 // const BCHJS = require('@psf/bch-js')
 
 // Local libraries.
-const WalletAdapter = require('../../../src/adapters/wallet')
-const { MockBchWallet } = require('../mocks/adapters/wallet')
+import WalletAdapter from '../../../src/adapters/wallet.js'
+
+import { MockBchWallet } from '../mocks/adapters/wallet.js'
+
+// Hack to get __dirname back.
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+import * as url from 'url'
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 // Global constants
 const testWalletFile = `${__dirname.toString()}/test-wallet.json`

@@ -60,4 +60,4 @@ class UseCasesMock {
   order = new Order()
 }
 
-module.exports = UseCasesMock
+export default UseCasesMock;

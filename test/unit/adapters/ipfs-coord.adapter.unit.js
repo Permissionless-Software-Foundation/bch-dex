@@ -2,20 +2,20 @@
   Unit tests for the IPFS Adapter.
 */
 
-const assert = require('chai').assert
-const sinon = require('sinon')
+import { assert } from 'chai'
 
-const IPFSCoordAdapter = require('../../../src/adapters/ipfs/ipfs-coord')
-const IPFSMock = require('../mocks/ipfs-mock')
-const IPFSCoordMock = require('../mocks/ipfs-coord-mock')
-const config = require('../../../config')
+import sinon from 'sinon'
+import IPFSCoordAdapter from '../../../src/adapters/ipfs/ipfs-coord.js'
+import create from '../mocks/ipfs-mock.js'
+import IPFSCoordMock from '../mocks/ipfs-coord-mock.js'
+import config from '../../../config/index.js'
 
 describe('#IPFS', () => {
   let uut
   let sandbox
 
   beforeEach(() => {
-    const ipfs = IPFSMock.create()
+    const ipfs = create()
     uut = new IPFSCoordAdapter({ ipfs })
 
     sandbox = sinon.createSandbox()
@@ -52,7 +52,7 @@ describe('#IPFS', () => {
     it('should get the public IP address if this node is a Circuit Relay', async () => {
       // Mock dependencies.
       uut.IpfsCoord = IPFSCoordMock
-      sandbox.stub(uut.publicIp, 'v4').returns('123')
+      sandbox.stub(uut.publicIp, 'v4').resolves('123')
 
       // Force Circuit Relay
       uut.config.isCircuitRelay = true
@@ -62,6 +62,21 @@ describe('#IPFS', () => {
 
       assert.equal(result, true)
     })
+
+    it('should exit quietly if this node is a Circuit Relay and there is an issue getting the IP address', async () => {
+      // Mock dependencies.
+      uut.IpfsCoord = IPFSCoordMock
+      sandbox.stub(uut.publicIp, 'v4').rejects(new Error('test error'))
+
+      // Force Circuit Relay
+      uut.config.isCircuitRelay = true
+
+      const result = await uut.start()
+      // console.log('result: ', result)
+
+      assert.equal(result, true)
+    })
+
     it('should return a promise that resolves into an instance of IPFS in production mode', async () => {
       uut.config.isProduction = true
       // Mock dependencies.

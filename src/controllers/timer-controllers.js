@@ -56,4 +56,4 @@ class TimerControllers {
   }
 }
 
-module.exports = TimerControllers
+export default TimerControllers

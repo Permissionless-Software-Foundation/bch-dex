@@ -2,8 +2,9 @@
   The (Clean Architecture) Adapter for manageing a webhook connection to P2WDB.
 */
 
-const config = require('../../config')
-const axios = require('axios')
+import config from '../../config/index.js'
+
+import axios from 'axios'
 
 let _this
 
@@ -101,4 +102,4 @@ function sleep (ms) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-module.exports = WebHook
+export default WebHook

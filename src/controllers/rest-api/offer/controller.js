@@ -2,7 +2,7 @@
   REST API Controller library for the /offer route
 */
 
-const { wlogger } = require('../../../adapters/wlogger')
+import wlogger from '../../../adapters/wlogger.js'
 
 let _this
 
@@ -128,4 +128,4 @@ class OfferRESTControllerLib {
   }
 }
 
-module.exports = OfferRESTControllerLib
+export default OfferRESTControllerLib

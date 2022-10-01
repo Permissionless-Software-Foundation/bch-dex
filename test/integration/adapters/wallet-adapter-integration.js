@@ -6,7 +6,7 @@
 // const assert = require('chai').assert
 
 // Local libraries.
-const WalletAdapter = require('../../../src/adapters/wallet')
+import WalletAdapter from '../../../src/adapters/wallet'
 
 describe('#wallet', () => {
   let uut

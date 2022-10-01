@@ -126,11 +126,11 @@ const fungibleTokenData01 = {
   "mutableData": ""
 }
 
-module.exports = {
+export default {
   nftOffer01,
   nftTokenData01,
   simpleNftOffer01,
   simpleNftTokenData01,
   fungibleOffer01,
   fungibleTokenData01
-}
+};

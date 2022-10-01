@@ -3,20 +3,19 @@
 */
 
 // Public npm libraries
-const assert = require('chai').assert
-const sinon = require('sinon')
+import { assert } from 'chai'
+import sinon from 'sinon'
 
 // Local support libraries
-const adapters = require('../../../mocks/adapters')
-const UseCasesMock = require('../../../mocks/use-cases')
-// const app = require('../../../mocks/app-mock')
+import adapters from '../../../mocks/adapters/index.js'
+import UseCasesMock from '../../../mocks/use-cases/index.js'
+import OfferRESTController from '../../../../../src/controllers/rest-api/offer/controller.js'
 
-const OfferRESTController = require('../../../../../src/controllers/rest-api/offer/controller')
+import { context as mockContext } from '../../../../unit/mocks/ctx-mock.js'
+
 let uut
 let sandbox
 let ctx
-
-const mockContext = require('../../../../unit/mocks/ctx-mock').context
 
 describe('#Offer-REST-Router', () => {
   // const testUser = {}

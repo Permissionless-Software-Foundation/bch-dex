@@ -2,13 +2,13 @@
   Unit tests for the webhook adapter.
 */
 
-const assert = require('chai').assert
-const sinon = require('sinon')
+import { assert } from 'chai'
+import sinon from 'sinon'
+
+import WebHook from '../../../src/adapters/webhook.js'
 
 // Set the environment variable to signal this is a test.
 process.env.TORLIST_ENV = 'test'
-
-const WebHook = require('../../../src/adapters/webhook')
 
 describe('#Webhook-Adapter', () => {
   let uut

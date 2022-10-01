@@ -3,7 +3,7 @@
   orders from the datatabase.
 */
 
-const Order = require('./models/order')
+import Order from './models/order.js'
 
 // let _this
 
@@ -39,4 +39,4 @@ class OrderPagination {
   }
 }
 
-module.exports = OrderPagination
+export default OrderPagination

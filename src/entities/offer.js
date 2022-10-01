@@ -103,4 +103,4 @@ class OfferEntity {
   }
 }
 
-module.exports = OfferEntity
+export default OfferEntity

@@ -65,4 +65,4 @@ class OrderRESTControllerLib {
   }
 }
 
-module.exports = OrderRESTControllerLib
+export default OrderRESTControllerLib

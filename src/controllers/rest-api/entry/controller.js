@@ -64,4 +64,4 @@ class EntryRESTControllerLib {
   }
 }
 
-module.exports = EntryRESTControllerLib
+export default EntryRESTControllerLib

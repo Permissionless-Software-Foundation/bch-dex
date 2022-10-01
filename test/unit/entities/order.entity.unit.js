@@ -2,10 +2,10 @@
   Unit tests for the User entity library.
 */
 
-const assert = require('chai').assert
-const sinon = require('sinon')
+import { assert } from 'chai'
+import sinon from 'sinon'
 
-const Order = require('../../../src/entities/order')
+import Order from '../../../src/entities/order.js'
 
 let sandbox
 let uut
