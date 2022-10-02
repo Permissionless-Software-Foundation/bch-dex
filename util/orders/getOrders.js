@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
-import config from '../../config'
-import Order from '../../src/adapters/localdb/models/order'
+import config from '../../config/index.js'
+import Order from '../../src/adapters/localdb/models/order.js'
 
 async function getOrder () {
   // Connect to the Mongo Database.
