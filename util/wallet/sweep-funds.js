@@ -7,11 +7,12 @@
 */
 
 // Public npm libraries
-const BCHJS = require('@psf/bch-js')
-const BchTokenSweep = require('bch-token-sweep/index')
+import BCHJS from '@psf/bch-js'
+
+import BchTokenSweep from 'bch-token-sweep/index'
 
 // Local libraries
-const WalletAdapter = require('../../src/adapters/wallet')
+import WalletAdapter from '../../src/adapters/wallet'
 
 // Constants
 const EMTPY_ADDR_CUTOFF = 15

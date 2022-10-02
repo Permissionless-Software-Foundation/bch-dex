@@ -512,6 +512,45 @@ class OfferUseCases {
     }
   }
 
+  // TODO: Write unit tests for this function, then add it to the Timer Controllers
+  // Looks for duplicate offers and removes the duplicate.
+  // Duplicates are checked for when an offer is created, and so should not
+  // exist. But emperical testing shows that they do. This function is called
+  // periodically by a timer, to clean up any duplicates that slipped through
+  // the cracks.
+  async removeDuplicateOffers () {
+    try {
+      const now = new Date()
+      console.log(`Starting removeDuplicateOffers() at ${now.toLocaleString()}`)
+
+      let duplicateFound = false
+
+      // Get all Offers in the database.
+      const offers = await this.OfferModel.find({})
+      // console.log('offers: ', offers)
+
+      const offerZcids = []
+
+      for (let i = 0; i < offers.length; i++) {
+        const thisOffer = offers[i]
+
+        if (offerZcids.includes(thisOffer.p2wdbHash)) {
+          await thisOffer.remove()
+          duplicateFound = true
+          continue
+        }
+
+        // Add the zcid to the array.
+        offerZcids.push(thisOffer.p2wdbHash)
+      }
+
+      return duplicateFound
+    } catch (err) {
+      console.error('Error in removeDuplicateOffers()')
+      throw err
+    }
+  }
+
   // This function is called by the garbage collection timer controller. It
   // checks the UTXO associated with each Offer in the database. If the UTXO
   // has been spent, the Offer is deleted from the database.

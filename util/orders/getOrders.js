@@ -1,8 +1,6 @@
-const mongoose = require('mongoose')
-
-const config = require('../../config')
-
-const Order = require('../../src/adapters/localdb/models/order')
+import mongoose from 'mongoose'
+import config from '../../config'
+import Order from '../../src/adapters/localdb/models/order'
 
 async function getOrder () {
   // Connect to the Mongo Database.

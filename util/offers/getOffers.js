@@ -2,11 +2,10 @@
   Get all Offers in the database.
 */
 
-const mongoose = require('mongoose')
+import mongoose from 'mongoose'
 
-const config = require('../../config')
-
-const Offer = require('../../src/adapters/localdb/models/offer')
+import config from '../../config/index.js'
+import Offer from '../../src/adapters/localdb/models/offer.js'
 
 async function getOffers () {
   // Connect to the Mongo Database.
