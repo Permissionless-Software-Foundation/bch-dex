@@ -6,7 +6,7 @@
   the DEX app wallet in order to be acceped.
 */
 
-const axios = require('axios')
+import axios from 'axios'
 
 const LOCALHOST = 'http://localhost:5700'
 // const LOCALHOST = 'http://172.17.0.1:5700'

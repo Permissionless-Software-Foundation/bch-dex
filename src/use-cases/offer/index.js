@@ -18,7 +18,6 @@ import axios from 'axios'
 
 // Local libraries
 import OfferEntity from '../../entities/offer.js'
-
 import config from '../../../config/index.js'
 
 const DEFAULT_ENTRIES_PER_PAGE = 20
@@ -132,7 +131,8 @@ class OfferUseCases {
       const cid = mutableCid.substring(7)
 
       // Retrieve the mutable data from Filecoin/IPFS.
-      const url = `https://${cid}.ipfs.w3s.link/data.json`
+      // const url = `https://${cid}.ipfs.w3s.link/data.json`
+      const url = `${this.config.ipfsGateway}${cid}/data.json`
       const result = await axios.get(url)
       const mutableData = result.data
       console.log(`mutableData: ${JSON.stringify(mutableData, null, 2)}`)
