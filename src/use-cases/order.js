@@ -123,7 +123,7 @@ class OrderLib {
 
       // Get UTXOs.
       const utxos = this.adapters.wallet.bchWallet.utxos.utxoStore
-      console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
+      // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
       if (orderEntity.buyOrSell.includes('sell')) {
         // Sell Order
