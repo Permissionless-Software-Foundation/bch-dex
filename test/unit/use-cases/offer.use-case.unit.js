@@ -160,4 +160,35 @@ describe('#offer-use-case', () => {
       assert.equal(result, 'fungible')
     })
   })
+
+  describe('#removeDuplicateOffers', () => {
+    it('should remove duplicate entries and return true', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.OfferModel, 'find').resolves([
+        { p2wdbHash: 'a', remove: async () => {} },
+        { p2wdbHash: 'a', remove: async () => {} },
+        { p2wdbHash: 'b', remove: async () => {} }
+      ])
+      // sandbox.stub(uut.OfferModel, 'remove').resolves()
+
+      const result = await uut.removeDuplicateOffers()
+      console.log('result: ', result)
+
+      assert.equal(result, true)
+    })
+
+    it('should return false if there are no duplicate entries', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.OfferModel, 'find').resolves([
+        { p2wdbHash: 'a', remove: async () => {} },
+        { p2wdbHash: 'b', remove: async () => {} }
+      ])
+      // sandbox.stub(uut.OfferModel, 'remove').resolves()
+
+      const result = await uut.removeDuplicateOffers()
+      console.log('result: ', result)
+
+      assert.equal(result, false)
+    })
+  })
 })

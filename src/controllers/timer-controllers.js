@@ -33,6 +33,7 @@ class TimerControllers {
   startTimers () {
     setInterval(this.gcOrders, 60000 * 5)
     setInterval(this.gcOffers, 60000 * 5)
+    setInterval(this.checkDupOffers, 60000 * 4.5)
   }
 
   // Garbage Collect the Orders.
@@ -52,6 +53,16 @@ class TimerControllers {
     } catch (err) {
       // Do not throw an error. This is a top-level function.
       console.log('Error in timer-controllers.js/gcOffers(): ', err)
+    }
+  }
+
+  // Remove duplicate Offers
+  checkDupOffers () {
+    try {
+      _this.useCases.offer.removeDuplicateOffers()
+    } catch (err) {
+      // Do not throw an error. This is a top-level function.
+      console.log('Error in timer-controllers.js/checkDupOffers(): ', err)
     }
   }
 }
