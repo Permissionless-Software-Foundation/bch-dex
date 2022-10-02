@@ -88,6 +88,7 @@ class WalletAdapter {
       }
 
       const advancedConfig = {}
+      console.log(`Using FullStack.cash: ${this.config.useFullStackCash}`)
       if (this.config.useFullStackCash) {
         advancedConfig.interface = 'rest-api'
         advancedConfig.restURL = this.config.apiServer
