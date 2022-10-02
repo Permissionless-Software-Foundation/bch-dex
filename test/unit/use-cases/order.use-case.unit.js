@@ -103,7 +103,8 @@ describe('#order-use-case', () => {
         buyOrSell: 'sell',
         rateInBaseUnit: 1000,
         minUnitsToExchange: 1250,
-        numTokens: 1
+        numTokens: 1,
+        ticker: 'TEST'
       }
 
       // Mock dependencies and force expected code path
