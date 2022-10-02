@@ -2,9 +2,11 @@
   Order use-case library.
 */
 
+// Global npm libraries
+import RetryQueue from '@chris.troutner/retry-queue'
+
 // Local libraries
 import wlogger from '../adapters/wlogger.js'
-
 import OrderEntity from '../entities/order.js'
 import config from '../../config/index.js'
 
@@ -23,6 +25,7 @@ class OrderLib {
     this.OrderModel = this.adapters.localdb.Order
     this.bch = this.adapters.bch
     this.config = config
+    this.retryQueue = new RetryQueue({ retryPeriod: 1000, attempts: 3 })
   }
 
   // Create a new order model and add it to the Mongo database.
@@ -37,18 +40,14 @@ class OrderLib {
       entryObj.makerAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
       console.log('entryObj.makerAddr: ', entryObj.makerAddr)
 
+      // Input Validation
+      const orderEntity = this.orderEntity.inputValidate(entryObj)
+      console.log('orderEntity: ', orderEntity)
+
       // Get Ticker for token ID.
-      // TODO: Move this below the orderEntity.validate() call.
       const tokenData = await this.adapters.wallet.bchWallet.getTxData([entryObj.tokenId])
       // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
       entryObj.ticker = tokenData[0].tokenTicker
-
-      // Input Validation
-      // TODO: Remove ticker from validation.
-      // TODO: Rename validate() to inputValidate(). Create fullValidate() that
-      // validates a fully hydrated Order entity.
-      const orderEntity = this.orderEntity.validate(entryObj)
-      console.log('orderEntity: ', orderEntity)
 
       // Ensure sufficient tokens exist to create the order.
       await this.ensureFunds(orderEntity)

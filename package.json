@@ -28,6 +28,7 @@
   },
   "repository": "Permissionless-Software-Foundation/bch-dex",
   "dependencies": {
+    "@chris.troutner/retry-queue": "1.0.5",
     "axios": "0.27.2",
     "bch-message-lib": "2.2.1",
     "bcryptjs": "2.4.3",
