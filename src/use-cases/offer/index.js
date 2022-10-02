@@ -15,6 +15,7 @@
 
 // Global npm libraries
 import axios from 'axios'
+import RetryQueue from '@chris.troutner/retry-queue'
 
 // Local libraries
 import OfferEntity from '../../entities/offer.js'
@@ -43,9 +44,12 @@ class OfferUseCases {
     // Encapsulate dependencies
     this.config = config
     this.axios = axios
-
     this.offerEntity = new OfferEntity()
     this.OfferModel = this.adapters.localdb.Offer
+    this.retryQueue = new RetryQueue({ retryPeriod: 1000, attempts: 3 })
+
+    // Bind 'this' object to functions
+    this.detectNsfw = this.detectNsfw.bind(this)
   }
 
   // This method is called by the POST /offer REST API controller, which is
@@ -73,14 +77,23 @@ class OfferUseCases {
 
       // Verify that UTXO in offer is unspent. If it is spent, then ignore the
       // offer.
-      const txid = offerObj.data.utxoTxid
-      const vout = offerObj.data.utxoVout
-      const utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
-        txid,
-        vout
-      )
+      // const txid = offerObj.data.utxoTxid
+      // const vout = offerObj.data.utxoVout
+      // const utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
+      //   txid,
+      //   vout
+      // )
+      //
+      const utxo = {
+        tx_hash: offerObj.data.utxoTxid,
+        tx_pos: offerObj.data.utxoVout
+      }
+      // const utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
+      const utxoStatus = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.utxoIsValid, utxo)
+
       console.log('utxoStatus: ', utxoStatus)
-      if (utxoStatus === null) return false
+      // if (utxoStatus === null) return false
+      if (!utxoStatus) return false
 
       // A new offer gets a status of 'posted'
       offerObj.data.offerStatus = 'posted'
@@ -90,18 +103,20 @@ class OfferUseCases {
 
       // Get data about the token.
       const tokenId = offerEntity.tokenId
-      const tokenData = await this.adapters.wallet.bchWallet.getTokenData(tokenId)
+      // const tokenData = await this.adapters.wallet.bchWallet.getTokenData(tokenId)
+      const tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTokenData, tokenId)
       console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
 
       // Generate a 'display category' for the token. This will allow the
       // front end UI to figure out how to display the token.
-      const displayCategory = await this.categorizeToken(offerEntity, tokenData)
+      const displayCategory = this.categorizeToken(offerEntity, tokenData)
       console.log('displayCategory: ', displayCategory)
       offerEntity.displayCategory = displayCategory
 
       // Detect if user set the NSFW flag.
       let nsfw = false
-      nsfw = await this.detectNsfw(tokenData)
+      // nsfw = await this.detectNsfw(tokenData)
+      nsfw = await this.retryQueue.addToQueue(this.detectNsfw, tokenData)
       offerEntity.nsfw = nsfw
 
       // Add offer to the local database.
@@ -165,7 +180,7 @@ class OfferUseCases {
   // The first three are easy to categorize. The simple-nft is a fungible token
   // with a quantity of 1, decimals of 0, and no minting baton. Categorizing this
   // type of token is the main reason why this function exists.
-  async categorizeToken (offerData, tokenData) {
+  categorizeToken (offerData, tokenData) {
     try {
       // console.log(`categorizeToken(): ${JSON.stringify(offerData, null, 2)}`)
 

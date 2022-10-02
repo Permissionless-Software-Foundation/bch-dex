@@ -29,7 +29,7 @@ class OfferEntity {
       utxoVout,
       offerStatus,
       makerAddr,
-      ticker,
+      // ticker,
       tokenType
     } = offerData.data
 
@@ -67,9 +67,9 @@ class OfferEntity {
     if (!makerAddr || typeof makerAddr !== 'string') {
       throw new Error("Property 'makerAddr' must be a string.")
     }
-    if (!ticker || typeof ticker !== 'string') {
-      throw new Error("Property 'ticker' must be a string.")
-    }
+    // if (!ticker || typeof ticker !== 'string') {
+    //   throw new Error("Property 'ticker' must be a string.")
+    // }
     if (!tokenType || typeof tokenType !== 'number') {
       throw new Error("Property 'tokenType' must be a number.")
     }
@@ -95,7 +95,7 @@ class OfferEntity {
       p2wdbHash: offerData.hash,
       offerStatus: offerStatus || this.offerStatus[0],
       makerAddr,
-      ticker,
+      // ticker,
       tokenType
     }
 
