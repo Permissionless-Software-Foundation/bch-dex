@@ -55,7 +55,7 @@ class OrderLib {
       // const tokenData = await this.adapters.wallet.bchWallet.getTxData([entryObj.tokenId])
       const tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTxData, [entryObj.tokenId])
       // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
-      entryObj.ticker = tokenData[0].tokenTicker
+      orderEntity.ticker = tokenData[0].tokenTicker
 
       // Move the tokens to holding address.
       const moveObj = {

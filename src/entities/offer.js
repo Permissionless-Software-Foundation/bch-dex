@@ -29,7 +29,7 @@ class OfferEntity {
       utxoVout,
       offerStatus,
       makerAddr,
-      // ticker,
+      ticker,
       tokenType
     } = offerData.data
 
@@ -95,7 +95,7 @@ class OfferEntity {
       p2wdbHash: offerData.hash,
       offerStatus: offerStatus || this.offerStatus[0],
       makerAddr,
-      // ticker,
+      ticker,
       tokenType
     }
 
