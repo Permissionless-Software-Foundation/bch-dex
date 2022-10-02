@@ -21,10 +21,10 @@ describe('#Order-Entity', () => {
 
   afterEach(() => sandbox.restore())
 
-  describe('#validate', () => {
+  describe('#inputValidate', () => {
     it('should throw an error if data is not provided', () => {
       try {
-        uut.validate()
+        uut.inputValidate()
       } catch (err) {
         // console.log(err)
         assert.include(err.message, 'Cannot destructure property')
@@ -34,7 +34,7 @@ describe('#Order-Entity', () => {
     it('should throw an error if messageType is not included', () => {
       try {
         const data = {}
-        uut.validate(data)
+        uut.inputValidate(data)
       } catch (err) {
         // console.log(err)
         assert.include(
@@ -47,7 +47,7 @@ describe('#Order-Entity', () => {
     it('should throw an error if messageClass is not included', () => {
       try {
         const data = { messageType: 1 }
-        uut.validate(data)
+        uut.inputValidate(data)
       } catch (err) {
         // console.log(err)
         assert.include(
@@ -60,7 +60,7 @@ describe('#Order-Entity', () => {
     it('should throw an error if tokenId is not included', () => {
       try {
         const data = { messageType: 1, messageClass: 1 }
-        uut.validate(data)
+        uut.inputValidate(data)
       } catch (err) {
         // console.log(err)
         assert.include(err.message, "Property 'tokenId' must be a string.")
@@ -70,7 +70,7 @@ describe('#Order-Entity', () => {
     it('should throw an error if buyOrSell is not included', () => {
       try {
         const data = { messageType: 1, messageClass: 1, tokenId: 'fakeId' }
-        uut.validate(data)
+        uut.inputValidate(data)
       } catch (err) {
         // console.log(err)
         assert.include(err.message, "Property 'buyOrSell' must be a string.")
@@ -85,7 +85,7 @@ describe('#Order-Entity', () => {
           tokenId: 'fakeId',
           buyOrSell: 'buy'
         }
-        uut.validate(data)
+        uut.inputValidate(data)
       } catch (err) {
         // console.log(err)
         assert.include(
@@ -104,7 +104,7 @@ describe('#Order-Entity', () => {
           buyOrSell: 'buy',
           rateInBaseUnit: 1000
         }
-        uut.validate(data)
+        uut.inputValidate(data)
       } catch (err) {
         // console.log(err)
         assert.include(
@@ -124,7 +124,7 @@ describe('#Order-Entity', () => {
           rateInBaseUnit: 1000,
           minUnitsToExchange: 350
         }
-        uut.validate(data)
+        uut.inputValidate(data)
       } catch (err) {
         // console.log(err)
         assert.include(err.message, "Property 'numTokens' must be a number.")

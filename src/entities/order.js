@@ -7,7 +7,10 @@
   The Order tracks the hdIndex address used to hold tokens or BCH for sale.
 */
 class Order {
-  validate (data) {
+  // TODO: Create a fullValidate() function that validates a fully-hydrated
+  // order model.
+
+  inputValidate (data) {
     const {
       messageType,
       messageClass,
@@ -16,8 +19,7 @@ class Order {
       rateInBaseUnit,
       minUnitsToExchange,
       numTokens,
-      makerAddr,
-      ticker
+      makerAddr
     } = data
 
     // Input Validation
@@ -45,9 +47,9 @@ class Order {
     if (!makerAddr || typeof makerAddr !== 'string') {
       throw new Error("Property 'makerAddr' must be a string.")
     }
-    if (!ticker || typeof ticker !== 'string') {
-      throw new Error("Property 'ticker' must be a string.")
-    }
+    // if (!ticker || typeof ticker !== 'string') {
+    //   throw new Error("Property 'ticker' must be a string.")
+    // }
 
     const offerData = {
       messageType,
@@ -57,8 +59,8 @@ class Order {
       rateInBaseUnit,
       minUnitsToExchange,
       numTokens,
-      makerAddr,
-      ticker
+      makerAddr
+      // ticker
     }
 
     return offerData

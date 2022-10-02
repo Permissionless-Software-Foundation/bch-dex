@@ -74,7 +74,7 @@ describe('#offer-use-case', () => {
       }
 
       // Mock dependencies
-      sandbox.stub(uut.adapters.bchjs.Blockchain, 'getTxOut').resolves(null)
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
       sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves({})
       sandbox.stub(uut, 'categorizeToken').resolves('nft')
       sandbox.stub(uut, 'detectNsfw').resolves(false)
@@ -111,18 +111,7 @@ describe('#offer-use-case', () => {
       }
 
       // Mock dependencies
-      sandbox.stub(uut.adapters.bchjs.Blockchain, 'getTxOut').resolves({
-        bestblock:
-          '000000000000000000d2060b83f90f8187b92fcccb4a42aaa19ce5a305fe0ae3',
-        confirmations: 0,
-        value: 0,
-        scriptPubKey: {
-          asm: 'OP_RETURN 5262419 1 1145980243 38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0 00000000001e8480 0000000009a7ec80',
-          hex: '6a04534c500001010453454e442038e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b00800000000001e8480080000000009a7ec80',
-          type: 'nulldata'
-        },
-        coinbase: false
-      })
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(true)
       sandbox.stub(uut, 'categorizeToken').resolves('fungible')
       sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves({})
       sandbox.stub(uut, 'detectNsfw').resolves(false)

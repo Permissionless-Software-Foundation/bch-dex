@@ -31,6 +31,9 @@ class WalletAdapter {
     this.bitcoinJs = bitcoinJs
     this.BchWallet = BchWallet
     this.bchWallet = {} // Will be replaced when initialized.
+
+    // Bind the 'this' object
+    this.moveTokens = this.moveTokens.bind(this)
   }
 
   // Open the wallet file, or create one if the file doesn't exist.
