@@ -106,14 +106,12 @@ describe('#order-use-case', () => {
         numTokens: 1
       }
 
-      // Mock dependencies
-      // sandbox.stub(uut.adapters.wallet, 'burnPsf').resolves('fakeTxid')
-      // sandbox.stub(uut.adapters.wallet.bchWallet, 'getTxData').resolves({ tokenTicker: 'TROUT' })
+      // Mock dependencies and force expected code path
       sandbox.stub(uut.orderEntity, 'inputValidate').returns(entryObj)
       sandbox.stub(uut, 'ensureFunds').resolves()
       sandbox.stub(uut.adapters.wallet.bchWallet.bchjs.Util, 'sleep').resolves()
       sandbox.stub(uut.adapters.wallet, 'moveTokens').resolves({ txid: 'fakeTxid', vout: 0, hdIndex: 1 })
-      sandbox.stub(uut.adapters.wallet.bchWallet, 'getUtxos').resolves()
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'initialize').resolves()
       sandbox.stub(uut.adapters.p2wdb, 'write').resolves('fakeHash')
 
       const result = await uut.createOrder(entryObj)

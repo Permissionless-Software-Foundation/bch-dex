@@ -26,6 +26,9 @@ class OrderLib {
     this.bch = this.adapters.bch
     this.config = config
     this.retryQueue = new RetryQueue({ retryPeriod: 1000, attempts: 3 })
+
+    // Bind subfunctions to the 'this' object.
+    this.ensureFunds = this.ensureFunds.bind(this)
   }
 
   // Create a new order model and add it to the Mongo database.
@@ -44,25 +47,29 @@ class OrderLib {
       const orderEntity = this.orderEntity.inputValidate(entryObj)
       console.log('orderEntity: ', orderEntity)
 
+      // Ensure sufficient tokens exist to create the order.
+      // await this.ensureFunds(orderEntity)
+      await this.retryQueue.addToQueue(this.ensureFunds, orderEntity)
+
       // Get Ticker for token ID.
-      const tokenData = await this.adapters.wallet.bchWallet.getTxData([entryObj.tokenId])
+      // const tokenData = await this.adapters.wallet.bchWallet.getTxData([entryObj.tokenId])
+      const tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTxData, [entryObj.tokenId])
       // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
       entryObj.ticker = tokenData[0].tokenTicker
-
-      // Ensure sufficient tokens exist to create the order.
-      await this.ensureFunds(orderEntity)
 
       // Move the tokens to holding address.
       const moveObj = {
         tokenId: orderEntity.tokenId,
         qty: orderEntity.numTokens
       }
-      const utxoInfo = await this.adapters.wallet.moveTokens(moveObj)
+      // const utxoInfo = await this.adapters.wallet.moveTokens(moveObj)
+      const utxoInfo = await this.retryQueue.addToQueue(this.adapters.wallet.moveTokens, moveObj)
       console.log('utxoInfo: ', utxoInfo)
 
       // Update the UTXO store for the wallet.
       await this.adapters.wallet.bchWallet.bchjs.Util.sleep(3000)
-      await this.adapters.wallet.bchWallet.getUtxos()
+      // await this.adapters.wallet.bchWallet.getUtxos()
+      await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.initialize, {})
 
       // Update the order with the new UTXO information.
       orderEntity.utxoTxid = utxoInfo.txid
@@ -78,7 +85,8 @@ class OrderLib {
         data: orderEntity,
         appId: this.config.p2wdbAppId
       }
-      const hash = await this.adapters.p2wdb.write(p2wdbObj)
+      // const hash = await this.adapters.p2wdb.write(p2wdbObj)
+      const hash = await this.retryQueue.addToQueue(this.adapters.p2wdb.write, p2wdbObj)
       // console.log('hash: ', hash)
 
       // Create a MongoDB model to hold the Order

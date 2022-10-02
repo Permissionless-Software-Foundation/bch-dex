@@ -27,6 +27,10 @@ class P2wdbAdapter {
 
     // Allow the localConfig to overwrite the config file values.
     this.p2wdbURL = localConfig.p2wdbURL || config.p2wdbUrl
+
+    // Bind the 'this' object to all functions
+    this.write = this.write.bind(this)
+    this.checkForSufficientFunds = this.checkForSufficientFunds.bind(this)
   }
 
   // Write some data to the P2WDB
