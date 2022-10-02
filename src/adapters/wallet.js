@@ -359,7 +359,7 @@ class WalletAdapter {
       }
 
       // Update the UTXO store of the wallet.
-      await this.bchWallet.getUtxos()
+      await this.bchWallet.initialize()
 
       // Get the token type of the token being moved.
       // Combine Fungible and NFT token UTXOs.
