@@ -97,7 +97,7 @@ services:
     #build:
     #  context: ./bch-dex-ui/
     #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-ui:v1.12.0
+    image: christroutner/bch-dex-ui:v1.2.4
     container_name: dex-ui
     environment:
       SERVER: 'http://192.168.2.3'
