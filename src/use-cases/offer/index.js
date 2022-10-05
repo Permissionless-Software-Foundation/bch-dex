@@ -83,7 +83,6 @@ class OfferUseCases {
       }
       // const utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
       const utxoStatus = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.utxoIsValid, utxo)
-
       console.log('utxoStatus: ', utxoStatus)
       // if (utxoStatus === null) return false
       if (!utxoStatus) return false
@@ -562,7 +561,8 @@ class OfferUseCases {
           }
           // console.log(`Checking this UTXO: ${JSON.stringify(utxo, null, 2)}`)
 
-          utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
+          // utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
+          utxoStatus = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.utxoIsValid, utxo)
           // console.log('utxoStatus: ', utxoStatus)
         } catch (err) {
           // Handle corner case of bad-data in the Offer model.
