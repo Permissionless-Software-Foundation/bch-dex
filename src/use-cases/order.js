@@ -216,7 +216,8 @@ class OrderLib {
             tx_hash: thisOrder.utxoTxid,
             tx_pos: thisOrder.utxoVout
           }
-          utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
+          // utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
+          utxoStatus = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.utxoIsValid, utxo)
           // console.log('utxoStatus: ', utxoStatus)
         } catch (err) {
           // Handle corner case of bad-data in the Order model.

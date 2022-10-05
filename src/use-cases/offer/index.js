@@ -77,20 +77,12 @@ class OfferUseCases {
 
       // Verify that UTXO in offer is unspent. If it is spent, then ignore the
       // offer.
-      // const txid = offerObj.data.utxoTxid
-      // const vout = offerObj.data.utxoVout
-      // const utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
-      //   txid,
-      //   vout
-      // )
-      //
       const utxo = {
         tx_hash: offerObj.data.utxoTxid,
         tx_pos: offerObj.data.utxoVout
       }
       // const utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
       const utxoStatus = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.utxoIsValid, utxo)
-
       console.log('utxoStatus: ', utxoStatus)
       // if (utxoStatus === null) return false
       if (!utxoStatus) return false
@@ -292,18 +284,11 @@ class OfferUseCases {
       }
 
       // Verify that UTXO for sale is unspent. Abort if it's been spent.
-      // const txid = offerInfo.utxoTxid
-      // const vout = offerInfo.utxoVout
-
       const utxo = {
         tx_hash: offerInfo.utxoTxid,
         tx_pos: offerInfo.utxoVout
       }
       const utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
-      // const utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
-      //   txid,
-      //   vout
-      // )
       console.log('utxoStatus: ', utxoStatus)
       if (!utxoStatus) {
         console.log(`utxo txid: ${offerInfo.utxoTxid}, vout: ${offerInfo.utxoVout}`)
@@ -570,19 +555,14 @@ class OfferUseCases {
         let utxoStatus = null
         try {
           // Get the status of the UTXO associate with this Offer.
-          // utxoStatus = await this.adapters.bchjs.Blockchain.getTxOut(
-          //   thisOffer.utxoTxid,
-          //   thisOffer.utxoVout
-          // )
-
-          // Get the status of the UTXO associate with this Offer.
           const utxo = {
             tx_hash: thisOffer.utxoTxid,
             tx_pos: thisOffer.utxoVout
           }
           // console.log(`Checking this UTXO: ${JSON.stringify(utxo, null, 2)}`)
 
-          utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
+          // utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
+          utxoStatus = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.utxoIsValid, utxo)
           // console.log('utxoStatus: ', utxoStatus)
         } catch (err) {
           // Handle corner case of bad-data in the Offer model.
