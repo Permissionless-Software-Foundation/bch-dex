@@ -57,7 +57,7 @@
     "mongoose": "5.13.14",
     "node-fetch": "npm:@achingbrain/node-fetch@2.6.7",
     "nodemailer": "6.7.5",
-    "p2wdb-esm": "2.2.6",
+    "p2wdb-esm": "2.2.7",
     "passport-local": "1.0.0",
     "public-ip": "4.0.4",
     "winston": "3.3.3",

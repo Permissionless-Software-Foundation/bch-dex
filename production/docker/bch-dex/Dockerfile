@@ -72,7 +72,10 @@ RUN npm run docs
 #EXPOSE 5010
 
 # Start the application.
-#COPY start-production.sh start-production.sh
 CMD ["./start-production.sh"]
 
 #CMD ["npm", "start"]
+
+# Used for debugging
+#COPY dummy-app.js dummy-app.js
+#CMD ["node", "dummy-app.js"]
