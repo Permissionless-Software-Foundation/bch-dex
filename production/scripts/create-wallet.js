@@ -16,9 +16,9 @@ async function createWallet () {
     }
 
     // Wait for the wallet to be created.
-    this.bchWallet = new BchWallet(undefined, advancedConfig)
-    await this.bchWallet.walletInfoPromise
-    const walletData = this.bchWallet.walletInfo
+    const bchWallet = new BchWallet(undefined, advancedConfig)
+    await bchWallet.walletInfoPromise
+    const walletData = bchWallet.walletInfo
     walletData.nextAddress = 1
 
     // Save the wallet file to disk.
