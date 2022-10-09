@@ -3,7 +3,7 @@
 */
 
 // Public npm libraries
-import BchWallet from 'minimal-slp-wallet/index.js'
+import BchWallet from 'minimal-slp-wallet'
 
 import bitcoinJs from 'bitcoincashjs-lib'
 

@@ -3,7 +3,7 @@
 */
 
 // Public NPM libraries
-import BchWallet from 'minimal-slp-wallet/index'
+import BchWallet from 'minimal-slp-wallet'
 
 import { promises as fs } from 'fs'
 

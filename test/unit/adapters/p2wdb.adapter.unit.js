@@ -8,7 +8,7 @@ import { assert } from 'chai'
 import sinon from 'sinon'
 
 // const BCHJS = require('@psf/bch-js')
-import BchWallet from 'minimal-slp-wallet/index.js'
+import BchWallet from 'minimal-slp-wallet'
 
 // Local libraries.
 import P2wdbAdapter from '../../../src/adapters/p2wdb-adapter.js'
