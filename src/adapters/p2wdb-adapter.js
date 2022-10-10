@@ -5,10 +5,11 @@
 // Public npm libraries.
 import axios from 'axios'
 
-import { Write, Read } from 'p2wdb/index.js'
+import P2WDB from 'p2wdb-esm'
 
 // Local libraries
 import config from '../../config/index.js'
+const { Write, Read } = P2WDB
 
 class P2wdbAdapter {
   constructor (localConfig = {}) {

@@ -115,6 +115,7 @@ class OrderLib {
 
       // Update the wallet balance
       await this.adapters.wallet.bchWallet.getUtxos()
+      // console.log(`wallet UTXOs: ${JSON.stringify(this.adapters.wallet.bchWallet.utxos.utxoStore, null, 2)}`)
 
       // Ensure the app wallet has enough funds to write to the P2WDB.
       const wif = this.adapters.wallet.bchWallet.walletInfo.privateKey

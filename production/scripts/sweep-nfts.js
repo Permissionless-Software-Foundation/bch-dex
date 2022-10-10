@@ -5,7 +5,7 @@
 */
 
 // Global npm libraries
-import BchWallet from 'minimal-slp-wallet/index.js'
+import BchWallet from 'minimal-slp-wallet'
 
 // Local libraries
 import WalletAdapter from '../../src/adapters/wallet.js'
