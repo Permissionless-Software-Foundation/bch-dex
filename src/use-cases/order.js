@@ -236,6 +236,7 @@ class OrderLib {
 
         // If the Order UTXO is spent, delete the Order model.
         if (!utxoStatus) {
+          console.log('utxoStatus: ', utxoStatus)
           console.log(`Spent UTXO detected. Deleting this Order: ${JSON.stringify(thisOrder, null, 2)}`)
           await thisOrder.remove()
         }
