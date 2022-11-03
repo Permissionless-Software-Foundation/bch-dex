@@ -306,7 +306,7 @@ class OfferUseCases {
       console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
       // Calculate amount of sats to generate a counter offer.
-      let satsToMove = offerInfo.numTokens * parseInt(offerInfo.rateInBaseUnit)
+      let satsToMove = Math.ceil(offerInfo.numTokens * parseInt(offerInfo.rateInBaseUnit))
       if (isNaN(satsToMove)) {
         throw new Error('Could not calculate the amount of BCH to generate counter offer')
       }
@@ -385,7 +385,7 @@ class OfferUseCases {
         // Sell Offer
 
         // Calculate the sats needed
-        const satsNeeded = offerEntity.numTokens * parseInt(offerEntity.rateInBaseUnit)
+        const satsNeeded = Math.ceil(offerEntity.numTokens * parseInt(offerEntity.rateInBaseUnit))
         if (isNaN(satsNeeded)) {
           throw new Error('Could not calculate sats needed!')
         }
@@ -467,7 +467,7 @@ class OfferUseCases {
       console.log(`txObj: ${JSON.stringify(txObj, null, 2)}`)
 
       // Ensure the 3rd output (vout=2) contains the required amount of BCH.
-      const satsToReceive = orderData.numTokens * parseInt(orderData.rateInBaseUnit)
+      const satsToReceive = Math.ceil(orderData.numTokens * parseInt(orderData.rateInBaseUnit))
       if (isNaN(satsToReceive)) {
         throw new Error('Could not calculate the amount of BCH offered in the Counter Offer')
       }
@@ -579,7 +579,8 @@ class OfferUseCases {
         }
 
         // If the Offer UTXO is spent, delete the Offer model.
-        if (!utxoStatus) {
+        if (utxoStatus === false) {
+          console.log('utxoStatus: ', utxoStatus)
           console.log(`Spent UTXO detected. Deleting this Offer: ${JSON.stringify(thisOffer, null, 2)}`)
           await thisOffer.remove()
         }
