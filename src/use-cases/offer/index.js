@@ -579,7 +579,7 @@ class OfferUseCases {
         }
 
         // If the Offer UTXO is spent, delete the Offer model.
-        if (!utxoStatus) {
+        if (utxoStatus === false) {
           console.log('utxoStatus: ', utxoStatus)
           console.log(`Spent UTXO detected. Deleting this Offer: ${JSON.stringify(thisOffer, null, 2)}`)
           await thisOffer.remove()
