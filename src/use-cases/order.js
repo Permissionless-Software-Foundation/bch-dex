@@ -10,6 +10,8 @@ import wlogger from '../adapters/wlogger.js'
 import OrderEntity from '../entities/order.js'
 import config from '../../config/index.js'
 
+const DEFAULT_ENTRIES_PER_PAGE = 20
+
 class OrderLib {
   constructor (localConfig = {}) {
     // console.log('User localConfig: ', localConfig)
@@ -244,6 +246,23 @@ class OrderLib {
     } catch (err) {
       console.error('Error in removeStaleOrders()')
       throw err
+    }
+  }
+
+  async listOrders (page = 0) {
+    try {
+      const data = await this.OrderModel.find({})
+      // Sort entries so newest entries show first.
+        .sort('-timestamp')
+      // Skip to the start of the selected page.
+        .skip(page * DEFAULT_ENTRIES_PER_PAGE)
+      // Only return 20 results.
+        .limit(DEFAULT_ENTRIES_PER_PAGE)
+
+      return data
+    } catch (error) {
+      console.error('Error in use-cases/order/listOrders()')
+      throw error
     }
   }
 }
