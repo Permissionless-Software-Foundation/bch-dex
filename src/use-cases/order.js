@@ -265,6 +265,26 @@ class OrderLib {
       throw error
     }
   }
+
+  // Delete an Order model by sending the token back to the root address. This
+  // will allow the garbage collectors to delete the Order and the Offer.
+  async deleteOrder (p2wdbHash) {
+    try {
+      console.log('p2wdbHash: ', p2wdbHash)
+
+      // Find the order by the given hash.
+      const order = await this.findOrderByHash(p2wdbHash)
+      console.log('order: ', order)
+
+      // Reclaim the tokens
+      const txid = await this.adapters.wallet.reclaimTokens(order)
+
+      return txid
+    } catch (err) {
+      console.error('Error in use-cases/order/deleteOrder()')
+      throw err
+    }
+  }
 }
 
 export default OrderLib

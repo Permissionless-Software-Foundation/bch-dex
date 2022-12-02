@@ -4,6 +4,7 @@
 
 // Public npm libraries
 import BchWallet from 'minimal-slp-wallet'
+import BchTokenSweep from 'bch-token-sweep/index.js'
 
 import bitcoinJs from 'bitcoincashjs-lib'
 
@@ -21,6 +22,8 @@ const WALLET_FILE = `${__dirname.toString()}/../../wallet.json`
 // const PROOF_OF_BURN_QTY = 0.01
 // const P2WDB_TOKEN_ID =
 // '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0'
+
+const advancedConfig = {}
 
 class WalletAdapter {
   constructor (localConfig = {}) {
@@ -87,7 +90,7 @@ class WalletAdapter {
         throw new Error('Wallet data is not formatted correctly. Can not read mnemonic in wallet file!')
       }
 
-      const advancedConfig = {}
+      // const advancedConfig = {}
       console.log(`Using FullStack.cash: ${this.config.useFullStackCash}`)
       if (this.config.useFullStackCash) {
         advancedConfig.interface = 'rest-api'
@@ -509,6 +512,47 @@ class WalletAdapter {
       return txid
     } catch (err) {
       console.error('Error in wallet.js/completeTx()')
+      throw err
+    }
+  }
+
+  // Given an Order database object, this function sends the tokens from the
+  // HD index where they are stored, back to the root address of the wallet.
+  async reclaimTokens (orderData) {
+    try {
+      // Get the key pair from the Order.
+      const keyPair = await this.getKeyPair(orderData.hdIndex)
+      console.log('keyPair: ', keyPair)
+
+      // Instantiate the wallet using the private key of the Order.
+      // const tempWallet = new this.BchWallet(keyPair.wif, advancedConfig)
+      // await tempWallet.initialize()
+
+      // Send the tokens from the Order to the root address.
+      // const receiver = {
+      //   address: this.bchWallet.walletInfo.address,
+      //   tokenId: orderData.tokenId,
+      //   qty: orderData.numTokens
+      // }
+      // console.log('receiver: ', receiver)
+      //
+      // const txid = await tempWallet.sendTokens(receiver)
+
+      // Sweep the tokens to the root address.
+      const sweeper = new BchTokenSweep(
+        keyPair.wif,
+        this.bchWallet.walletInfo.privateKey,
+        this.bchWallet,
+        550,
+        this.bchWallet.walletInfo.cashAddress
+      )
+      await sweeper.populateObjectFromNetwork()
+      const hex = await sweeper.sweepTo(this.bchWallet.walletInfo.cashAddress)
+      const txid = await this.bchWallet.ar.sendTx(hex)
+
+      return txid
+    } catch (err) {
+      console.error('Error in wallet.js/reclaimTokens()')
       throw err
     }
   }
