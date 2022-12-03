@@ -35,6 +35,7 @@ class OrderRESTControllerLib {
       // console.log('body: ', ctx.request.body)
 
       const orderObj = ctx.request.body.order
+      console.log('orderObj: ', orderObj)
 
       const hash = await _this.useCases.order.createOrder(orderObj)
 
@@ -58,6 +59,26 @@ class OrderRESTControllerLib {
       ctx.body = offers
     } catch (err) {
       console.log('Error in listOrders REST API handler: ', err)
+      _this.handleError(ctx, err)
+    }
+  }
+
+  // Delete an existing order by returning the token to the root address of
+  // the DEX wallet.
+  async deleteOrder (ctx) {
+    try {
+      // console.log('body: ', ctx.request.body)
+
+      const p2wdbHash = ctx.request.body.p2wdbHash
+      // console.log('p2wdbHash: ', p2wdbHash)
+
+      const txid = await _this.useCases.order.deleteOrder(p2wdbHash)
+
+      ctx.body = { txid }
+    } catch (err) {
+      // console.log(`err.message: ${err.message}`)
+      // console.log('err: ', err)
+      // ctx.throw(422, err.message)
       _this.handleError(ctx, err)
     }
   }

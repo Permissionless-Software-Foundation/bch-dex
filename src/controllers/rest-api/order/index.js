@@ -51,6 +51,7 @@ class OrderRouter {
     // Define the routes and attach the controller.
     this.router.post('/', _this.orderRESTController.createOrder)
     this.router.get('/list/all/:page', _this.orderRESTController.listOrders)
+    this.router.post('/delete', _this.orderRESTController.deleteOrder)
 
     // Attach the Controller routes to the Koa app.
     app.use(_this.router.routes())
