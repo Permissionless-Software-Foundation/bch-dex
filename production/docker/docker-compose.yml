@@ -50,6 +50,7 @@ services:
     container_name: p2wdb
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
+      ENABLE_BCH_PAYMENT: 1
       DEBUG_LEVEL: 1
     logging:
       driver: 'json-file'
@@ -67,6 +68,7 @@ services:
     volumes:
       - ../data/ipfsdata/p2wdb:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/p2wdb
       - ./p2wdb/start-production.sh:/home/safeuser/ipfs-p2wdb-service/start-production.sh
+      - ../scripts/wallet.json:/home/safeuser/ipfs-p2wdb-service/wallet.json
     restart: always
 
   bch-dex:
