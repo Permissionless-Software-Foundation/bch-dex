@@ -49,6 +49,9 @@ class OrderLib {
       const orderEntity = this.orderEntity.inputValidate(entryObj)
       console.log('orderEntity: ', orderEntity)
 
+      // Optimize the wallet to speed up working with it.
+      await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.optimize, {})
+
       // Ensure sufficient tokens exist to create the order.
       // await this.ensureFunds(orderEntity)
       await this.retryQueue.addToQueue(this.ensureFunds, orderEntity)
