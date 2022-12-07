@@ -50,6 +50,7 @@ class OrderLib {
       console.log('orderEntity: ', orderEntity)
 
       // Optimize the wallet to speed up working with it.
+      console.log('Optimizing wallet before creating new order.')
       await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.optimize, {})
 
       // Ensure sufficient tokens exist to create the order.
