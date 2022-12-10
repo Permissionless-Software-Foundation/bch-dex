@@ -46,8 +46,8 @@ export default {
   // : 'https://wa-usa-bch-consumer.fullstackcash.nl',
 
   // P2WDB URL that will accept API calls from the p2wdb npm library.
-  // p2wdbUrl: process.env.P2WDB_URL ? process.env.P2WDB_URL : 'https://p2wdb.fullstack.cash',
-  p2wdbUrl: process.env.P2WDB_URL ? process.env.P2WDB_URL : 'http://localhost:5010',
+  p2wdbUrl: process.env.P2WDB_URL ? process.env.P2WDB_URL : 'https://p2wdb.fullstack.cash',
+  // p2wdbUrl: process.env.P2WDB_URL ? process.env.P2WDB_URL : 'http://localhost:5010',
 
   // FullStack.cash account information, used for automatic JWT handling.
   getJwtAtStartup: process.env.GET_JWT_AT_STARTUP ? true : false,
@@ -63,6 +63,9 @@ export default {
   fullstackPassword: process.env.FULLSTACKPASS
     ? process.env.FULLSTACKPASS
     : 'demo',
+  authPass: process.env.FULLSTACK_AUTH_PASS
+    ? process.env.FULLSTACK_AUTH_PASS
+    : '',
 
   // IPFS settings.
   isCircuitRelay: process.env.ENABLE_CIRCUIT_RELAY ? true : false,
