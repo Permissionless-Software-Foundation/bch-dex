@@ -29,6 +29,6 @@ export WEBHOOKSERVICE=http://172.17.0.1:5667/webhook
 export WEBHOOKTARGET=http://172.17.0.1:5700/p2wdb
 export APP_ID=bch-dex-001
 
-export P2WDB_URL=http://172.17.0.1:5667
+#export P2WDB_URL=http://172.17.0.1:5667
 
 npm start
