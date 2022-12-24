@@ -1,7 +1,6 @@
 /*
-  This script will travers the HD wallet and sweep funds and tokens back
-  into the root address (index 0). That root address needs to have funds
-  to pay for the transactions.
+  This script is the same as sweep-wallet.js, but it requires a FullStack.cash
+  account, which makes the scanning much faster.
 */
 
 // Public npm libraries
@@ -12,13 +11,24 @@ import BchTokenSweep from 'bch-token-sweep/index.js'
 import WalletAdapter from '../../src/adapters/wallet.js'
 
 // Constants
-const EMTPY_ADDR_CUTOFF = 10
+// const EMTPY_ADDR_CUTOFF = 10
+const START_INDEX = 1
+const LAST_ADDR_INDEX = 100
+
+if (!process.env.BCHJSTOKEN) {
+  console.log('You will need a JWT token from FullStack.cash to execute this script. Export it to the BCHJSTOKEN environment variable and try again.')
+  process.exit(0)
+}
 
 async function sweepFunds () {
   try {
-    // Open the wallet files.
+    // Configure the wallet library to use a FullStack.cash or a local Cash Stack
     const walletLib = new WalletAdapter()
-    // const walletInfo = await walletLib.openWallet()
+    walletLib.config.useFullStackCash = true
+    // walletLib.config.apiServer = 'http://192.168.2.129:3000/v5/'
+    walletLib.config.apiServer = 'https://api.fullstack.cash/v5/'
+
+    // Open the wallet files.
     const walletInfo = await openWallet(walletLib)
     const wallet = await walletLib.instanceWallet(walletInfo)
     console.log('walletInfo: ', walletInfo)
@@ -33,7 +43,7 @@ async function sweepFunds () {
     const masterHDNode = bchjs.HDNode.fromSeed(rootSeed)
 
     let emptyAddrCnt = 0
-    let hdIndex = 1
+    let hdIndex = START_INDEX
 
     do {
       // Generate a keypair from the HD wallet.
@@ -73,9 +83,10 @@ async function sweepFunds () {
       }
 
       hdIndex++
-    } while (emptyAddrCnt < EMTPY_ADDR_CUTOFF)
-
-    console.log(`${EMTPY_ADDR_CUTOFF} empty addresses detected. Exiting.`)
+      // } while (emptyAddrCnt < EMTPY_ADDR_CUTOFF)
+      // console.log(`${EMTPY_ADDR_CUTOFF} empty addresses detected. Exiting.`)
+    } while (hdIndex < LAST_ADDR_INDEX)
+    console.log(`Last index of ${LAST_ADDR_INDEX} reached. emptyAddrCnt: ${emptyAddrCnt}`)
 
     console.log('\n\nDo not forget to reset the nextAddress property in the wallet.json file!\n\n')
   } catch (err) {
