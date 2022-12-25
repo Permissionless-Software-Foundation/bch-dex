@@ -11,12 +11,7 @@ import WalletAdapter from '../../src/adapters/wallet.js'
 
 // Constants
 const START_INDEX = 1
-const LAST_ADDR_INDEX = 850
-
-if (!process.env.BCHJSTOKEN) {
-  console.log('You will need a JWT token from FullStack.cash to execute this script. Export it to the BCHJSTOKEN environment variable and try again.')
-  process.exit(0)
-}
+const LAST_ADDR_INDEX = 100
 
 async function listAddrs () {
   try {
