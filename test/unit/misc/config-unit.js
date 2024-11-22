@@ -40,9 +40,13 @@ describe('#config', () => {
     assert.equal(config.env, 'test')
   })
 
-  it('Should return test environment config', async () => {
+  it('Should return prod environment config', async () => {
     process.env.BCH_DEX = 'prod'
 
+    process.env.WALLET_INTERFACE = 'web2'
+    process.env.APISERVER = 'https://api.fullstack.cash/v5/'
+
+    await import('../../../config/env/common.js?foo=bar2')
     const importedConfig3 = await import('../../../config/index.js?foo=bar2')
     const config = importedConfig3.default
     // console.log('config: ', config)

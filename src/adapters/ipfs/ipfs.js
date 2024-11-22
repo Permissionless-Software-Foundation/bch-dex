@@ -9,94 +9,94 @@
 */
 
 // Global npm libraries
-// const IPFS = require('ipfs')
-// const IPFS = require('@chris.troutner/ipfs')
-// import IPFSembedded from 'ipfs';
-
-import { create } from 'ipfs-http-client'
+import { createHelia } from 'helia'
 import fs from 'fs'
-import http from 'http'
+import { FsBlockstore } from 'blockstore-fs'
+import { FsDatastore } from 'datastore-fs'
+import { createLibp2p } from 'libp2p'
+import { tcp } from '@libp2p/tcp'
+import { noise } from '@chainsafe/libp2p-noise'
+import { yamux } from '@chainsafe/libp2p-yamux'
+// import { bootstrap } from '@libp2p/bootstrap'
+// import { identifyService } from 'libp2p/identify'
+import { identify } from '@libp2p/identify'
+// import { circuitRelayServer, circuitRelayTransport } from '@libp2p/circuit-relay-v2'
+import { circuitRelayServer } from '@libp2p/circuit-relay-v2'
+import { gossipsub } from '@chainsafe/libp2p-gossipsub'
+import { webSockets } from '@libp2p/websockets'
+import { publicIpv4 } from 'public-ip'
+import { multiaddr } from '@multiformats/multiaddr'
+// import { webRTC } from '@libp2p/webrtc'
+import { keychain } from '@libp2p/keychain'
+import { defaultLogger } from '@libp2p/logger'
+import { unixfs } from '@helia/unixfs'
 
 // Local libraries
 import config from '../../../config/index.js'
+import JsonFiles from '../json-files.js'
 
-const IPFS_DIR = './.ipfsdata/ipfs'
+// Hack to get __dirname back.
+// https://blog.logrocket.com/alternatives-dirname-node-js-es-modules/
+import * as url from 'url'
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
+// console.log('__dirname: ', __dirname)
+
+const ROOT_DIR = `${__dirname}../../../`
+const IPFS_DIR = `${__dirname}../../../.ipfsdata/ipfs`
 
 class IpfsAdapter {
   constructor (localConfig) {
     // Encapsulate dependencies
     this.config = config
     this.fs = fs
-    this.create = create
-
-    // Choose the IPFS constructor based on the config settings.
-    // this.IPFS = IPFSembedded // default
-    // if (this.config.isProduction) {
-    //   this.IPFS = IPFSexternal
-    // }
+    this.createLibp2p = createLibp2p
+    this.publicIp = publicIpv4
+    this.multiaddr = multiaddr
+    this.jsonFiles = new JsonFiles()
+    this.keychain = keychain
+    this.createHelia = createHelia
 
     // Properties of this class instance.
     this.isReady = false
+
+    // Bind 'this' object to all subfunctions
+    this.start = this.start.bind(this)
+    this.createNode = this.createNode.bind(this)
+    this.stop = this.stop.bind(this)
+    this.ensureBlocksDir = this.ensureBlocksDir.bind(this)
+    this.getSeed = this.getSeed.bind(this)
+    this.getKeychain = this.getKeychain.bind(this)
   }
 
   // Start an IPFS node.
   async start () {
     try {
-      // Ipfs Options
-      const ipfsOptionsEmbedded = {
-        repo: IPFS_DIR,
-        start: true,
-        config: {
-          relay: {
-            enabled: true, // enable circuit relay dialer and listener
-            hop: {
-              enabled: config.isCircuitRelay // enable circuit relay HOP (make this node a relay)
-            }
-          },
-          pubsub: true, // enable pubsub
-          Swarm: {
-            ConnMgr: {
-              HighWater: 30,
-              LowWater: 10
-            }
-          },
-          Addresses: {
-            Swarm: [
-              `/ip4/0.0.0.0/tcp/${this.config.ipfsTcpPort}`,
-              `/ip4/0.0.0.0/tcp/${this.config.ipfsWsPort}/ws`
-            ]
-          },
-          Datastore: {
-            StorageMax: '2GB',
-            StorageGCWatermark: 50,
-            GCPeriod: '15m'
-          }
-        }
-      }
+      // Ensure the directory structure exists that is needed by the IPFS node to store data.
+      this.ensureBlocksDir()
 
-      const ipfsOptionsExternal = {
-        host: this.config.ipfsHost,
-        port: this.config.ipfsApiPort,
-        agent: http.Agent({ keepAlive: true, maxSockets: 2000 })
-      }
+      // Create an IPFS node
+      const ipfs = await this.createNode()
+      // console.log('ipfs: ', ipfs)
 
-      let ipfsOptions = ipfsOptionsEmbedded
-      if (this.config.isProduction) {
-        ipfsOptions = ipfsOptionsExternal
-      }
+      this.id = ipfs.libp2p.peerId.toString()
+      console.log('IPFS ID: ', this.id)
 
-      // Create a new IPFS node.
-      this.ipfs = await this.create(ipfsOptions)
+      // Attempt to guess our ip4 IP address.
+      const ip4 = await this.publicIp()
+      let detectedMultiaddr = `/ip4/${ip4}/tcp/${this.config.ipfsTcpPort}/p2p/${this.id}`
+      detectedMultiaddr = this.multiaddr(detectedMultiaddr)
 
-      // Set the 'server' profile so the node does not scan private networks.
-      await this.ipfs.config.profiles.apply('server')
+      // Get the multiaddrs for the node.
+      const multiaddrs = ipfs.libp2p.getMultiaddrs()
+      multiaddrs.push(detectedMultiaddr)
+      console.log('Multiaddrs: ', multiaddrs)
 
-      // Debugging: Display IPFS config settings.
-      // const configSettings = await this.ipfs.config.getAll()
-      // console.log(`configSettings: ${JSON.stringify(configSettings, null, 2)}`)
+      this.multiaddrs = multiaddrs
 
       // Signal that this adapter is ready.
       this.isReady = true
+
+      this.ipfs = ipfs
 
       return this.ipfs
     } catch (err) {
@@ -111,31 +111,175 @@ class IpfsAdapter {
     }
   }
 
+  async getKeychain (datastore) {
+    const keychainInit = {
+      pass: await this.getSeed()
+    }
+
+    const chain = this.keychain(keychainInit)({
+      datastore,
+      logger: defaultLogger()
+    })
+
+    return chain
+  }
+
+  // This function creates an IPFS node using Helia.
+  // It returns the node as an object.
+  async createNode () {
+    try {
+      // Create block and data stores.
+      const blockstore = new FsBlockstore(`${IPFS_DIR}/blockstore`)
+      const datastore = new FsDatastore(`${IPFS_DIR}/datastore`)
+
+      // const keychainInit = {
+      //   pass: await this.getSeed()
+      // }
+
+      // Create an identity
+      let peerId
+      // console.log('this.keychain: ', this.keychain)
+      // const chain = this.keychain(keychainInit)({
+      //   datastore,
+      //   logger: defaultLogger()
+      // })
+      const chain = await this.getKeychain(datastore)
+      try {
+        peerId = await chain.exportPeerId('myKey')
+      } catch (err) {
+        await chain.createKey('myKey', 'Ed25519', 4096)
+        peerId = await chain.exportPeerId('myKey')
+      }
+
+      // Configure services
+      const services = {
+        identify: identify(),
+        pubsub: gossipsub({ allowPublishToZeroTopicPeers: true })
+      }
+      if (this.config.isCircuitRelay) {
+        console.log('Helia (IPFS) node IS configured as Circuit Relay')
+        services.relay = circuitRelayServer({ // makes the node function as a relay server
+          hopTimeout: 30 * 1000, // incoming relay requests must be resolved within this time limit
+          advertise: true,
+          reservations: {
+            maxReservations: 15, // how many peers are allowed to reserve relay slots on this server
+            reservationClearInterval: 300 * 1000, // how often to reclaim stale reservations
+            applyDefaultLimit: true, // whether to apply default data/duration limits to each relayed connection
+            defaultDurationLimit: 2 * 60 * 1000, // the default maximum amount of time a relayed connection can be open for
+            defaultDataLimit: BigInt(2 << 7), // the default maximum number of bytes that can be transferred over a relayed connection
+            maxInboundHopStreams: 32, // how many inbound HOP streams are allow simultaneously
+            maxOutboundHopStreams: 64 // how many outbound HOP streams are allow simultaneously
+          }
+        })
+      } else {
+        console.log('Helia (IPFS) node IS NOT configured as Circuit Relay')
+      }
+
+      const transports = [
+        tcp(),
+        webSockets()
+        // circuitRelayTransport({
+        //   discoverRelays: 3,
+        //   reservationConcurrency: 3
+        // }),
+        // webRTC()
+      ]
+
+      // libp2p is the networking layer that underpins Helia
+      const libp2p = await this.createLibp2p({
+        peerId,
+        datastore,
+        addresses: {
+          listen: [
+            '/ip4/127.0.0.1/tcp/0',
+            `/ip4/0.0.0.0/tcp/${this.config.ipfsTcpPort}`,
+            `/ip4/0.0.0.0/tcp/${this.config.ipfsWsPort}/ws`
+            // '/webrtc'
+          ]
+        },
+        transports,
+        connectionEncryption: [
+          noise()
+        ],
+        streamMuxers: [
+          yamux()
+        ],
+        services
+      })
+
+      // create a Helia node
+      const helia = await this.createHelia({
+        blockstore,
+        datastore,
+        libp2p
+      })
+
+      // Attach IPFS file system.
+      const fs = unixfs(helia)
+      helia.fs = fs
+
+      return helia
+    } catch (err) {
+      console.error('Error creating Helia node: ', err)
+
+      throw err
+    }
+  }
+
   async stop () {
     await this.ipfs.stop()
 
     return true
   }
 
-  // Remove the '/blocks' directory that is used to store IPFS data.
-  // Dev Note: It's assumed this node is not pinning any data and that
-  // everything in this directory is transient. This folder will regularly
-  // fill up and prevent IPFS from starting.
-  // rmBlocksDir () {
-  //  try {
-  //    const dir = `${IPFS_DIR}/blocks`
-  //    console.log(`Deleting ${dir} directory...`)
-  //
-  //    this.fs.rmdirSync(dir, { recursive: true })
-  //
-  //    console.log(`${dir} directory is deleted!`)
-  //
-  //    return true // Signal successful execution.
-  //  } catch (err) {
-  //    console.log('Error in rmBlocksDir()')
-  //    throw err
-  //  }
-  // }
+  // Ensure that the directories exist to store blocks from the IPFS network.
+  // This function is called at startup, before the IPFS node is started.
+  ensureBlocksDir () {
+    try {
+      !this.fs.existsSync(`${ROOT_DIR}.ipfsdata`) && this.fs.mkdirSync(`${ROOT_DIR}.ipfsdata`)
+
+      !this.fs.existsSync(`${IPFS_DIR}`) && this.fs.mkdirSync(`${IPFS_DIR}`)
+
+      !this.fs.existsSync(`${IPFS_DIR}/blockstore`) && this.fs.mkdirSync(`${IPFS_DIR}/blockstore`)
+
+      !this.fs.existsSync(`${IPFS_DIR}/datastore`) && this.fs.mkdirSync(`${IPFS_DIR}/datastore`)
+
+      // !fs.existsSync(`${IPFS_DIR}/datastore/peers`) && fs.mkdirSync(`${IPFS_DIR}/datastore/peers`)
+
+      return true
+    } catch (err) {
+      console.error('Error in adapters/ipfs.js/ensureBlocksDir(): ', err)
+      throw err
+    }
+  }
+
+  // This function opens the seed used to generate the key for this IPFS peer.
+  // The seed is stored in a JSON file. If it doesn't exist, a new one is created.
+  async getSeed () {
+    try {
+      let seed
+
+      const filename = `${IPFS_DIR}/seed.json`
+
+      try {
+        // Try to read the JSON file containing the seed.
+        seed = await this.jsonFiles.readJSON(filename)
+      } catch (err) {
+        const seedNum = Math.floor(Math.random() * 1000000000000000000000)
+        seed = seedNum.toString()
+
+        // Save the newly generated seed
+        await this.jsonFiles.writeJSON(seed, filename)
+      }
+
+      // console.log('getSeed() seed: ', seed)
+
+      return seed
+    } catch (err) {
+      console.error('Error in adapters/ipfs/ipfs.js/getSeed()')
+      throw err
+    }
+  }
 }
 
 export default IpfsAdapter
