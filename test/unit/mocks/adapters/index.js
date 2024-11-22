@@ -18,19 +18,28 @@ class IpfsAdapter {
 class IpfsCoordAdapter {
   constructor () {
     this.ipfsCoord = {
+      adapters: {
+        ipfs: {
+          connectToPeer: async () => {}
+        }
+      },
       useCases: {
         peer: {
           sendPrivateMessage: () => {
           }
         }
-      }
+      },
+      thisNode: {}
     }
   }
 }
 
 const ipfs = {
   ipfsAdapter: new IpfsAdapter(),
-  ipfsCoordAdapter: new IpfsCoordAdapter()
+  ipfsCoordAdapter: new IpfsCoordAdapter(),
+  getStatus: async () => {},
+  getPeers: async () => {},
+  getRelays: async () => {}
 }
 ipfs.ipfs = ipfs.ipfsAdapter.ipfs
 

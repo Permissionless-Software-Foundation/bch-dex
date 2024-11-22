@@ -9,17 +9,15 @@ import BCHJS from '@psf/bch-js'
 
 // Load individual adapter libraries.
 import IPFSAdapter from './ipfs/index.js'
-
 import LocalDB from './localdb/index.js'
 import LogsAPI from './logapi.js'
 import Passport from './passport.js'
 import Nodemailer from './nodemailer.js'
-
 // const { wlogger } = require('./wlogger')
 import JSONFiles from './json-files.js'
-
 import FullStackJWT from './fullstack-jwt.js'
 import config from '../../config/index.js'
+// import Wallet from './wallet.adapter.js'
 
 import BCHAdapter from './bch.js'
 import WalletAdapter from './wallet.js'
@@ -43,6 +41,7 @@ class Adapters {
     localConfig.bchWallet = this.wallet.bchWallet
     this.p2wdb = new P2wdbAdapter(localConfig)
     this.webhook = new Webhook()
+    // this.wallet = new Wallet(localConfig)
 
     // Get a valid JWT API key and instance bch-js.
     this.fullStackJwt = new FullStackJWT(config)
@@ -50,13 +49,21 @@ class Adapters {
 
   async start () {
     try {
+      // let apiToken
       if (this.config.getJwtAtStartup) {
         // Get a JWT token and instantiate bch-js with it. Then pass that instance
         // to all the rest of the apps controllers and adapters.
-        await this.fullStackJwt.getJWT()
+        // apiToken = await this.fullStackJwt.getJWT()
         // Instantiate bch-js with the JWT token, and overwrite the placeholder for bch-js.
         this.bchjs = await this.fullStackJwt.instanceBchjs()
       }
+
+      // Create a default instance of minimal-slp-wallet without initializing it
+      // (without retrieving the wallets UTXOs). This instance will be overwritten
+      // if the operator has configured BCH payments.
+      console.log('\nCreating default startup wallet. This wallet may be overwritten.')
+      // await this.wallet.instanceWalletWithoutInitialization({}, { apiToken })
+      this.bchjs = this.wallet.bchWallet.bchjs
 
       // Start the IPFS node.
       // Do not start these adapters if this is an e2e test.
@@ -73,11 +80,18 @@ class Adapters {
         await this.wallet.instanceWallet(walletData, this.bchjs)
 
         // Wait until a webhook is established with the P2WDB
-        await this.webhook.waitUntilSuccess(this.config.webhookTarget)
+        // await this.webhook.waitUntilSuccess(this.config.webhookTarget)
 
         // Overwrite instances of wallet used by P2WDB lib.
         this.p2wdb.bchWallet = this.wallet.bchWallet
         this.p2wdb.bchjs = this.wallet.bchWallet.bchjs
+
+        if (this.config.useIpfs) {
+          await this.ipfs.start()
+        }
+      } else {
+        // These lines are here to ensure code coverage hits 100%.
+        console.log('Not starting IPFS node since this is an e2e test.')
       }
 
       console.log('Async Adapters have been started.')
