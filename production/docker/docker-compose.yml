@@ -46,7 +46,7 @@ services:
     #build:
     #  context: ./p2wdb/
     #  dockerfile: Dockerfile
-    image: christroutner/p2wdb:v4.0.5
+    image: christroutner/p2wdb:v4.1.3
     container_name: p2wdb
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
