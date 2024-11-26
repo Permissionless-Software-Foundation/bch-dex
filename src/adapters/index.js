@@ -23,6 +23,7 @@ import BCHAdapter from './bch.js'
 import WalletAdapter from './wallet.js'
 import P2wdbAdapter from './p2wdb-adapter.js'
 import Webhook from './webhook.js'
+import NostrAdapter from './nostr.js'
 
 class Adapters {
   constructor (localConfig = {}) {
@@ -41,6 +42,8 @@ class Adapters {
     localConfig.bchWallet = this.wallet.bchWallet
     this.p2wdb = new P2wdbAdapter(localConfig)
     this.webhook = new Webhook()
+    this.nostr = new NostrAdapter(this.config)
+
     // this.wallet = new Wallet(localConfig)
 
     // Get a valid JWT API key and instance bch-js.
@@ -73,6 +76,8 @@ class Adapters {
 
       // Open the wallet file
       const walletData = await this.wallet.openWallet()
+      await this.nostr.start(walletData.privateKey)
+
       // console.log('walletData: ', walletData)
 
       if (this.config.env !== 'test') {
