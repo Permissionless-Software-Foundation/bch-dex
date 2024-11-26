@@ -180,6 +180,6 @@ export default {
   // END IPFS CONFIGURATION
 
   // Nostr
-  nostrRelay: process.env.NOSTR_RELAY ? process.env.NOSTR_RELAY : '',
-  nostrTopic: process.env.NOSTR_TOPIC ? process.env.NOSTR_TOPIC : 'bch-dex-test-topic'
+  nostrRelay: process.env.NOSTR_RELAY ? process.env.NOSTR_RELAY : 'wss://nostr-relay.psfoundation.info',
+  nostrTopic: process.env.NOSTR_TOPIC ? process.env.NOSTR_TOPIC : 'bch-dex-test-topic-01'
 }
