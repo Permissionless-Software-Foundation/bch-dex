@@ -70,7 +70,7 @@ class OrderLib {
       }
       // const utxoInfo = await this.adapters.wallet.moveTokens(moveObj)
       const utxoInfo = await this.retryQueue.addToQueue(this.adapters.wallet.moveTokens, moveObj)
-      console.log('utxoInfo: ', utxoInfo)
+      // console.log('utxoInfo: ', utxoInfo)
 
       // Update the UTXO store for the wallet.
       await this.adapters.wallet.bchWallet.bchjs.Util.sleep(3000)
@@ -86,24 +86,26 @@ class OrderLib {
       orderEntity.dataType = 'offer'
 
       // Add order to P2WDB.
-      const p2wdbObj = {
+      const postObj = {
         wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
         data: orderEntity,
         appId: this.config.p2wdbAppId
       }
-      // const hash = await this.adapters.p2wdb.write(p2wdbObj)
-      const hash = await this.retryQueue.addToQueue(this.adapters.p2wdb.write, p2wdbObj)
+
+      const postMsg = JSON.stringify(postObj)
+
+      const eventId = await this.adapters.nostr.post(postMsg)
       // console.log('hash: ', hash)
 
       // Create a MongoDB model to hold the Order
       orderEntity.hdIndex = utxoInfo.hdIndex
-      orderEntity.p2wdbHash = hash
+      orderEntity.nostrEventId = eventId
 
       console.log(`creating new order model: ${JSON.stringify(orderEntity, null, 2)}`)
       const order = new this.OrderModel(orderEntity)
       await order.save()
 
-      return hash
+      return eventId
     } catch (err) {
       // console.log("Error in use-cases/entry.js/createEntry()", err.message)
       wlogger.error('Error in use-cases/order.js/createOrder())')
@@ -130,19 +132,17 @@ class OrderLib {
 
       // Get UTXOs.
       const utxos = this.adapters.wallet.bchWallet.utxos.utxoStore
-      // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
+      console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
       if (orderEntity.buyOrSell.includes('sell')) {
         // Sell Order
 
         // Combine Fungible and NFT token UTXOs.
         let tokenUtxos = utxos.slpUtxos.type1.tokens.concat(utxos.slpUtxos.nft.tokens)
-
         // Get token UTXOs that match the token in the order.
         tokenUtxos = tokenUtxos.filter(
           x => x.tokenId === orderEntity.tokenId
         )
-        console.log('tokenUtxos: ', tokenUtxos)
 
         // Get the total amount of tokens in the wallet that match the token
         // in the order.
@@ -171,14 +171,14 @@ class OrderLib {
     }
   }
 
-  // Retrieve an Order model from the database. Find it by its P2WDB CID.
-  async findOrderByHash (p2wdbHash) {
+  // Retrieve an Order model from the database. Find it by its event Id.
+  async findOrderByEvent (nostrEventId) {
     try {
-      if (typeof p2wdbHash !== 'string' || !p2wdbHash) {
-        throw new Error('p2wdbHash must be a string')
+      if (typeof nostrEventId !== 'string' || !nostrEventId) {
+        throw new Error('nostrEventId must be a string')
       }
 
-      const order = await this.OrderModel.findOne({ p2wdbHash })
+      const order = await this.OrderModel.findOne({ nostrEventId })
 
       if (!order) {
         throw new Error('order not found')
@@ -189,7 +189,7 @@ class OrderLib {
 
       return orderObject
     } catch (err) {
-      console.error('Error in findOrder()')
+      console.error('Error in findOrderByEvent()')
       throw err
     }
   }
@@ -204,7 +204,7 @@ class OrderLib {
 
       // Get all Orders in the database.
       const orders = await this.OrderModel.find({})
-      // console.log('orders: ', orders)
+      console.log('orders: ', orders)
 
       // Loop through each Order and ensure the UTXO is still valid.
       for (let i = 0; i < orders.length; i++) {
@@ -256,6 +256,7 @@ class OrderLib {
   async listOrders (page = 0) {
     try {
       const data = await this.OrderModel.find({})
+
       // Sort entries so newest entries show first.
         .sort('-timestamp')
       // Skip to the start of the selected page.
@@ -272,12 +273,10 @@ class OrderLib {
 
   // Delete an Order model by sending the token back to the root address. This
   // will allow the garbage collectors to delete the Order and the Offer.
-  async deleteOrder (p2wdbHash) {
+  async deleteOrder (nostrEventId) {
     try {
-      console.log('p2wdbHash: ', p2wdbHash)
-
       // Find the order by the given hash.
-      const order = await this.findOrderByHash(p2wdbHash)
+      const order = await this.findOrderByEvent(nostrEventId)
       console.log('order: ', order)
 
       // Reclaim the tokens

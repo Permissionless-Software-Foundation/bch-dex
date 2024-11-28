@@ -69,10 +69,10 @@ class OrderRESTControllerLib {
     try {
       // console.log('body: ', ctx.request.body)
 
-      const p2wdbHash = ctx.request.body.p2wdbHash
+      const nostrEventId = ctx.request.body.nostrEventId
       // console.log('p2wdbHash: ', p2wdbHash)
 
-      const txid = await _this.useCases.order.deleteOrder(p2wdbHash)
+      const txid = await _this.useCases.order.deleteOrder(nostrEventId)
 
       ctx.body = { txid }
     } catch (err) {

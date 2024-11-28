@@ -37,7 +37,8 @@ const Order = new mongoose.Schema({
   // SWaP Protocol Properties
   lokadId: { type: String },
   messageType: { type: Number },
-  messageClass: { type: Number }
+  messageClass: { type: Number },
+  nostrEventId: { type: String } // Nostr Event Id.
 })
 
 export default mongoose.model('order', Order)

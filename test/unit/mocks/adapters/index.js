@@ -150,7 +150,8 @@ const wallet = {
     return { cashAddress: 'fakeAddr', wif: 'fakeWif', hdIndex: 1 }
   },
   bchWallet: new MockBchWallet(),
-  moveTokens: async () => {}
+  moveTokens: async () => {},
+  reclaimTokens: async ()=>{}
 }
 
 const p2wdb = {
@@ -159,4 +160,9 @@ const p2wdb = {
   checkForSufficientFunds: async () => true
 }
 
-export default { ipfs, localdb, bch, wallet, p2wdb, bchjs}
+const nostr = {
+  post: async () => {return true },
+  read: async () => { return true }
+}
+
+export default { ipfs, localdb, bch, wallet, p2wdb, bchjs, nostr}
