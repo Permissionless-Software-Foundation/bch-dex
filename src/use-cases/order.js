@@ -85,15 +85,12 @@ class OrderLib {
       // Add P2WDB specific flag for signaling that this is a new offer.
       orderEntity.dataType = 'offer'
 
-      // Add order to P2WDB.
+      // Post the new Order information to Nostr under the topic set in the
+      // config file.
       const postObj = {
-        wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
-        data: orderEntity,
-        appId: this.config.p2wdbAppId
+        data: orderEntity
       }
-
       const postMsg = JSON.stringify(postObj)
-
       const eventId = await this.adapters.nostr.post(postMsg)
       // console.log('hash: ', hash)
 
