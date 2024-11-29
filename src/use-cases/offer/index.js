@@ -454,7 +454,7 @@ class OfferUseCases {
       const orderHash = p2wdbData.data.offerHash
       let orderData = {}
       try {
-        orderData = await this.orderUseCase.findOrderByHash(orderHash)
+        orderData = await this.orderUseCase.findOrderByEvent(orderHash)
         console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
       } catch (err) {
         console.log('Order matching this Counter Offer is not managed by this instance of bch-dex. Exiting.')
