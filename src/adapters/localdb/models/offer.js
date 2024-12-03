@@ -34,7 +34,8 @@ const Offer = new mongoose.Schema({
   // SWaP Protocol Properties
   lokadId: { type: String },
   messageType: { type: Number },
-  messageClass: { type: Number }
+  messageClass: { type: Number },
+  nostrEventId: { type: String } // Nostr Event Id.
 
 })
 

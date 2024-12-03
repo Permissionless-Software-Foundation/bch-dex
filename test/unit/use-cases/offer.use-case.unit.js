@@ -48,79 +48,67 @@ describe('#offer-use-case', () => {
         )
       }
     })
+    it('should throw an error if order use cases are not passed in', () => {
+      try {
+        uut = new OfferLib({ adapters })
+
+        assert.fail('Unexpected code path')
+        console.log(uut) // linter
+      } catch (err) {
+        assert.include(
+          err.message,
+          'Instance of Order Use Cases must be passed in when instantiating Offer Use Cases library.'
+        )
+      }
+    })
   })
 
   describe('#createOffer', () => {
-    // it('should ignore an offer if utxo has been spent', async () => {
-    //   const offerObj = {
-    //     appId: 'swapTest555',
-    //     data: {
-    //       messageType: 1,
-    //       messageClass: 1,
-    //       tokenId:
-    //         '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
-    //       buyOrSell: 'sell',
-    //       rateInSats: 1000,
-    //       minSatsToExchange: 10,
-    //       numTokens: 0.02,
-    //       utxoTxid:
-    //         '241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87',
-    //       utxoVout: 0
-    //     },
-    //     timestamp: '2021-09-20T17:54:26.395Z',
-    //     localTimeStamp: '9/20/2021, 10:54:26 AM',
-    //     txid: '46f50f2a0cf44e3ed70dfb0618ef3ebfee57aabcf229b5d2d17c07322b54a8d7',
-    //     hash: 'zdpuB2X25AZCKo3wpr4sSbw44vqPWJRqcxWQRHZccK5BdtoGD'
-    //   }
-    //
-    //   // Mock dependencies
-    //   // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
-    //   sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves({})
-    //   sandbox.stub(uut, 'categorizeToken').resolves('nft')
-    //   sandbox.stub(uut, 'detectNsfw').resolves(false)
-    //
-    //   const result = await uut.createOffer(offerObj)
-    //   // console.log('result: ', result)
-    //
-    //   assert.equal(result, false)
-    // })
+    it('should handle error', async () => {
+      try {
+        await uut.createOffer()
+        assert.fail('unexpected code path')
+      } catch (error) {
+        assert.include(error.message, 'Cannot read properties of undefined')
+      }
+    })
+    it('should return false if offer already exist', async () => {
+      const offerObj = mockData.offerMockData
 
-    // it('should create an offer and return the hash', async () => {
-    //   const offerObj = {
-    //     appId: 'swapTest555',
-    //     data: {
-    //       messageType: 1,
-    //       messageClass: 1,
-    //       tokenId:
-    //         '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
-    //       buyOrSell: 'sell',
-    //       rateInBaseUnit: 1000,
-    //       minUnitsToExchange: 10,
-    //       numTokens: 0.02,
-    //       utxoTxid:
-    //         '241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87',
-    //       utxoVout: 0,
-    //       makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
-    //       ticker: 'TROUT',
-    //       tokenType: 1
-    //     },
-    //     timestamp: '2021-09-20T17:54:26.395Z',
-    //     localTimeStamp: '9/20/2021, 10:54:26 AM',
-    //     txid: '46f50f2a0cf44e3ed70dfb0618ef3ebfee57aabcf229b5d2d17c07322b54a8d7',
-    //     hash: 'zdpuB2X25AZCKo3wpr4sSbw44vqPWJRqcxWQRHZccK5BdtoGD'
-    //   }
-    //
-    //   // Mock dependencies
-    //   // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(true)
-    //   sandbox.stub(uut, 'categorizeToken').resolves('fungible')
-    //   sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves({})
-    //   sandbox.stub(uut, 'detectNsfw').resolves(false)
-    //
-    //   const result = await uut.createOffer(offerObj)
-    //   // console.log('result: ', result)
-    //
-    //   assert.equal(result, true)
-    // })
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').resolves({})
+
+      const result = await uut.createOffer(offerObj)
+      assert.isFalse(result)
+    })
+    it('should return false for invalid utxo', async () => {
+      const offerObj = mockData.offerMockData
+
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue').resolves(null)
+
+      const result = await uut.createOffer(offerObj)
+      assert.isFalse(result)
+    })
+
+    it('should create offer', async () => {
+      const tokenDataMock = mockData.simpleNftTokenData01
+      const offerObj = mockData.offerMockData
+
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves({}) // Utxo Status call
+        .onCall(1).resolves(tokenDataMock) // Token Data call
+        .onCall(2).resolves(false) // detectNsfw  call
+
+      const result = await uut.createOffer(offerObj)
+      assert.isTrue(result)
+    })
   })
 
   describe('#categorizeToken', () => {
@@ -159,15 +147,28 @@ describe('#offer-use-case', () => {
 
       assert.equal(result, 'fungible')
     })
+    it('should unknow type', async () => {
+      try {
+        // Mock dependencies
+        const offerData = mockData.fungibleOffer01
+        const tokenData = { genesisData: {} }
+
+        await uut.categorizeToken(offerData, tokenData)
+
+        assert.fail('unexpected code path')
+      } catch (error) {
+        assert.include(error.message, 'Unknown token type:')
+      }
+    })
   })
 
   describe('#removeDuplicateOffers', () => {
     it('should remove duplicate entries and return true', async () => {
       // Mock dependencies and force desired code path.
       sandbox.stub(uut.OfferModel, 'find').resolves([
-        { p2wdbHash: 'a', remove: async () => {} },
-        { p2wdbHash: 'a', remove: async () => {} },
-        { p2wdbHash: 'b', remove: async () => {} }
+        { p2wdbHash: 'a', remove: async () => { } },
+        { p2wdbHash: 'a', remove: async () => { } },
+        { p2wdbHash: 'b', remove: async () => { } }
       ])
       // sandbox.stub(uut.OfferModel, 'remove').resolves()
 
@@ -180,8 +181,8 @@ describe('#offer-use-case', () => {
     it('should return false if there are no duplicate entries', async () => {
       // Mock dependencies and force desired code path.
       sandbox.stub(uut.OfferModel, 'find').resolves([
-        { p2wdbHash: 'a', remove: async () => {} },
-        { p2wdbHash: 'b', remove: async () => {} }
+        { p2wdbHash: 'a', remove: async () => { } },
+        { p2wdbHash: 'b', remove: async () => { } }
       ])
       // sandbox.stub(uut.OfferModel, 'remove').resolves()
 
@@ -189,6 +190,70 @@ describe('#offer-use-case', () => {
       console.log('result: ', result)
 
       assert.equal(result, false)
+    })
+  })
+  describe('#findOfferByTxid', () => {
+    it('should throw an error if input is not provided', async () => {
+      try {
+        await uut.findOfferByTxid()
+        assert.fail('unexpected code path')
+      } catch (error) {
+        assert.equal(error.message, 'utxoTxid must be a string')
+      }
+    })
+    it('should throw an error if offer is not found', async () => {
+      try {
+        // Mock dependencies and force desired code path.
+        sandbox.stub(uut.OfferModel, 'findOne').resolves(null)
+
+        await uut.findOfferByTxid('241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87')
+        assert.fail('unexpected code path')
+      } catch (error) {
+        assert.equal(error.message, 'offer not found')
+      }
+    })
+
+    it('should return offer', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.OfferModel, 'findOne').resolves(mockData.nftOffer01)
+
+      const result = await uut.findOfferByTxid('241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87')
+      assert.isObject(result)
+    })
+  })
+  describe('#detectNsfw', () => {
+    it('should return false for wrong cid format', async () => {
+      const result = await uut.detectNsfw({ mutableData: '' })
+      assert.isFalse(result)
+    })
+
+    it('should return true if nft boolean detected', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.axios, 'get').resolves({ data: { nsfw: true } })
+
+      const result = await uut.detectNsfw({ mutableData: 'ipfs://bafybeibqnsmmh6bkf2wwextetki4tly65z4r4qkrrpl5xwgvzdzjley6wm' })
+      assert.isTrue(result)
+    })
+    it('should return true if nft string detected', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.axios, 'get').resolves({ data: { nsfw: 'true' } })
+
+      const result = await uut.detectNsfw({ mutableData: 'ipfs://bafybeibqnsmmh6bkf2wwextetki4tly65z4r4qkrrpl5xwgvzdzjley6wm' })
+      assert.isTrue(result)
+    })
+    it('should return false if nfsw property does not exist', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.axios, 'get').resolves({ data: {} })
+
+      const result = await uut.detectNsfw({ mutableData: 'ipfs://bafybeibqnsmmh6bkf2wwextetki4tly65z4r4qkrrpl5xwgvzdzjley6wm' })
+      assert.isFalse(result)
+    })
+    it('should return false on error', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.axios, 'get').throws(new Error('test error'))
+
+      const result = await uut.detectNsfw({ mutableData: 'ipfs://bafybeibqnsmmh6bkf2wwextetki4tly65z4r4qkrrpl5xwgvzdzjley6wm' })
+      assert.isFalse(result)
     })
   })
 })

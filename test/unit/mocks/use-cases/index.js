@@ -41,11 +41,23 @@ class Offer {
   async createOffer() {
     return {}
   }
+  async removeStaleOffers(){
+
+  }
+  async removeDuplicateOffers(){
+    
+  }
+  async loadOffers(){
+    
+  }
 }
 
 class Order {
   async createOrder() {
     return {}
+  }
+  async removeStaleOrders(){
+
   }
 }
 

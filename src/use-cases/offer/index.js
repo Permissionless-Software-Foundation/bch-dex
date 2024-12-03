@@ -37,7 +37,7 @@ class OfferUseCases {
     this.orderUseCase = localConfig.order
     if (!this.orderUseCase) {
       throw new Error(
-        'Instance of Offer Use Cases must be passed in when instantiating Offer Use Cases library.'
+        'Instance of Order Use Cases must be passed in when instantiating Offer Use Cases library.'
       )
     }
 
@@ -50,17 +50,19 @@ class OfferUseCases {
 
     // Bind 'this' object to functions
     this.detectNsfw = this.detectNsfw.bind(this)
+    this.loadOffers = this.loadOffers.bind(this)
   }
 
-  // This method is called by the POST /offer REST API controller, which is
-  // triggered by a P2WDB webhook.
+  // <This method is called by the POST /offer REST API controller, which is
+  // triggered by a P2WDB webhook. ( DEPRECATED)>
+  // This method is called by timer controller to load offers fron nostr server
   async createOffer (offerObj) {
     try {
       console.log('Use Case createOffer(offerObj): ', offerObj)
 
-      // Return if Offer already exists in database with the same P2WDB CID.
+      // Return if Offer already exists in database with the same utxo transaction id.
       try {
-        await this.findOfferByHash(offerObj.hash)
+        await this.findOfferByTxid(offerObj.data.utxoTxid)
 
         console.log('Offer already found in local database.')
         return false
@@ -71,9 +73,9 @@ class OfferUseCases {
       // Input Validation
       // TODO: This is a hack. Find a better way to protect against the corner-
       // case of counter-offers getting routed here.
-      if (offerObj.data.dataType === 'counter-offer') {
-        console.log('WARN: Counter Offer innappropriately routed to createOffer()')
-      }
+      // if (offerObj.data.dataType === 'counter-offer') {
+      //   console.log('WARN: Counter Offer innappropriately routed to createOffer()')
+      // }
 
       // Verify that UTXO in offer is unspent. If it is spent, then ignore the
       // offer.
@@ -89,6 +91,9 @@ class OfferUseCases {
 
       // A new offer gets a status of 'posted'
       offerObj.data.offerStatus = 'posted'
+
+      // Set timestamp
+      offerObj.timestamp = new Date().getTime()
 
       const offerEntity = this.offerEntity.validate(offerObj)
       console.log('offerEntity: ', offerEntity)
@@ -117,7 +122,7 @@ class OfferUseCases {
 
       return true
     } catch (err) {
-      console.error('Error in createOffer()')
+      console.error('Error in createOffer()', err.message)
       throw err
     }
   }
@@ -140,7 +145,7 @@ class OfferUseCases {
       // Retrieve the mutable data from Filecoin/IPFS.
       // const url = `https://${cid}.ipfs.w3s.link/data.json`
       const url = `${this.config.ipfsGateway}${cid}/data.json`
-      const result = await axios.get(url)
+      const result = await this.axios.get(url)
       const mutableData = result.data
       console.log(`mutableData: ${JSON.stringify(mutableData, null, 2)}`)
 
@@ -207,11 +212,11 @@ class OfferUseCases {
   async listOffers (page = 0) {
     try {
       const data = await this.OfferModel.find({})
-      // Sort entries so newest entries show first.
+        // Sort entries so newest entries show first.
         .sort('-timestamp')
-      // Skip to the start of the selected page.
+        // Skip to the start of the selected page.
         .skip(page * DEFAULT_ENTRIES_PER_PAGE)
-      // Only return 20 results.
+        // Only return 20 results.
         .limit(DEFAULT_ENTRIES_PER_PAGE)
 
       return data
@@ -227,11 +232,11 @@ class OfferUseCases {
         displayCategory: { $ne: 'fungible' },
         nsfw
       })
-      // Sort entries so newest entries show first.
+        // Sort entries so newest entries show first.
         .sort('-timestamp')
-      // Skip to the start of the selected page.
+        // Skip to the start of the selected page.
         .skip(page * NFT_ENTRIES_PER_PAGE)
-      // Only return 20 results.
+        // Only return 20 results.
         .limit(NFT_ENTRIES_PER_PAGE)
 
       // console.log('listNftOffers() returning this data: ', data)
@@ -246,11 +251,11 @@ class OfferUseCases {
   async listFungibleOffers (page = 0) {
     try {
       const data = await this.OfferModel.find({ displayCategory: 'fungible' })
-      // Sort entries so newest entries show first.
+        // Sort entries so newest entries show first.
         .sort('-timestamp')
-      // Skip to the start of the selected page.
+        // Skip to the start of the selected page.
         .skip(page * FUNGIBLE_ENTRIES_PER_PAGE)
-      // Only return 20 results.
+        // Only return 20 results.
         .limit(FUNGIBLE_ENTRIES_PER_PAGE)
 
       // console.log('listFungibleOffers() returning this data: ', data)
@@ -398,7 +403,7 @@ class OfferUseCases {
           throw new Error('App wallet does not control enough BCH to purchase the tokens.')
         }
 
-      //
+        //
       } else {
         // Buy Offer
         throw new Error('Buy offers are not supported yet.')
@@ -437,8 +442,28 @@ class OfferUseCases {
     // return offerObject
     // } catch (err) {
     //   // console.error('Error in findOffer(): ', err)
-    //   throw err
+    //   throw errByHash
     // }
+  }
+
+  async findOfferByTxid (utxoTxid) {
+    try {
+      // try {
+      if (typeof utxoTxid !== 'string' || !utxoTxid) {
+        throw new Error('utxoTxid must be a string')
+      }
+
+      const offer = await this.OfferModel.findOne({ utxoTxid })
+
+      if (!offer) {
+        throw new Error('offer not found')
+      }
+
+      return offer
+    } catch (error) {
+      console.error('Error in use-cases/offer/findOfferByTxid(): ')
+      throw error
+    }
   }
 
   // This function is called by the P2WDB webhook REST API handler. When a
@@ -626,6 +651,30 @@ class OfferUseCases {
     await offer.save()
 
     return true
+  }
+
+  // Get offers data from nostr.
+  async loadOffers () {
+    try {
+      // Retrieve offers array.
+      const offers = await this.adapters.nostr.read()
+      for (let i = 0; i < offers.length; i++) {
+        try {
+          const offer = offers[i]
+
+          // offer data
+          const offerObj = JSON.parse(offer)
+
+          // Try to create new offer
+          await this.createOffer(offerObj)
+        } catch (error) {
+          /* exit quietly */
+        }
+      }
+    } catch (error) {
+      console.error('Error in loadOffers(): ', error)
+      throw error
+    }
   }
 }
 
