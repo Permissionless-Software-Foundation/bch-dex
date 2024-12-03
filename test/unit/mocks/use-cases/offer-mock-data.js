@@ -126,11 +126,30 @@ const fungibleTokenData01 = {
   "mutableData": ""
 }
 
+const offerMockData ={
+  data: {
+    messageType: 1,
+    messageClass: 1,
+    tokenId:
+      '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
+    buyOrSell: 'sell',
+    rateInBaseUnit: 1000,
+    minUnitsToExchange: 10,
+    numTokens: 0.02,
+    utxoTxid:
+      '241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87',
+    utxoVout: 0,
+    makerAddr: 'address',
+    tokenType: 1
+  }
+}
+
 export default {
   nftOffer01,
   nftTokenData01,
   simpleNftOffer01,
   simpleNftTokenData01,
   fungibleOffer01,
-  fungibleTokenData01
+  fungibleTokenData01,
+  offerMockData
 };
