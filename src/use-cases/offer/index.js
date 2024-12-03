@@ -53,9 +53,7 @@ class OfferUseCases {
     this.loadOffers = this.loadOffers.bind(this)
   }
 
-  // <This method is called by the POST /offer REST API controller, which is
-  // triggered by a P2WDB webhook. ( DEPRECATED)>
-  // This method is called by timer controller to load offers fron nostr server
+  // This method is called by timer controller to load offers from a Nostr topic.
   async createOffer (offerObj) {
     try {
       console.log('Use Case createOffer(offerObj): ', offerObj)

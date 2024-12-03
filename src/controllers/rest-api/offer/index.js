@@ -48,8 +48,13 @@ class OfferRouter {
       )
     }
 
+    // 12/3/24 CT:
+    // Note: The createOffer() path was used by a P2WDB webhook to generate an
+    // Offer from and Order. This has been deprecated and Offers are now created
+    // by a Timer Controller monitoring a Nostr topic.
+
     // Define the routes and attach the controller.
-    this.router.post('/', _this.offerRESTController.createOffer)
+    // this.router.post('/', _this.offerRESTController.createOffer) // Deprecated.
     this.router.post('/take', _this.offerRESTController.takeOffer)
     this.router.get('/list/all/:page', _this.offerRESTController.listOffers)
     this.router.get('/list/nft/:page', _this.offerRESTController.listNftOffers)
