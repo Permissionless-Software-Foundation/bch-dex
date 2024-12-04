@@ -3,45 +3,45 @@
 */
 
 const nftOffer01 = {
- "messageType": 1,
- "messageClass": 1,
- "tokenId": "eb93f05553ff088bffb0ec687519e83c59e5108c160f7c25a4b6c45109d7e40b",
- "buyOrSell": "sell",
- "rateInBaseUnit": 7672536,
- "minUnitsToExchange": 7672536,
- "numTokens": 1,
- "utxoTxid": "c736d73e274df20e9b069b4990d1a264fb80aa98d67cc6c7a39e42bff48e7c04",
- "utxoVout": 1,
- "timestamp": 1662930309998,
- "globaltimestamp": "2022-09-11T21:05:09.998Z",
- "localTimestamp": "9/11/2022, 9:05:09 PM",
- "txid": "4266862b8358664996038d8c29d49dc0f3d3058fd1ef3d567b084e6b16ceb5b2",
- "p2wdbHash": "zdpuArq7rCuVCGPyTnWpLjy9AYsh8yrbwjGdKwg2GDDALkM8t",
- "offerStatus": "posted",
- "makerAddr": "bitcoincash:qrqlz63cwmu0hcmsrfnd8jemn3atkpaqds6tf4ksrr",
- "ticker": "TV001",
- "tokenType": 65
+  "messageType": 1,
+  "messageClass": 1,
+  "tokenId": "eb93f05553ff088bffb0ec687519e83c59e5108c160f7c25a4b6c45109d7e40b",
+  "buyOrSell": "sell",
+  "rateInBaseUnit": 7672536,
+  "minUnitsToExchange": 7672536,
+  "numTokens": 1,
+  "utxoTxid": "c736d73e274df20e9b069b4990d1a264fb80aa98d67cc6c7a39e42bff48e7c04",
+  "utxoVout": 1,
+  "timestamp": 1662930309998,
+  "globaltimestamp": "2022-09-11T21:05:09.998Z",
+  "localTimestamp": "9/11/2022, 9:05:09 PM",
+  "txid": "4266862b8358664996038d8c29d49dc0f3d3058fd1ef3d567b084e6b16ceb5b2",
+  "p2wdbHash": "zdpuArq7rCuVCGPyTnWpLjy9AYsh8yrbwjGdKwg2GDDALkM8t",
+  "offerStatus": "posted",
+  "makerAddr": "bitcoincash:qrqlz63cwmu0hcmsrfnd8jemn3atkpaqds6tf4ksrr",
+  "ticker": "TV001",
+  "tokenType": 65
 }
 
 const nftTokenData01 = {
- "genesisData": {
-   "type": 65,
-   "ticker": "TV001",
-   "name": "Introduction to NFTs on BCH",
-   "tokenId": "eb93f05553ff088bffb0ec687519e83c59e5108c160f7c25a4b6c45109d7e40b",
-   "documentUri": "ipfs://bafybeibmgilu4lk3uivwyzhtm7jorl5zbsluewqmcsxs6otzrphh33okk4",
-   "documentHash": "c1731268f4873f1928438abdaf6ffc546d86a1817dc6f3c6bc73fbdfb4664f10",
-   "decimals": 0,
-   "mintBatonIsActive": false,
-   "tokensInCirculationBN": "1",
-   "tokensInCirculationStr": "1",
-   "blockCreated": 740395,
-   "totalBurned": "0",
-   "totalMinted": "1",
-   "parentGroupId": "030563ddd65772d8e9b79b825529ed53c7d27037507b57c528788612b4911107"
- },
- "immutableData": "ipfs://bafybeibmgilu4lk3uivwyzhtm7jorl5zbsluewqmcsxs6otzrphh33okk4",
- "mutableData": "ipfs://bafybeifzhunfpodsztsj5x4ypopngkxuapbxwaxaxkahaybdktk6joqtlq"
+  "genesisData": {
+    "type": 65,
+    "ticker": "TV001",
+    "name": "Introduction to NFTs on BCH",
+    "tokenId": "eb93f05553ff088bffb0ec687519e83c59e5108c160f7c25a4b6c45109d7e40b",
+    "documentUri": "ipfs://bafybeibmgilu4lk3uivwyzhtm7jorl5zbsluewqmcsxs6otzrphh33okk4",
+    "documentHash": "c1731268f4873f1928438abdaf6ffc546d86a1817dc6f3c6bc73fbdfb4664f10",
+    "decimals": 0,
+    "mintBatonIsActive": false,
+    "tokensInCirculationBN": "1",
+    "tokensInCirculationStr": "1",
+    "blockCreated": 740395,
+    "totalBurned": "0",
+    "totalMinted": "1",
+    "parentGroupId": "030563ddd65772d8e9b79b825529ed53c7d27037507b57c528788612b4911107"
+  },
+  "immutableData": "ipfs://bafybeibmgilu4lk3uivwyzhtm7jorl5zbsluewqmcsxs6otzrphh33okk4",
+  "mutableData": "ipfs://bafybeifzhunfpodsztsj5x4ypopngkxuapbxwaxaxkahaybdktk6joqtlq"
 }
 
 const simpleNftOffer01 = {
@@ -126,7 +126,7 @@ const fungibleTokenData01 = {
   "mutableData": ""
 }
 
-const offerMockData ={
+const offerMockData = {
   data: {
     messageType: 1,
     messageClass: 1,
@@ -144,6 +144,31 @@ const offerMockData ={
   }
 }
 
+const deserealizeTxMock = {
+  //...
+  vout: [
+    { 
+      value: 0,
+      scriptPubKey: {
+        addresses: ['bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7478']
+      }
+    },
+    {
+      value: 0,
+      scriptPubKey: {
+        addresses: ['bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7478']
+      }
+    },
+    {
+      value: 0,
+      scriptPubKey: {
+        addresses: ['bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7478']
+      }
+    },
+    //...
+  ]
+}
+
 export default {
   nftOffer01,
   nftTokenData01,
@@ -151,5 +176,6 @@ export default {
   simpleNftTokenData01,
   fungibleOffer01,
   fungibleTokenData01,
-  offerMockData
+  offerMockData,
+  deserealizeTxMock
 };

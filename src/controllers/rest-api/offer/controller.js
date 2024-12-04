@@ -100,11 +100,11 @@ class OfferRESTControllerLib {
     try {
       console.log('REST API controller, body: ', ctx.request.body)
 
-      const offerCid = ctx.request.body.offerCid
+      const nostrEventId = ctx.request.body.nostrEventId
 
-      const hash = await _this.useCases.offer.takeOffer(offerCid)
+      const eventId = await _this.useCases.offer.takeOffer(nostrEventId)
 
-      ctx.body = { hash }
+      ctx.body = { eventId }
     } catch (err) {
       wlogger.error('Error in takeOffer() REST API handler.')
       _this.handleError(ctx, err)

@@ -24,6 +24,7 @@ class MockBchWallet {
         this.sendTokens = async () => {
             return 'fakeTxid';
         };
+        this.utxoIsValid =async ()=>{}
         this.getUtxos = async () => { };
         this.getBalance = async () => { };
         this.listTokens = async () => { };
