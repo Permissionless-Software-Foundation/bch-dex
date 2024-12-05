@@ -4,7 +4,6 @@
 
 import wlogger from '../../../adapters/wlogger.js'
 
-let _this
 
 class OfferRESTControllerLib {
   constructor (localConfig = {}) {
@@ -26,7 +25,13 @@ class OfferRESTControllerLib {
     this.OfferModel = this.adapters.localdb.Offer
     // this.userUseCases = this.useCases.user
 
-    _this = this
+    // Bind 'this' object to all subfunctions.
+    this.createOffer = this.createOffer.bind(this)
+    this.listOffers = this.listOffers.bind(this)
+    this.listNftOffers = this.listNftOffers.bind(this)
+    this.listFungibleOffers = this.listFungibleOffers.bind(this)
+    this.takeOffer = this.takeOffer.bind(this)
+    this.handleError = this.handleError.bind(this)
   }
 
   // No api-doc documentation because this wont be a public endpoint
@@ -36,7 +41,7 @@ class OfferRESTControllerLib {
 
       const offerObj = ctx.request.body
 
-      await _this.useCases.offer.createOffer(offerObj)
+      await this.useCases.offer.createOffer(offerObj)
 
       ctx.body = {
         success: true
@@ -45,7 +50,7 @@ class OfferRESTControllerLib {
       // console.log(`err.message: ${err.message}`)
       // console.log('err: ', err)
       // ctx.throw(422, err.message)
-      _this.handleError(ctx, err)
+      this.handleError(ctx, err)
     }
   }
 
@@ -55,12 +60,12 @@ class OfferRESTControllerLib {
       let page = ctx.params.page
       if (!page) page = 0
 
-      const offers = await _this.useCases.offer.listOffers(page)
+      const offers = await this.useCases.offer.listOffers(page)
 
       ctx.body = offers
     } catch (err) {
       console.log('Error in listOffers REST API handler: ', err)
-      _this.handleError(ctx, err)
+      this.handleError(ctx, err)
     }
   }
 
@@ -70,12 +75,12 @@ class OfferRESTControllerLib {
       let page = ctx.params.page
       if (!page) page = 0
 
-      const offers = await _this.useCases.offer.listNftOffers(page)
+      const offers = await this.useCases.offer.listNftOffers(page)
 
       ctx.body = offers
     } catch (err) {
       console.log('Error in listNftOffers REST API handler: ', err)
-      _this.handleError(ctx, err)
+      this.handleError(ctx, err)
     }
   }
 
@@ -85,12 +90,12 @@ class OfferRESTControllerLib {
       let page = ctx.params.page
       if (!page) page = 0
 
-      const offers = await _this.useCases.offer.listFungibleOffers(page)
+      const offers = await this.useCases.offer.listFungibleOffers(page)
 
       ctx.body = offers
     } catch (err) {
       console.log('Error in Fungible REST API handler: ', err)
-      _this.handleError(ctx, err)
+      this.handleError(ctx, err)
     }
   }
 
@@ -102,12 +107,12 @@ class OfferRESTControllerLib {
 
       const nostrEventId = ctx.request.body.nostrEventId
 
-      const eventId = await _this.useCases.offer.takeOffer(nostrEventId)
+      const eventId = await this.useCases.offer.takeOffer(nostrEventId)
 
       ctx.body = { eventId }
     } catch (err) {
       wlogger.error('Error in takeOffer() REST API handler.')
-      _this.handleError(ctx, err)
+      this.handleError(ctx, err)
     }
   }
 
