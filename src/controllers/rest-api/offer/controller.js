@@ -4,7 +4,6 @@
 
 import wlogger from '../../../adapters/wlogger.js'
 
-
 class OfferRESTControllerLib {
   constructor (localConfig = {}) {
     // Dependency Injection.
