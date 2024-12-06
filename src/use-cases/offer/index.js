@@ -37,7 +37,7 @@ class OfferUseCases {
     this.orderUseCase = localConfig.order
     if (!this.orderUseCase) {
       throw new Error(
-        'Instance of Offer Use Cases must be passed in when instantiating Offer Use Cases library.'
+        'Instance of Order Use Cases must be passed in when instantiating Offer Use Cases library.'
       )
     }
 
@@ -50,17 +50,17 @@ class OfferUseCases {
 
     // Bind 'this' object to functions
     this.detectNsfw = this.detectNsfw.bind(this)
+    this.loadOffers = this.loadOffers.bind(this)
   }
 
-  // This method is called by the POST /offer REST API controller, which is
-  // triggered by a P2WDB webhook.
+  // This method is called by timer controller to load offers from a Nostr topic.
   async createOffer (offerObj) {
     try {
       console.log('Use Case createOffer(offerObj): ', offerObj)
 
-      // Return if Offer already exists in database with the same P2WDB CID.
+      // Return if Offer already exists in database with the same utxo transaction id.
       try {
-        await this.findOfferByHash(offerObj.hash)
+        await this.findOfferByTxid(offerObj.data.utxoTxid)
 
         console.log('Offer already found in local database.')
         return false
@@ -71,9 +71,9 @@ class OfferUseCases {
       // Input Validation
       // TODO: This is a hack. Find a better way to protect against the corner-
       // case of counter-offers getting routed here.
-      if (offerObj.data.dataType === 'counter-offer') {
-        console.log('WARN: Counter Offer innappropriately routed to createOffer()')
-      }
+      // if (offerObj.data.dataType === 'counter-offer') {
+      //   console.log('WARN: Counter Offer innappropriately routed to createOffer()')
+      // }
 
       // Verify that UTXO in offer is unspent. If it is spent, then ignore the
       // offer.
@@ -89,6 +89,9 @@ class OfferUseCases {
 
       // A new offer gets a status of 'posted'
       offerObj.data.offerStatus = 'posted'
+
+      // Set timestamp
+      offerObj.timestamp = new Date().getTime()
 
       const offerEntity = this.offerEntity.validate(offerObj)
       console.log('offerEntity: ', offerEntity)
@@ -117,7 +120,7 @@ class OfferUseCases {
 
       return true
     } catch (err) {
-      console.error('Error in createOffer()')
+      console.error('Error in createOffer()', err.message)
       throw err
     }
   }
@@ -140,7 +143,7 @@ class OfferUseCases {
       // Retrieve the mutable data from Filecoin/IPFS.
       // const url = `https://${cid}.ipfs.w3s.link/data.json`
       const url = `${this.config.ipfsGateway}${cid}/data.json`
-      const result = await axios.get(url)
+      const result = await this.axios.get(url)
       const mutableData = result.data
       console.log(`mutableData: ${JSON.stringify(mutableData, null, 2)}`)
 
@@ -207,11 +210,11 @@ class OfferUseCases {
   async listOffers (page = 0) {
     try {
       const data = await this.OfferModel.find({})
-      // Sort entries so newest entries show first.
+        // Sort entries so newest entries show first.
         .sort('-timestamp')
-      // Skip to the start of the selected page.
+        // Skip to the start of the selected page.
         .skip(page * DEFAULT_ENTRIES_PER_PAGE)
-      // Only return 20 results.
+        // Only return 20 results.
         .limit(DEFAULT_ENTRIES_PER_PAGE)
 
       return data
@@ -227,11 +230,11 @@ class OfferUseCases {
         displayCategory: { $ne: 'fungible' },
         nsfw
       })
-      // Sort entries so newest entries show first.
+        // Sort entries so newest entries show first.
         .sort('-timestamp')
-      // Skip to the start of the selected page.
+        // Skip to the start of the selected page.
         .skip(page * NFT_ENTRIES_PER_PAGE)
-      // Only return 20 results.
+        // Only return 20 results.
         .limit(NFT_ENTRIES_PER_PAGE)
 
       // console.log('listNftOffers() returning this data: ', data)
@@ -246,11 +249,11 @@ class OfferUseCases {
   async listFungibleOffers (page = 0) {
     try {
       const data = await this.OfferModel.find({ displayCategory: 'fungible' })
-      // Sort entries so newest entries show first.
+        // Sort entries so newest entries show first.
         .sort('-timestamp')
-      // Skip to the start of the selected page.
+        // Skip to the start of the selected page.
         .skip(page * FUNGIBLE_ENTRIES_PER_PAGE)
-      // Only return 20 results.
+        // Only return 20 results.
         .limit(FUNGIBLE_ENTRIES_PER_PAGE)
 
       // console.log('listFungibleOffers() returning this data: ', data)
@@ -270,12 +273,12 @@ class OfferUseCases {
   // provide functionality to take less than the total amount of tokens offered
   // (offerInfo.numTokens). Taking less than the offered amount will be added
   // in the future.
-  async takeOffer (offerCid) {
+  async takeOffer (eventId) {
     try {
-      console.log('offerCid: ', offerCid)
+      if (!eventId || typeof eventId !== 'string') throw new Error('eventId must be a string')
 
       // Get the Offer information
-      const offerInfo = await this.findOfferByHash(offerCid)
+      const offerInfo = await this.findOfferByEvent(eventId)
       console.log(`offerInfo: ${JSON.stringify(offerInfo, null, 2)}`)
 
       // Ensure the offer is in a 'posted' state and not already 'taken'
@@ -288,6 +291,8 @@ class OfferUseCases {
         tx_hash: offerInfo.utxoTxid,
         tx_pos: offerInfo.utxoVout
       }
+
+      // Note : should be added to retry-queue?
       const utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
       console.log('utxoStatus: ', utxoStatus)
       if (!utxoStatus) {
@@ -307,6 +312,7 @@ class OfferUseCases {
 
       // Calculate amount of sats to generate a counter offer.
       let satsToMove = Math.ceil(offerInfo.numTokens * parseInt(offerInfo.rateInBaseUnit))
+      console.log('satsToMove', satsToMove, offerInfo)
       if (isNaN(satsToMove)) {
         throw new Error('Could not calculate the amount of BCH to generate counter offer')
       }
@@ -332,9 +338,9 @@ class OfferUseCases {
       // Create valid Offer object
       const takenOfferInfo = Object.assign({}, offerInfo)
       takenOfferInfo.partialTxHex = partialTxHex
-      delete takenOfferInfo.p2wdbHash
+      delete takenOfferInfo.nostrEventId
       delete takenOfferInfo._id
-      takenOfferInfo.offerHash = offerInfo.p2wdbHash
+      takenOfferInfo.offerHash = offerInfo.nostrEventId
 
       // Add P2WDB specific flag for signaling that this is a new offer.
       takenOfferInfo.dataType = 'counter-offer'
@@ -342,19 +348,19 @@ class OfferUseCases {
       // Write offer info to the P2WDB
       // TODO: This will trigger the webhook. Find some way of triggering the
       // webhook on new offers, but not on counteroffers
-      const p2wdbObj = {
+      const nostrData = {
         wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
         data: takenOfferInfo,
         appId: this.config.p2wdbAppId
       }
-      const hash = await this.adapters.p2wdb.write(p2wdbObj)
+      const resultEventId = await this.adapters.nostr.post(nostrData)
 
       // Delete the Offer from the database, so that the user doesn't attempt
       // to take the offer more than once.
       offerInfo.remove()
 
       // Return the P2WDB CID
-      return hash
+      return resultEventId
 
       // return 'fake-hash'
     } catch (err) {
@@ -377,9 +383,10 @@ class OfferUseCases {
       await this.adapters.wallet.bchWallet.initialize()
 
       // Ensure the app wallet has enough funds to write to the P2WDB.
-      const wif = this.adapters.wallet.bchWallet.walletInfo.privateKey
-      const canWriteToP2WDB = await this.adapters.p2wdb.checkForSufficientFunds(wif)
-      if (!canWriteToP2WDB) throw new Error('App wallet does not have funds for writing to the P2WDB.')
+      // Note :  this validation should be deprecated for nostr functionality?
+      // const wif = this.adapters.wallet.bchWallet.walletInfo.privateKey
+      // const canWriteToP2WDB = await this.adapters.p2wdb.checkForSufficientFunds(wif)
+      // if (!canWriteToP2WDB) throw new Error('App wallet does not have funds for writing to the P2WDB.')
 
       if (offerEntity.buyOrSell.includes('sell')) {
         // Sell Offer
@@ -398,7 +405,7 @@ class OfferUseCases {
           throw new Error('App wallet does not control enough BCH to purchase the tokens.')
         }
 
-      //
+        //
       } else {
         // Buy Offer
         throw new Error('Buy offers are not supported yet.')
@@ -417,41 +424,66 @@ class OfferUseCases {
     }
   }
 
-  async findOfferByHash (p2wdbHash) {
-    // try {
-    if (typeof p2wdbHash !== 'string' || !p2wdbHash) {
-      throw new Error('p2wdbHash must be a string')
+  // Retrieve an Order model from the database. Find it by its event Id.
+  async findOfferByEvent (nostrEventId) {
+    try {
+      if (typeof nostrEventId !== 'string' || !nostrEventId) {
+        throw new Error('nostrEventId must be a string')
+      }
+
+      const order = await this.OfferModel.findOne({ nostrEventId })
+
+      if (!order) {
+        throw new Error('offer not found')
+      }
+
+      const orderObject = order.toObject()
+      // return this.offerEntity.validateFromModel(offerObject)
+
+      return orderObject
+    } catch (err) {
+      console.error('Error in findOfferByEvent()')
+      throw err
     }
+  }
 
-    const offer = await this.OfferModel.findOne({ p2wdbHash })
+  async findOfferByTxid (utxoTxid) {
+    try {
+      // try {
+      if (typeof utxoTxid !== 'string' || !utxoTxid) {
+        throw new Error('utxoTxid must be a string')
+      }
 
-    if (!offer) {
-      throw new Error('offer not found')
+      const offer = await this.OfferModel.findOne({ utxoTxid })
+
+      // TODO: Offer should be found by TXID, then if there is more than one
+      // result, they should be filtered by the vout property. That will leave
+      // one remaining UTXO.
+
+      if (!offer) {
+        throw new Error('offer not found')
+      }
+
+      return offer
+    } catch (error) {
+      console.error('Error in use-cases/offer/findOfferByTxid(): ', error.message)
+      throw error
     }
-
-    return offer
-
-    // const offerObject = offer.toObject()
-    // return this.offerEntity.validateFromModel(offerObject)
-
-    // return offerObject
-    // } catch (err) {
-    //   // console.error('Error in findOffer(): ', err)
-    //   throw err
-    // }
   }
 
   // This function is called by the P2WDB webhook REST API handler. When a
   // Counter Offer is passed to bch-dex by the P2WDB, the data is then passed
   // to this function. It does due dilligence on the Counter Offer, then signs
   // and broadcasts the transaction to accept the Counter Offer.
-  async acceptCounterOffer (p2wdbData) {
+  async acceptCounterOffer (offerData) {
     try {
-      console.log(`acceptCounterOffer() p2wdbData: ${JSON.stringify(p2wdbData, null, 2)}`)
+      console.log(`acceptCounterOffer() offerData: ${JSON.stringify(offerData, null, 2)}`)
 
       // See if this instance of bch-dex is managing the Order associated with
       // the incoming Counter Offer.
-      const orderHash = p2wdbData.data.offerHash
+
+      // Note : this should be handle by nostrEvent id or UtxoId?
+      const orderHash = offerData.data.nostrEventId
       let orderData = {}
       try {
         orderData = await this.orderUseCase.findOrderByEvent(orderHash)
@@ -462,12 +494,13 @@ class OfferUseCases {
       }
 
       // Deserialize the partially signed transaction.
-      const txHex = p2wdbData.data.partialTxHex
+      const txHex = offerData.data.partialTxHex
       const txObj = await this.adapters.wallet.deseralizeTx(txHex)
       console.log(`txObj: ${JSON.stringify(txObj, null, 2)}`)
 
       // Ensure the 3rd output (vout=2) contains the required amount of BCH.
       const satsToReceive = Math.ceil(orderData.numTokens * parseInt(orderData.rateInBaseUnit))
+      console.log('Ceil', satsToReceive)
       if (isNaN(satsToReceive)) {
         throw new Error('Could not calculate the amount of BCH offered in the Counter Offer')
       }
@@ -600,32 +633,64 @@ class OfferUseCases {
     }
   }
 
-  async flagOffer (flagData) {
-    console.log(`flagData: ${JSON.stringify(flagData, null, 2)}`)
+  // Flag offers as NSFW.
+  async flagOffer (flagData = {}) {
+    try {
+      if (!flagData.data) throw new Error('"data" property is required')
 
-    const p2wdbHash = flagData.data.p2wdbHash
+      console.log(`flagData: ${JSON.stringify(flagData, null, 2)}`)
 
-    // Get the offer from the database.
-    const offer = await this.findOfferByHash(p2wdbHash)
-    console.log(`Flagging this offer: ${JSON.stringify(offer, null, 2)}`)
+      const eventId = flagData.data.nostrEventId
 
-    if (!offer) {
-      throw new Error(`Offer ${p2wdbHash} not found in the database.`)
+      // Get the offer from the database.
+      const offer = await this.findOfferByEvent(eventId)
+      console.log(`Flagging this offer: ${JSON.stringify(offer, null, 2)}`)
+
+      if (!offer) {
+        throw new Error(`Offer ${eventId} not found in the database.`)
+      }
+
+      // Add the raw flag data to the database model.
+      offer.flags.push(flagData)
+
+      // If flag count is 3 or more, mark the Offer as NSFW
+      const flagCnt = offer.flags.length
+      if (flagCnt >= 3) {
+        offer.nsfw = true
+      }
+
+      // Save the updated offer data to the database.
+      await offer.save()
+
+      return true
+    } catch (error) {
+      console.error('Error in flagOffer(): ', error)
+      throw error
     }
+  }
 
-    // Add the raw flag data to the database model.
-    offer.flags.push(flagData)
+  // Get offers data from nostr.
+  async loadOffers () {
+    try {
+      // Retrieve offers array.
+      const offers = await this.adapters.nostr.read()
+      for (let i = 0; i < offers.length; i++) {
+        try {
+          const offer = offers[i]
 
-    // If flag count is 3 or more, mark the Offer as NSFW
-    const flagCnt = offer.flags.length
-    if (flagCnt >= 3) {
-      offer.nsfw = true
+          // offer data
+          const offerObj = JSON.parse(offer)
+
+          // Try to create new offer
+          await this.createOffer(offerObj)
+        } catch (error) {
+          /* exit quietly */
+        }
+      }
+    } catch (error) {
+      console.error('Error in loadOffers(): ', error)
+      throw error
     }
-
-    // Save the updated offer data to the database.
-    await offer.save()
-
-    return true
   }
 }
 

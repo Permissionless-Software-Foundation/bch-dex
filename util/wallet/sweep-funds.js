@@ -9,10 +9,10 @@
 // Public npm libraries
 import BCHJS from '@psf/bch-js'
 
-import BchTokenSweep from 'bch-token-sweep/index'
+import BchTokenSweep from 'bch-token-sweep'
 
 // Local libraries
-import WalletAdapter from '../../src/adapters/wallet'
+import WalletAdapter from '../../src/adapters/wallet.js'
 
 // Constants
 const EMTPY_ADDR_CUTOFF = 15
@@ -22,6 +22,7 @@ async function sweepFunds () {
     // Open the wallet files.
     const wallet = new WalletAdapter()
     const walletInfo = await wallet.openWallet()
+    const bchWallet = await wallet.instanceWallet(walletInfo)
     console.log('walletInfo: ', walletInfo)
 
     const rootAddr = walletInfo.cashAddress
@@ -49,7 +50,7 @@ async function sweepFunds () {
         const sweeper = new BchTokenSweep(
           wifToSweep,
           rootWif,
-          bchjs,
+          bchWallet,
           550,
           rootAddr
         )
@@ -68,7 +69,7 @@ async function sweepFunds () {
         // Wait between loop iterations.
         await bchjs.Util.sleep(3000)
       } catch (err) {
-        console.log(`error message with index ${hdIndex}: ${err.message}`)
+        console.log(`error message with index ${hdIndex}: ${err}`)
         emptyAddrCnt++
       }
 

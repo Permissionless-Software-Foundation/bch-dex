@@ -55,7 +55,7 @@ class OrderLib {
 
       // Ensure sufficient tokens exist to create the order.
       // await this.ensureFunds(orderEntity)
-      await this.retryQueue.addToQueue(this.ensureFunds, orderEntity)
+      // await this.retryQueue.addToQueue(this.ensureFunds, orderEntity)
 
       // Get Ticker for token ID.
       // const tokenData = await this.adapters.wallet.bchWallet.getTxData([entryObj.tokenId])

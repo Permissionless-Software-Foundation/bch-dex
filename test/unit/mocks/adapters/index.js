@@ -151,7 +151,11 @@ const wallet = {
   },
   bchWallet: new MockBchWallet(),
   moveTokens: async () => {},
-  reclaimTokens: async ()=>{}
+  moveBch: async () => {},
+  reclaimTokens: async ()=>{},
+  generatePartialTx: async ()=>{},
+  deseralizeTx:async ()=>{},
+  completeTx:async ()=>{ return ''},
 }
 
 const p2wdb = {

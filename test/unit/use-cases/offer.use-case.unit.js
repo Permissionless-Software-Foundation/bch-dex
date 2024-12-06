@@ -48,79 +48,67 @@ describe('#offer-use-case', () => {
         )
       }
     })
+    it('should throw an error if order use cases are not passed in', () => {
+      try {
+        uut = new OfferLib({ adapters })
+
+        assert.fail('Unexpected code path')
+        console.log(uut) // linter
+      } catch (err) {
+        assert.include(
+          err.message,
+          'Instance of Order Use Cases must be passed in when instantiating Offer Use Cases library.'
+        )
+      }
+    })
   })
 
   describe('#createOffer', () => {
-    // it('should ignore an offer if utxo has been spent', async () => {
-    //   const offerObj = {
-    //     appId: 'swapTest555',
-    //     data: {
-    //       messageType: 1,
-    //       messageClass: 1,
-    //       tokenId:
-    //         '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
-    //       buyOrSell: 'sell',
-    //       rateInSats: 1000,
-    //       minSatsToExchange: 10,
-    //       numTokens: 0.02,
-    //       utxoTxid:
-    //         '241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87',
-    //       utxoVout: 0
-    //     },
-    //     timestamp: '2021-09-20T17:54:26.395Z',
-    //     localTimeStamp: '9/20/2021, 10:54:26 AM',
-    //     txid: '46f50f2a0cf44e3ed70dfb0618ef3ebfee57aabcf229b5d2d17c07322b54a8d7',
-    //     hash: 'zdpuB2X25AZCKo3wpr4sSbw44vqPWJRqcxWQRHZccK5BdtoGD'
-    //   }
-    //
-    //   // Mock dependencies
-    //   // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
-    //   sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves({})
-    //   sandbox.stub(uut, 'categorizeToken').resolves('nft')
-    //   sandbox.stub(uut, 'detectNsfw').resolves(false)
-    //
-    //   const result = await uut.createOffer(offerObj)
-    //   // console.log('result: ', result)
-    //
-    //   assert.equal(result, false)
-    // })
+    it('should handle error', async () => {
+      try {
+        await uut.createOffer()
+        assert.fail('unexpected code path')
+      } catch (error) {
+        assert.include(error.message, 'Cannot read properties of undefined')
+      }
+    })
+    it('should return false if offer already exist', async () => {
+      const offerObj = mockData.offerMockData
 
-    // it('should create an offer and return the hash', async () => {
-    //   const offerObj = {
-    //     appId: 'swapTest555',
-    //     data: {
-    //       messageType: 1,
-    //       messageClass: 1,
-    //       tokenId:
-    //         '38e97c5d7d3585a2cbf3f9580c82ca33985f9cb0845d4dcce220cb709f9538b0',
-    //       buyOrSell: 'sell',
-    //       rateInBaseUnit: 1000,
-    //       minUnitsToExchange: 10,
-    //       numTokens: 0.02,
-    //       utxoTxid:
-    //         '241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87',
-    //       utxoVout: 0,
-    //       makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
-    //       ticker: 'TROUT',
-    //       tokenType: 1
-    //     },
-    //     timestamp: '2021-09-20T17:54:26.395Z',
-    //     localTimeStamp: '9/20/2021, 10:54:26 AM',
-    //     txid: '46f50f2a0cf44e3ed70dfb0618ef3ebfee57aabcf229b5d2d17c07322b54a8d7',
-    //     hash: 'zdpuB2X25AZCKo3wpr4sSbw44vqPWJRqcxWQRHZccK5BdtoGD'
-    //   }
-    //
-    //   // Mock dependencies
-    //   // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(true)
-    //   sandbox.stub(uut, 'categorizeToken').resolves('fungible')
-    //   sandbox.stub(uut.adapters.wallet.bchWallet, 'getTokenData').resolves({})
-    //   sandbox.stub(uut, 'detectNsfw').resolves(false)
-    //
-    //   const result = await uut.createOffer(offerObj)
-    //   // console.log('result: ', result)
-    //
-    //   assert.equal(result, true)
-    // })
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').resolves({})
+
+      const result = await uut.createOffer(offerObj)
+      assert.isFalse(result)
+    })
+    it('should return false for invalid utxo', async () => {
+      const offerObj = mockData.offerMockData
+
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue').resolves(null)
+
+      const result = await uut.createOffer(offerObj)
+      assert.isFalse(result)
+    })
+
+    it('should create offer', async () => {
+      const tokenDataMock = mockData.simpleNftTokenData01
+      const offerObj = mockData.offerMockData
+
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves({}) // Utxo Status call
+        .onCall(1).resolves(tokenDataMock) // Token Data call
+        .onCall(2).resolves(false) // detectNsfw  call
+
+      const result = await uut.createOffer(offerObj)
+      assert.isTrue(result)
+    })
   })
 
   describe('#categorizeToken', () => {
@@ -159,15 +147,28 @@ describe('#offer-use-case', () => {
 
       assert.equal(result, 'fungible')
     })
+    it('should unknow type', async () => {
+      try {
+        // Mock dependencies
+        const offerData = mockData.fungibleOffer01
+        const tokenData = { genesisData: {} }
+
+        await uut.categorizeToken(offerData, tokenData)
+
+        assert.fail('unexpected code path')
+      } catch (error) {
+        assert.include(error.message, 'Unknown token type:')
+      }
+    })
   })
 
   describe('#removeDuplicateOffers', () => {
     it('should remove duplicate entries and return true', async () => {
       // Mock dependencies and force desired code path.
       sandbox.stub(uut.OfferModel, 'find').resolves([
-        { p2wdbHash: 'a', remove: async () => {} },
-        { p2wdbHash: 'a', remove: async () => {} },
-        { p2wdbHash: 'b', remove: async () => {} }
+        { p2wdbHash: 'a', remove: async () => { } },
+        { p2wdbHash: 'a', remove: async () => { } },
+        { p2wdbHash: 'b', remove: async () => { } }
       ])
       // sandbox.stub(uut.OfferModel, 'remove').resolves()
 
@@ -180,8 +181,8 @@ describe('#offer-use-case', () => {
     it('should return false if there are no duplicate entries', async () => {
       // Mock dependencies and force desired code path.
       sandbox.stub(uut.OfferModel, 'find').resolves([
-        { p2wdbHash: 'a', remove: async () => {} },
-        { p2wdbHash: 'b', remove: async () => {} }
+        { p2wdbHash: 'a', remove: async () => { } },
+        { p2wdbHash: 'b', remove: async () => { } }
       ])
       // sandbox.stub(uut.OfferModel, 'remove').resolves()
 
@@ -189,6 +190,555 @@ describe('#offer-use-case', () => {
       console.log('result: ', result)
 
       assert.equal(result, false)
+    })
+    it('should handle error', async () => {
+      try {
+        // Mock dependencies and force desired code path.
+        sandbox.stub(uut.OfferModel, 'find').throws(new Error('test error'))
+        // sandbox.stub(uut.OfferModel, 'remove').resolves()
+
+        await uut.removeDuplicateOffers()
+        assert.fail('unexpected code path')
+      } catch (error) {
+        assert.equal(error.message, 'test error')
+      }
+    })
+  })
+  describe('#removeStaleOffers', () => {
+    it('remove offer with wrong utxoState', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.OfferModel, 'find').resolves([{ remove: async () => { } }])
+      sandbox.stub(uut.retryQueue, 'addToQueue').resolves(false)
+
+      await uut.removeStaleOffers()
+    })
+    it('remove offer with wrong txid', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.OfferModel, 'find').resolves([{ remove: async () => { } }])
+      sandbox.stub(uut.retryQueue, 'addToQueue').throws(new Error('txid needs to be a proper transaction ID'))
+
+      await uut.removeStaleOffers()
+    })
+    it('remove expired offer ', async () => {
+      const tsMock = new Date()
+      tsMock.setMonth(tsMock.getMonth() - 3)
+
+      const timestamp = tsMock.getTime()
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.OfferModel, 'find').resolves([{ timestamp, remove: async () => { } }])
+      sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
+
+      await uut.removeStaleOffers()
+    })
+    it('should handle axios error ', async () => {
+      const testErr = new Error()
+      testErr.isAxiosError = true
+
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.OfferModel, 'find').resolves([{ remove: async () => { } }])
+      sandbox.stub(uut.retryQueue, 'addToQueue').throws(testErr)
+
+      await uut.removeStaleOffers()
+    })
+    it('should handle error ', async () => {
+      try {
+        const testErr = new Error('unknow error')
+
+        // Mock dependencies and force desired code path.
+        sandbox.stub(uut.OfferModel, 'find').resolves([{ remove: async () => { } }])
+        sandbox.stub(uut.retryQueue, 'addToQueue').throws(testErr)
+
+        await uut.removeStaleOffers()
+        assert.fail('unexpected code path')
+      } catch (error) {
+        assert.equal(error.message, 'unknow error')
+      }
+    })
+  })
+  describe('#findOfferByTxid', () => {
+    it('should throw an error if input is not provided', async () => {
+      try {
+        await uut.findOfferByTxid()
+        assert.fail('unexpected code path')
+      } catch (error) {
+        assert.equal(error.message, 'utxoTxid must be a string')
+      }
+    })
+    it('should throw an error if offer is not found', async () => {
+      try {
+        // Mock dependencies and force desired code path.
+        sandbox.stub(uut.OfferModel, 'findOne').resolves(null)
+
+        await uut.findOfferByTxid('241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87')
+        assert.fail('unexpected code path')
+      } catch (error) {
+        assert.equal(error.message, 'offer not found')
+      }
+    })
+
+    it('should return offer', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.OfferModel, 'findOne').resolves(mockData.nftOffer01)
+
+      const result = await uut.findOfferByTxid('241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87')
+      assert.isObject(result)
+    })
+  })
+  describe('#detectNsfw', () => {
+    it('should return false for wrong cid format', async () => {
+      const result = await uut.detectNsfw({ mutableData: '' })
+      assert.isFalse(result)
+    })
+
+    it('should return true if nft boolean detected', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.axios, 'get').resolves({ data: { nsfw: true } })
+
+      const result = await uut.detectNsfw({ mutableData: 'ipfs://bafybeibqnsmmh6bkf2wwextetki4tly65z4r4qkrrpl5xwgvzdzjley6wm' })
+      assert.isTrue(result)
+    })
+    it('should return true if nft string detected', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.axios, 'get').resolves({ data: { nsfw: 'true' } })
+
+      const result = await uut.detectNsfw({ mutableData: 'ipfs://bafybeibqnsmmh6bkf2wwextetki4tly65z4r4qkrrpl5xwgvzdzjley6wm' })
+      assert.isTrue(result)
+    })
+    it('should return false if nfsw property does not exist', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.axios, 'get').resolves({ data: {} })
+
+      const result = await uut.detectNsfw({ mutableData: 'ipfs://bafybeibqnsmmh6bkf2wwextetki4tly65z4r4qkrrpl5xwgvzdzjley6wm' })
+      assert.isFalse(result)
+    })
+    it('should return false on error', async () => {
+      // Mock dependencies and force desired code path.
+      sandbox.stub(uut.axios, 'get').throws(new Error('test error'))
+
+      const result = await uut.detectNsfw({ mutableData: 'ipfs://bafybeibqnsmmh6bkf2wwextetki4tly65z4r4qkrrpl5xwgvzdzjley6wm' })
+      assert.isFalse(result)
+    })
+  })
+  describe('#listOffers', () => {
+    it('should handle error', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut.OfferModel, 'find').throws(new Error('test error'))
+
+        await uut.listOffers()
+
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+
+    it('should list orders', async () => {
+      const queryMock = {
+        sort () {
+          return this
+        },
+        skip () {
+          return this
+        },
+        limit () { return [] }
+      }
+      // Mock dependencies
+      sandbox.stub(uut.OfferModel, 'find').returns(queryMock)
+
+      const result = await uut.listOffers()
+      assert.isArray(result)
+    })
+  })
+  describe('#listNftOffers', () => {
+    it('should handle error', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut.OfferModel, 'find').throws(new Error('test error'))
+
+        await uut.listNftOffers()
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+
+    it('should list orders', async () => {
+      const queryMock = {
+        sort () {
+          return this
+        },
+        skip () {
+          return this
+        },
+        limit () { return [] }
+      }
+      // Mock dependencies
+      sandbox.stub(uut.OfferModel, 'find').returns(queryMock)
+
+      const result = await uut.listNftOffers(1, true)
+      assert.isArray(result)
+    })
+  })
+  describe('#listFungibleOffers', () => {
+    it('should handle error', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut.OfferModel, 'find').throws(new Error('test error'))
+
+        await uut.listFungibleOffers()
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+
+    it('should list orders', async () => {
+      const queryMock = {
+        sort () {
+          return this
+        },
+        skip () {
+          return this
+        },
+        limit () { return [] }
+      }
+
+      // Mock dependencies
+      sandbox.stub(uut.OfferModel, 'find').returns(queryMock)
+
+      const result = await uut.listFungibleOffers()
+      assert.isArray(result)
+    })
+  })
+  describe('#takeOffer', () => {
+    it('should handle error if input is not provided', async () => {
+      try {
+        await uut.takeOffer()
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'eventId must be a string')
+      }
+    })
+    it('should handle error for wrong offer status', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut, 'findOfferByEvent').returns({ offerStatus: 'completed' })
+
+        await uut.takeOffer('eventId')
+
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'offer status is not "posted", so offer is dead and can not be countered.')
+      }
+    })
+    it('should handle error for invalid utxo', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut, 'findOfferByEvent').returns({ offerStatus: 'posted' })
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').returns(false)
+
+        await uut.takeOffer('eventId')
+
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'UTXO does not exist. Aborting.')
+      }
+    })
+
+    it('should handle insufficient funds', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut, 'findOfferByEvent').returns({ offerStatus: 'posted' })
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').returns(true)
+        sandbox.stub(uut, 'ensureFunds').throws(new Error('test error'))
+
+        await uut.takeOffer('eventId')
+
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+    it('should handle error if counter offer cant be calculated', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut, 'findOfferByEvent').returns({ offerStatus: 'posted' })
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').returns(true)
+        sandbox.stub(uut, 'ensureFunds').resolves(true)
+
+        await uut.takeOffer('eventId')
+
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Could not calculate the amount of BCH to generate counter offer')
+      }
+    })
+    it('should handle error if counter offer cant be calculated', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut, 'findOfferByEvent').returns({ offerStatus: 'posted' })
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').returns(true)
+        sandbox.stub(uut, 'ensureFunds').resolves(true)
+
+        await uut.takeOffer('eventId')
+
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Could not calculate the amount of BCH to generate counter offer')
+      }
+    })
+    it('should take offer', async () => {
+      // Mock data
+      const offerMock = Object.assign({}, mockData.offerMockData.data)
+      offerMock.remove = async () => { }
+      offerMock.offerStatus = 'posted'
+
+      // Mock dependencies
+      sandbox.stub(uut, 'findOfferByEvent').returns(offerMock)
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').returns(true)
+      sandbox.stub(uut, 'ensureFunds').resolves(true)
+      sandbox.stub(uut.adapters.wallet, 'moveBch').resolves({ sats: 1 })
+
+      await uut.takeOffer('eventId')
+    })
+  })
+
+  describe('#ensureFunds', () => {
+    // it('should handle insufficient funds to use p2wdb', async () => {
+    //   try {
+    //     // Mock dependencies
+    //     sandbox.stub(uut.adapters.p2wdb, 'checkForSufficientFunds').resolves(false)
+    //
+    //     await uut.ensureFunds(mockData.offerMockData.data)
+    //
+    //     assert.fail('Unexpected code path')
+    //   } catch (err) {
+    //     assert.include(err.message, 'App wallet does not have funds for writing to the P2WDB')
+    //   }
+    // })
+
+    it('should throw error if sats needed could no be able to calculated', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut.adapters.p2wdb, 'checkForSufficientFunds').resolves(true)
+
+        // Mock Input
+        const mock = Object.assign({}, mockData.offerMockData.data)
+        mock.rateInBaseUnit = null
+
+        await uut.ensureFunds(mock)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Could not calculate sats needed!')
+      }
+    })
+
+    it('should throw error if app wallet does not have enough bch', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut.adapters.p2wdb, 'checkForSufficientFunds').resolves(true)
+        sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(0)
+
+        await uut.ensureFunds(mockData.offerMockData.data)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'App wallet does not control enough BCH to purchase the tokens.')
+      }
+    })
+
+    it('should handle BUY offer', async () => {
+      try {
+        const mock = Object.assign({}, mockData.offerMockData.data)
+        mock.buyOrSell = 'buy'
+
+        await uut.ensureFunds(mock)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Buy offers are not supported yet.')
+      }
+    })
+    it('should return true', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.adapters.p2wdb, 'checkForSufficientFunds').resolves(true)
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'getBalance').resolves(10 * 10 ** 6)
+
+      const result = await uut.ensureFunds(mockData.offerMockData.data)
+      assert.isTrue(result)
+    })
+  })
+  describe('#findOrderByEvent', () => {
+    it('should throw an error if hash is not provided', async () => {
+      try {
+        await uut.findOfferByEvent()
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'nostrEventId must be a string')
+      }
+    })
+    it('should throw an error if order is not found!', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut.OfferModel, 'findOne').resolves(null)
+
+        await uut.findOfferByEvent('eventId')
+
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'offer not found')
+      }
+    })
+    it('should return offer by eventId', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.OfferModel, 'findOne').resolves({ toObject: () => { return { hash: 'hash' } } })
+
+      const result = await uut.findOfferByEvent('eventId')
+      assert.isObject(result)
+    })
+  })
+  describe('#flagOffer', () => {
+    it('should throw an error if input is not provided', async () => {
+      try {
+        await uut.flagOffer()
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, '"data" property is required')
+      }
+    })
+    it('should throw an error if offer is not found!', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut, 'findOfferByEvent').resolves(null)
+
+        const input = {
+          data:
+          {
+            nostrEventId: 'eventId'
+          }
+        }
+        await uut.flagOffer(input)
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'not found in the database')
+      }
+    })
+    it('should flag offer', async () => {
+      // Mock dependencies
+      sandbox.stub(uut, 'findOfferByEvent').resolves({ flags: ['a', 'b', 'c'], save: () => { } })
+
+      const input = {
+        data:
+        {
+          nostrEventId: 'eventId'
+        }
+      }
+      const result = await uut.flagOffer(input)
+      assert.isTrue(result)
+    })
+  })
+
+  describe('#loadOffers', () => {
+    it('should handle nostr error', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut.adapters.nostr, 'read').throws(new Error('test error'))
+
+        await uut.loadOffers()
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+    it('should skip internal function errors ', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.adapters.nostr, 'read').resolves([mockData.offerMockData])
+
+      await uut.loadOffers()
+    })
+    it('should review and load offers', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.adapters.nostr, 'read').resolves([JSON.stringify(mockData.offerMockData)])
+
+      await uut.loadOffers()
+    })
+  })
+  describe('#acceptCounterOffer', () => {
+    it('should return if order is not found!', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.orderUseCase, 'findOrderByEvent').throws(new Error('test error'))
+
+      const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
+      assert.equal(result, 'N/A')
+    })
+    it('should handle error if counter offer cant be calculated', async () => {
+      try {
+        // Mock Data
+        const mock = Object.assign({}, mockData.offerMockData.data)
+        mock.rateInBaseUnit = null
+
+        // Mock dependencies
+        sandbox.stub(uut.orderUseCase, 'findOrderByEvent').resolves(mock)
+
+        await uut.acceptCounterOffer({ data: { /** .... */ } })
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Could not calculate the amount of BCH offered in the Counter Offer')
+      }
+    })
+    it('should handle error for wrong transaction output', async () => {
+      try {
+        // Mock dependencies
+
+        sandbox.stub(uut.orderUseCase, 'findOrderByEvent').resolves(mockData.offerMockData.data)
+        sandbox.stub(uut.adapters.wallet.bchWallet.bchjs.BitcoinCash, 'toSatoshi').returns(0)
+        sandbox.stub(uut.adapters.wallet, 'deseralizeTx').resolves(mockData.deserealizeTxMock)
+
+        await uut.acceptCounterOffer({ data: { /** .... */ } })
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'The Counter Offer has an output of ')
+        assert.include(err.message, 'which does not match the required')
+      }
+    })
+    it('should handle error for wrong transaction output address', async () => {
+      try {
+        // Mock data
+        const mock = Object.assign({}, mockData.offerMockData.data)
+        mock.makerAddr = 'bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7477' // Unknow Adress
+        mock.rateInBaseUnit = 0
+        mock.numTokens = 0
+
+        // Mock dependencies
+        sandbox.stub(uut.orderUseCase, 'findOrderByEvent').resolves(mock)
+        sandbox.stub(uut.adapters.wallet.bchWallet.bchjs.BitcoinCash, 'toSatoshi').returns(0)
+
+        sandbox.stub(uut.adapters.wallet, 'deseralizeTx').resolves(mockData.deserealizeTxMock)
+
+        await uut.acceptCounterOffer({ data: { /** .... */ } })
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'The Counter Offer has an output address of')
+        assert.include(err.message, 'which does not match the Maker address')
+      }
+    })
+    it('should return tx id', async () => {
+      // Mock data
+      const mock = Object.assign({}, mockData.offerMockData.data)
+      mock.makerAddr = mockData.deserealizeTxMock.vout[2].scriptPubKey.addresses[0] // Maker Address
+      mock.rateInBaseUnit = 0
+      mock.numTokens = 0
+
+      // Mock dependencies
+      sandbox.stub(uut.orderUseCase, 'findOrderByEvent').resolves(mock)
+      sandbox.stub(uut.adapters.wallet.bchWallet.bchjs.BitcoinCash, 'toSatoshi').returns(0)
+      sandbox.stub(uut.adapters.wallet, 'deseralizeTx').resolves(mockData.deserealizeTxMock)
+
+      //
+      const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
+      assert.isString(result)
     })
   })
 })

@@ -56,27 +56,70 @@ describe('#Timer-Controllers', () => {
     })
   })
 
-  // describe('#startTimers', () => {
-  //   it('should start the timers', () => {
-  //     const result = uut.startTimers()
-  //
-  //     // uut.stopTimers()
-  //
-  //     assert.equal(result, true)
-  //   })
-  // })
+  describe('#startTimers', () => {
+    it('should start the timers', () => {
+      const result = uut.startTimers()
 
-  // describe('#exampleTimerFunc', () => {
-  //   it('should kick off the Use Case', async () => {
-  //     const result = await uut.exampleTimerFunc()
-  //
-  //     assert.equal(result, true)
-  //   })
-  //
-  //   it('should return false on error', async () => {
-  //     const result = await uut.exampleTimerFunc(true)
-  //
-  //     assert.equal(result, false)
-  //   })
-  // })
+      // uut.stopTimers()
+
+      assert.equal(result, true)
+    })
+  })
+
+  describe('#gcOrders', () => {
+    it('should kick off the Use Case', async () => {
+      const result = await uut.gcOrders()
+
+      assert.equal(result, true)
+    })
+
+    it('should return false on error', async () => {
+      sandbox.stub(uut.useCases.order, 'removeStaleOrders').throws(new Error('test error'))
+      const result = await uut.gcOrders()
+
+      assert.equal(result, false)
+    })
+  })
+  describe('#gcOffers', () => {
+    it('should kick off the Use Case', async () => {
+      const result = await uut.gcOffers()
+
+      assert.equal(result, true)
+    })
+
+    it('should return false on error', async () => {
+      sandbox.stub(uut.useCases.offer, 'removeStaleOffers').throws(new Error('test error'))
+      const result = await uut.gcOffers()
+
+      assert.equal(result, false)
+    })
+  })
+  describe('#checkDupOffers', () => {
+    it('should kick off the Use Case', async () => {
+      const result = await uut.checkDupOffers()
+
+      assert.equal(result, true)
+    })
+
+    it('should return false on error', async () => {
+      sandbox.stub(uut.useCases.offer, 'removeDuplicateOffers').throws(new Error('test error'))
+      const result = await uut.checkDupOffers()
+
+      assert.equal(result, false)
+    })
+  })
+  describe('#loadOffers', () => {
+    it('should kick off the Use Case', async () => {
+      const result = await uut.loadOffers()
+
+      assert.equal(result, true)
+    })
+
+    it('should return false on error', async () => {
+      sandbox.stub(uut.useCases.offer, 'loadOffers').throws(new Error('test error'))
+      const result = await uut.loadOffers()
+
+      assert.equal(result, false)
+    })
+  })
 })
