@@ -384,9 +384,9 @@ class OfferUseCases {
 
       // Ensure the app wallet has enough funds to write to the P2WDB.
       // Note :  this validation should be deprecated for nostr functionality?
-      const wif = this.adapters.wallet.bchWallet.walletInfo.privateKey
-      const canWriteToP2WDB = await this.adapters.p2wdb.checkForSufficientFunds(wif)
-      if (!canWriteToP2WDB) throw new Error('App wallet does not have funds for writing to the P2WDB.')
+      // const wif = this.adapters.wallet.bchWallet.walletInfo.privateKey
+      // const canWriteToP2WDB = await this.adapters.p2wdb.checkForSufficientFunds(wif)
+      // if (!canWriteToP2WDB) throw new Error('App wallet does not have funds for writing to the P2WDB.')
 
       if (offerEntity.buyOrSell.includes('sell')) {
         // Sell Offer
@@ -456,13 +456,17 @@ class OfferUseCases {
 
       const offer = await this.OfferModel.findOne({ utxoTxid })
 
+      // TODO: Offer should be found by TXID, then if there is more than one
+      // result, they should be filtered by the vout property. That will leave
+      // one remaining UTXO.
+
       if (!offer) {
         throw new Error('offer not found')
       }
 
       return offer
     } catch (error) {
-      console.error('Error in use-cases/offer/findOfferByTxid(): ')
+      console.error('Error in use-cases/offer/findOfferByTxid(): ', error.message)
       throw error
     }
   }
@@ -629,6 +633,7 @@ class OfferUseCases {
     }
   }
 
+  // Flag offers as NSFW.
   async flagOffer (flagData = {}) {
     try {
       if (!flagData.data) throw new Error('"data" property is required')

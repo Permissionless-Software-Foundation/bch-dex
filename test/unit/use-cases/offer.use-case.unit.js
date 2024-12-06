@@ -503,19 +503,20 @@ describe('#offer-use-case', () => {
       await uut.takeOffer('eventId')
     })
   })
+
   describe('#ensureFunds', () => {
-    it('should handle insufficient funds to use p2wdb', async () => {
-      try {
-        // Mock dependencies
-        sandbox.stub(uut.adapters.p2wdb, 'checkForSufficientFunds').resolves(false)
-
-        await uut.ensureFunds(mockData.offerMockData.data)
-
-        assert.fail('Unexpected code path')
-      } catch (err) {
-        assert.include(err.message, 'App wallet does not have funds for writing to the P2WDB')
-      }
-    })
+    // it('should handle insufficient funds to use p2wdb', async () => {
+    //   try {
+    //     // Mock dependencies
+    //     sandbox.stub(uut.adapters.p2wdb, 'checkForSufficientFunds').resolves(false)
+    //
+    //     await uut.ensureFunds(mockData.offerMockData.data)
+    //
+    //     assert.fail('Unexpected code path')
+    //   } catch (err) {
+    //     assert.include(err.message, 'App wallet does not have funds for writing to the P2WDB')
+    //   }
+    // })
 
     it('should throw error if sats needed could no be able to calculated', async () => {
       try {
