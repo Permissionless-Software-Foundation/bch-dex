@@ -103,7 +103,8 @@ class NostrAdapter {
         })
 
         pool.on('event', (relay, subId, ev) => {
-          messages.push(ev.content)
+          // console.log('ev: ', ev)
+          messages.push({ content: ev.content, eventId: ev.id })
         })
       })
 

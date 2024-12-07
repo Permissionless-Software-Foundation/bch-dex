@@ -17,6 +17,8 @@ class OfferEntity {
       )
     }
 
+    console.log('offer entity validate() offerData: ', offerData)
+
     const {
       messageType,
       messageClass,
@@ -30,7 +32,8 @@ class OfferEntity {
       offerStatus,
       makerAddr,
       ticker,
-      tokenType
+      tokenType,
+      nostrEventId
     } = offerData.data
 
     // Input Validation
@@ -73,6 +76,9 @@ class OfferEntity {
     if (!tokenType || typeof tokenType !== 'number') {
       throw new Error("Property 'tokenType' must be a number.")
     }
+    if (!nostrEventId || typeof nostrEventId !== 'string') {
+      throw new Error("Property 'nostrEventId' must be a string.")
+    }
 
     // Convert the timestamp to a number.
     let timestamp = new Date(offerData.timestamp)
@@ -96,8 +102,10 @@ class OfferEntity {
       offerStatus: offerStatus || this.offerStatus[0],
       makerAddr,
       ticker,
-      tokenType
+      tokenType,
+      nostrEventId
     }
+    console.log('offer entity validatedOfferData: ', validatedOfferData)
 
     return validatedOfferData
   }
