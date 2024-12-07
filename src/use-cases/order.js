@@ -36,18 +36,18 @@ class OrderLib {
   // Create a new order model and add it to the Mongo database.
   async createOrder (entryObj) {
     try {
-      console.log('createOrder(entryObj): ', entryObj)
+      // console.log('createOrder(entryObj): ', entryObj)
       if (!entryObj) return false
 
       if (!entryObj.tokenId) throw new Error('entry does not contain required properties')
 
       // Specify the address to send payment.
       entryObj.makerAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
-      console.log('entryObj.makerAddr: ', entryObj.makerAddr)
+      // console.log('entryObj.makerAddr: ', entryObj.makerAddr)
 
       // Input Validation
       const orderEntity = this.orderEntity.inputValidate(entryObj)
-      console.log('orderEntity: ', orderEntity)
+      // console.log('orderEntity: ', orderEntity)
 
       // Optimize the wallet to speed up working with it.
       console.log('Optimizing wallet before creating new order.')
@@ -105,7 +105,7 @@ class OrderLib {
       return eventId
     } catch (err) {
       // console.log("Error in use-cases/entry.js/createEntry()", err.message)
-      wlogger.error('Error in use-cases/order.js/createOrder())')
+      wlogger.error('Error in use-cases/order.js/createOrder(): ', err)
       console.log('error entryObj: ', entryObj)
       throw err
     }
@@ -129,7 +129,7 @@ class OrderLib {
 
       // Get UTXOs.
       const utxos = this.adapters.wallet.bchWallet.utxos.utxoStore
-      console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
+      // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
       if (orderEntity.buyOrSell.includes('sell')) {
         // Sell Order

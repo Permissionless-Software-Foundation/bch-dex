@@ -140,14 +140,15 @@ const offerMockData = {
       '241c06bf61384b8623477e419bf4779edbcc7e3bc862f0f179a9ed2967069b87',
     utxoVout: 0,
     makerAddr: 'address',
-    tokenType: 1
+    tokenType: 1,
+    nostrEventId: 'test'
   }
 }
 
 const deserealizeTxMock = {
   //...
   vout: [
-    { 
+    {
       value: 0,
       scriptPubKey: {
         addresses: ['bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7478']

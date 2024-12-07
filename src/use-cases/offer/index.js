@@ -51,18 +51,21 @@ class OfferUseCases {
     // Bind 'this' object to functions
     this.detectNsfw = this.detectNsfw.bind(this)
     this.loadOffers = this.loadOffers.bind(this)
+
+    // State
+    this.seenOffers = []
   }
 
   // This method is called by timer controller to load offers from a Nostr topic.
   async createOffer (offerObj) {
     try {
-      console.log('Use Case createOffer(offerObj): ', offerObj)
+      // console.log('Use Case createOffer(offerObj): ', offerObj)
 
       // Return if Offer already exists in database with the same utxo transaction id.
       try {
         await this.findOfferByTxid(offerObj.data.utxoTxid)
 
-        console.log('Offer already found in local database.')
+        // console.log('Offer already found in local database.')
         return false
       } catch (err) { /* exit quietly */ }
 
@@ -74,6 +77,14 @@ class OfferUseCases {
       // if (offerObj.data.dataType === 'counter-offer') {
       //   console.log('WARN: Counter Offer innappropriately routed to createOffer()')
       // }
+
+      // Quickly skip over offers that have already been processed.
+      const eventId = offerObj.data.nostrEventId
+      if (this.seenOffers.includes(eventId)) {
+        // console.log(`Offer with event ID ${eventId} already processed. Skipping.`)
+        return false
+      }
+      this.seenOffers.push(eventId)
 
       // Verify that UTXO in offer is unspent. If it is spent, then ignore the
       // offer.
@@ -94,13 +105,13 @@ class OfferUseCases {
       offerObj.timestamp = new Date().getTime()
 
       const offerEntity = this.offerEntity.validate(offerObj)
-      console.log('offerEntity: ', offerEntity)
+      // console.log('offerEntity: ', offerEntity)
 
       // Get data about the token.
       const tokenId = offerEntity.tokenId
       // const tokenData = await this.adapters.wallet.bchWallet.getTokenData(tokenId)
       const tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTokenData, tokenId)
-      console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
+      // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
 
       // Generate a 'display category' for the token. This will allow the
       // front end UI to figure out how to display the token.
@@ -142,16 +153,29 @@ class OfferUseCases {
 
       // Retrieve the mutable data from Filecoin/IPFS.
       // const url = `https://${cid}.ipfs.w3s.link/data.json`
-      const url = `${this.config.ipfsGateway}${cid}/data.json`
-      const result = await this.axios.get(url)
-      const mutableData = result.data
-      console.log(`mutableData: ${JSON.stringify(mutableData, null, 2)}`)
+      let mutableData = {}
+
+      try {
+        // Try the conventional data URL.
+        const url = `${this.config.ipfsGateway}${cid}/data.json`
+        const result = await this.axios.get(url)
+        mutableData = result.data
+        // console.log(`mutableData: ${JSON.stringify(mutableData, null, 2)}`)
+      } catch (err) {
+        // Try the newer data URL.
+        const url = `${this.config.ipfsGateway}${cid}`
+        const result = await this.axios.get(url)
+        mutableData = result.data
+        // console.log(`mutableData: ${JSON.stringify(mutableData, null, 2)}`)
+      }
+      console.log('mutableData: ', mutableData)
 
       // Logical tests
       const hasNsfw = !!mutableData.nsfw
       const nsfwSetTrue = mutableData.nsfw === true
       const nsfwStringTrue = mutableData.nsfw === 'true'
       const nsfwDetected = hasNsfw && (nsfwSetTrue || nsfwStringTrue)
+      console.log(`hasNsfw: ${hasNsfw}, nsfwSetTrue: ${nsfwSetTrue}, nsfwStringTrue: ${nsfwStringTrue}, nsfwDetected: ${nsfwDetected}`)
 
       if (nsfwDetected) {
         console.log('NSFW flag set as true')
@@ -307,8 +331,8 @@ class OfferUseCases {
       await this.ensureFunds(offerInfo)
 
       // Get UTXOs.
-      const utxos = this.adapters.wallet.bchWallet.utxos.utxoStore
-      console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
+      // const utxos = this.adapters.wallet.bchWallet.utxos.utxoStore
+      // console.log(`utxos: ${JSON.stringify(utxos, null, 2)}`)
 
       // Calculate amount of sats to generate a counter offer.
       let satsToMove = Math.ceil(offerInfo.numTokens * parseInt(offerInfo.rateInBaseUnit))
@@ -674,12 +698,17 @@ class OfferUseCases {
     try {
       // Retrieve offers array.
       const offers = await this.adapters.nostr.read()
+      console.log('offers: ', offers)
+
       for (let i = 0; i < offers.length; i++) {
         try {
           const offer = offers[i]
 
           // offer data
-          const offerObj = JSON.parse(offer)
+          const offerObj = JSON.parse(offer.content)
+
+          // Append the Nostr Event ID to the offer object
+          offerObj.data.nostrEventId = offer.eventId
 
           // Try to create new offer
           await this.createOffer(offerObj)

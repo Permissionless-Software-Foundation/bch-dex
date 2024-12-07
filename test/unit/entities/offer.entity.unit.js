@@ -237,6 +237,36 @@ describe('#Offer-Entity', () => {
       }
     })
 
+    it('should throw an error if nostrEventId is not included', () => {
+      try {
+        const offerData = {
+          data: {
+            messageType: 1,
+            messageClass: 1,
+            tokenId: 'fakeId',
+            buyOrSell: 'buy',
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
+            numTokens: 1,
+            utxoTxid: 'fakeTxid',
+            utxoVout: 0,
+            offerStatus: 'posted',
+            makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+            tokenType: 1
+          }
+        }
+        uut.validate(offerData)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log(err)
+        assert.include(
+          err.message,
+          "Property 'nostrEventId' must be a string."
+        )
+      }
+    })
+
     it('should validate a new offer', () => {
       const offerObj = {
         appId: 'swapTest555',
@@ -255,7 +285,8 @@ describe('#Offer-Entity', () => {
           offerStatus: 'posted',
           makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
           ticker: 'TROUT',
-          tokenType: 1
+          tokenType: 1,
+          nostrEventId: 'test'
         },
         timestamp: '2021-09-20T17:54:26.395Z',
         localTimeStamp: '9/20/2021, 10:54:26 AM',
