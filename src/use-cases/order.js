@@ -31,6 +31,8 @@ class OrderLib {
 
     // Bind subfunctions to the 'this' object.
     this.ensureFunds = this.ensureFunds.bind(this)
+    this.createOrder = this.createOrder.bind(this)
+    this.findOrderByUtxo = this.findOrderByUtxo.bind(this)
   }
 
   // Create a new order model and add it to the Mongo database.
@@ -191,6 +193,47 @@ class OrderLib {
     }
   }
 
+  // Retrieve an Order model from the database. Find it by its UTXO (TXID & Vout)
+  async findOrderByUtxo (offerData = {}) {
+    try {
+      console.log('findOrderByUtxo() offerData: ', offerData)
+
+      // if (typeof nostrEventId !== 'string' || !nostrEventId) {
+      //   throw new Error('nostrEventId must be a string')
+      // }
+
+      console.log('ping01')
+
+      // const allOrders = await this.OrderModel.find({})
+      // console.log('allOrders: ', allOrders)
+
+      console.log('ping02')
+
+      // const order = await this.OrderModel.findOne({ nostrEventId })
+      const order = await this.OrderModel.findOne({ utxoTxid: offerData.data.utxoTxid, utxoVout: offerData.data.utxoVout })
+      // const order = await this.OrderModel.findOne({ utxoTxid: offerData.data.utxoTxid })
+      // const order = await this.OrderModel.findOne({ tokenId: offerData.data.tokenId })
+      console.log('findOrderByUtxo() order: ', order)
+
+      console.log('ping03')
+
+      if (!order) {
+        throw new Error('order not found')
+      }
+      if (!order.nostrEventId) {
+        throw new Error('order not found')
+      }
+
+      const orderObject = order.toObject()
+      // return this.offerEntity.validateFromModel(offerObject)
+
+      return orderObject
+    } catch (err) {
+      console.error('Error in findOrderByUtxo(): ', err)
+      throw err
+    }
+  }
+
   // This function is called by the garbage collection timer controller. It
   // checks the UTXO associated with each Order in the database. If the UTXO
   // has been spent, the Order is deleted from the database.
@@ -201,7 +244,7 @@ class OrderLib {
 
       // Get all Orders in the database.
       const orders = await this.OrderModel.find({})
-      console.log('orders: ', orders)
+      // console.log('orders: ', orders)
 
       // Loop through each Order and ensure the UTXO is still valid.
       for (let i = 0; i < orders.length; i++) {
@@ -239,7 +282,7 @@ class OrderLib {
 
         // If the Order UTXO is spent, delete the Order model.
         if (utxoStatus === false) {
-          console.log('utxoStatus: ', utxoStatus)
+          // console.log('utxoStatus: ', utxoStatus)
           console.log(`Spent UTXO detected. Deleting this Order: ${JSON.stringify(thisOrder, null, 2)}`)
           await thisOrder.remove()
         }

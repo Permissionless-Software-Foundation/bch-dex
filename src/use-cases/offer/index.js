@@ -94,7 +94,7 @@ class OfferUseCases {
       }
       // const utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
       const utxoStatus = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.utxoIsValid, utxo)
-      console.log('utxoStatus: ', utxoStatus)
+      // console.log('utxoStatus: ', utxoStatus)
       // if (utxoStatus === null) return false
       if (!utxoStatus) return false
 
@@ -175,7 +175,7 @@ class OfferUseCases {
       const nsfwSetTrue = mutableData.nsfw === true
       const nsfwStringTrue = mutableData.nsfw === 'true'
       const nsfwDetected = hasNsfw && (nsfwSetTrue || nsfwStringTrue)
-      console.log(`hasNsfw: ${hasNsfw}, nsfwSetTrue: ${nsfwSetTrue}, nsfwStringTrue: ${nsfwStringTrue}, nsfwDetected: ${nsfwDetected}`)
+      // console.log(`hasNsfw: ${hasNsfw}, nsfwSetTrue: ${nsfwSetTrue}, nsfwStringTrue: ${nsfwStringTrue}, nsfwDetected: ${nsfwDetected}`)
 
       if (nsfwDetected) {
         console.log('NSFW flag set as true')
@@ -318,7 +318,7 @@ class OfferUseCases {
 
       // Note : should be added to retry-queue?
       const utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
-      console.log('utxoStatus: ', utxoStatus)
+      // console.log('utxoStatus: ', utxoStatus)
       if (!utxoStatus) {
         console.log(`utxo txid: ${offerInfo.utxoTxid}, vout: ${offerInfo.utxoVout}`)
 
@@ -377,11 +377,11 @@ class OfferUseCases {
         data: takenOfferInfo,
         appId: this.config.p2wdbAppId
       }
-      const resultEventId = await this.adapters.nostr.post(nostrData)
+      const resultEventId = await this.adapters.nostr.post(JSON.stringify(nostrData))
 
       // Delete the Offer from the database, so that the user doesn't attempt
       // to take the offer more than once.
-      offerInfo.remove()
+      // offerInfo.remove()
 
       // Return the P2WDB CID
       return resultEventId
@@ -472,27 +472,27 @@ class OfferUseCases {
   }
 
   async findOfferByTxid (utxoTxid) {
-    try {
-      // try {
-      if (typeof utxoTxid !== 'string' || !utxoTxid) {
-        throw new Error('utxoTxid must be a string')
-      }
-
-      const offer = await this.OfferModel.findOne({ utxoTxid })
-
-      // TODO: Offer should be found by TXID, then if there is more than one
-      // result, they should be filtered by the vout property. That will leave
-      // one remaining UTXO.
-
-      if (!offer) {
-        throw new Error('offer not found')
-      }
-
-      return offer
-    } catch (error) {
-      console.error('Error in use-cases/offer/findOfferByTxid(): ', error.message)
-      throw error
+    // try {
+    // try {
+    if (typeof utxoTxid !== 'string' || !utxoTxid) {
+      throw new Error('utxoTxid must be a string')
     }
+
+    const offer = await this.OfferModel.findOne({ utxoTxid })
+
+    // TODO: Offer should be found by TXID, then if there is more than one
+    // result, they should be filtered by the vout property. That will leave
+    // one remaining UTXO.
+
+    if (!offer) {
+      throw new Error('offer not found')
+    }
+
+    return offer
+    // } catch (error) {
+    //   // console.error('Error in use-cases/offer/findOfferByTxid(): ', error.message)
+    //   throw error
+    // }
   }
 
   // This function is called by the P2WDB webhook REST API handler. When a
@@ -505,17 +505,18 @@ class OfferUseCases {
 
       // See if this instance of bch-dex is managing the Order associated with
       // the incoming Counter Offer.
-
-      // Note : this should be handle by nostrEvent id or UtxoId?
-      const orderHash = offerData.data.nostrEventId
+      console.log('ping11')
+      // Note : this should be handled by nostrEvent id or UtxoId?
+      // const orderHash = offerData.data.nostrEventId
       let orderData = {}
       try {
-        orderData = await this.orderUseCase.findOrderByEvent(orderHash)
+        orderData = await this.orderUseCase.findOrderByUtxo(offerData)
         console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
       } catch (err) {
-        console.log('Order matching this Counter Offer is not managed by this instance of bch-dex. Exiting.')
+        console.log('Order matching this Counter Offer is not managed by this instance of bch-dex. Skipping.')
         return 'N/A'
       }
+      console.log('ping12')
 
       // Deserialize the partially signed transaction.
       const txHex = offerData.data.partialTxHex
@@ -549,7 +550,7 @@ class OfferUseCases {
 
       return txid
     } catch (err) {
-      console.error('Error in acceptCounterOffer()')
+      console.error('Error in acceptCounterOffer(): ', err)
       throw err
     }
   }
@@ -637,7 +638,7 @@ class OfferUseCases {
 
         // If the Offer UTXO is spent, delete the Offer model.
         if (utxoStatus === false) {
-          console.log('utxoStatus: ', utxoStatus)
+          // console.log('utxoStatus: ', utxoStatus)
           console.log(`Spent UTXO detected. Deleting this Offer: ${JSON.stringify(thisOffer, null, 2)}`)
           await thisOffer.remove()
         }
@@ -698,7 +699,7 @@ class OfferUseCases {
     try {
       // Retrieve offers array.
       const offers = await this.adapters.nostr.read()
-      console.log('offers: ', offers)
+      // console.log('offers: ', offers)
 
       for (let i = 0; i < offers.length; i++) {
         try {
@@ -709,9 +710,19 @@ class OfferUseCases {
 
           // Append the Nostr Event ID to the offer object
           offerObj.data.nostrEventId = offer.eventId
+          // console.log('loadOffers() offerObj: ', offerObj)
 
-          // Try to create new offer
-          await this.createOffer(offerObj)
+          if (offerObj.data.dataType === 'offer') {
+            // Try to create new offer
+            await this.createOffer(offerObj)
+          }
+
+          if (offerObj.data.dataType === 'counter-offer') {
+            console.log('Counter offer detected: ', offerObj)
+            await this.acceptCounterOffer(offerObj)
+          }
+
+          // Ignore the post if it doesn't fit the above filters.
         } catch (error) {
           /* exit quietly */
         }

@@ -2,8 +2,10 @@
   Adapter library for working with Nostr.
 */
 
+// Global npm libraries
 import BchNostr from 'bch-nostr'
 import { RelayPool } from 'nostr'
+import RetryQueue from '@chris.troutner/retry-queue'
 
 class NostrAdapter {
   constructor (localConfig = { nostrRelay: '', nostrTopic: '' }) {
@@ -25,6 +27,11 @@ class NostrAdapter {
     // Encapsulate dependencies
     this.bchNostr = new BchNostr()
     this.RelayPool = RelayPool
+    this.retryQueue = new RetryQueue({
+      concurrency: 1,
+      attempts: 5,
+      retryPeriod: 1000
+    })
 
     // Bind the 'this' object
     this.start = this.start.bind(this)
@@ -71,7 +78,7 @@ class NostrAdapter {
         msg,
         tags: [['t', this.topic]]
       }
-      const eventId = await this.bchNostr.post.uploadToNostr(inObj)
+      const eventId = await this.retryQueue.addToQueue(this.bchNostr.post.uploadToNostr, inObj)
       return eventId
     } catch (error) {
       console.log(`Error in nostr.js/post() ${error.message} `)

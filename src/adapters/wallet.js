@@ -5,12 +5,11 @@
 // Public npm libraries
 import BchWallet from 'minimal-slp-wallet'
 import BchTokenSweep from 'bch-token-sweep/index.js'
-
 import bitcoinJs from 'bitcoincashjs-lib'
+import RetryQueue from '@chris.troutner/retry-queue'
 
 // Local libraries
 import JsonFiles from './json-files.js'
-
 import config from '../../config/index.js'
 
 // Hack to get __dirname back.
@@ -35,6 +34,11 @@ class WalletAdapter {
     this.BchWallet = BchWallet
     this.bchWallet = {} // Will be replaced when initialized.
     // this.advancedConfig = localConfig.advancedConfig
+    this.retryQueue = new RetryQueue({
+      concurrency: 1,
+      attempts: 5,
+      retryPeriod: 5000
+    })
 
     // Bind the 'this' object
     this.moveTokens = this.moveTokens.bind(this)
@@ -441,7 +445,7 @@ class WalletAdapter {
 
       return txObj2
     } catch (err) {
-      console.error('Error in wallet.js/deserializePartialTx()')
+      console.error('Error in wallet.js/deserializeTx()')
       throw err
     }
   }
@@ -508,7 +512,9 @@ class WalletAdapter {
       // return csTxHex
 
       // Broadcast transaction to the network
-      const txid = await this.bchWallet.ar.sendTx(csTxHex)
+      // const txid = await this.bchWallet.ar.sendTx(csTxHex)
+      const txid = await this.retryQueue.addToQueue(this.bchWallet.broadcast, { hex: csTxHex })
+      console.log('completeTx() txid: ', txid)
 
       return txid
     } catch (err) {
