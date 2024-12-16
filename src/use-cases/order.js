@@ -104,7 +104,9 @@ class OrderLib {
       const order = new this.OrderModel(orderEntity)
       await order.save()
 
-      return eventId
+      const noteId = this.adapters.nostr.eventId2note(eventId)
+
+      return { eventId, noteId }
     } catch (err) {
       // console.log("Error in use-cases/entry.js/createEntry()", err.message)
       wlogger.error('Error in use-cases/order.js/createOrder(): ', err)
@@ -196,26 +198,13 @@ class OrderLib {
   // Retrieve an Order model from the database. Find it by its UTXO (TXID & Vout)
   async findOrderByUtxo (offerData = {}) {
     try {
-      console.log('findOrderByUtxo() offerData: ', offerData)
-
-      // if (typeof nostrEventId !== 'string' || !nostrEventId) {
-      //   throw new Error('nostrEventId must be a string')
-      // }
-
-      console.log('ping01')
-
-      // const allOrders = await this.OrderModel.find({})
-      // console.log('allOrders: ', allOrders)
-
-      console.log('ping02')
+      // console.log('findOrderByUtxo() offerData: ', offerData)
 
       // const order = await this.OrderModel.findOne({ nostrEventId })
       const order = await this.OrderModel.findOne({ utxoTxid: offerData.data.utxoTxid, utxoVout: offerData.data.utxoVout })
       // const order = await this.OrderModel.findOne({ utxoTxid: offerData.data.utxoTxid })
       // const order = await this.OrderModel.findOne({ tokenId: offerData.data.tokenId })
       console.log('findOrderByUtxo() order: ', order)
-
-      console.log('ping03')
 
       if (!order) {
         throw new Error('order not found')

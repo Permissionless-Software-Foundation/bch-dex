@@ -6,6 +6,7 @@
 import BchNostr from 'bch-nostr'
 import { RelayPool } from 'nostr'
 import RetryQueue from '@chris.troutner/retry-queue'
+import * as nip19 from 'nostr-tools/nip19'
 
 class NostrAdapter {
   constructor (localConfig = { nostrRelay: '', nostrTopic: '' }) {
@@ -37,6 +38,7 @@ class NostrAdapter {
     this.start = this.start.bind(this)
     this.post = this.post.bind(this)
     this.read = this.read.bind(this)
+    this.eventId2note = this.eventId2note.bind(this)
   }
 
   // Create nostr keys.
@@ -122,6 +124,12 @@ class NostrAdapter {
       console.log(`Error in nostr.js/read() ${error.message} `)
       throw error
     }
+  }
+
+  // Convert an Event ID into a `noteabc..` syntax that Astral expects.
+  // This can be used to generate a link to Astral to display the post.
+  eventId2note (eventId) {
+    return nip19.noteEncode(eventId)
   }
 }
 

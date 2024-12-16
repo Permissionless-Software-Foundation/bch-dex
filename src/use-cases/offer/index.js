@@ -49,11 +49,25 @@ class OfferUseCases {
     this.retryQueue = new RetryQueue({ retryPeriod: 1000, attempts: 3 })
 
     // Bind 'this' object to functions
+    this.createOffer = this.createOffer.bind(this)
     this.detectNsfw = this.detectNsfw.bind(this)
+    this.categorizeToken = this.categorizeToken.bind(this)
+    this.listOffers = this.listOffers.bind(this)
+    this.listNftOffers = this.listNftOffers.bind(this)
+    this.listFungibleOffers = this.listFungibleOffers.bind(this)
+    this.takeOffer = this.takeOffer.bind(this)
+    this.ensureFunds = this.ensureFunds.bind(this)
+    this.findOfferByEvent = this.findOfferByEvent.bind(this)
+    this.findOfferByTxid = this.findOfferByTxid.bind(this)
+    this.acceptCounterOffer = this.acceptCounterOffer.bind(this)
+    this.removeDuplicateOffers = this.removeDuplicateOffers.bind(this)
+    this.removeStaleOffers = this.removeStaleOffers.bind(this)
+    this.flagOffer = this.flagOffer.bind(this)
     this.loadOffers = this.loadOffers.bind(this)
 
     // State
     this.seenOffers = []
+    this.seenCounterOffers = []
   }
 
   // This method is called by timer controller to load offers from a Nostr topic.
@@ -373,18 +387,20 @@ class OfferUseCases {
       // TODO: This will trigger the webhook. Find some way of triggering the
       // webhook on new offers, but not on counteroffers
       const nostrData = {
-        wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
-        data: takenOfferInfo,
-        appId: this.config.p2wdbAppId
+        // wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
+        data: takenOfferInfo
+        // appId: this.config.p2wdbAppId
       }
       const resultEventId = await this.adapters.nostr.post(JSON.stringify(nostrData))
+
+      const noteId = this.adapters.nostr.eventId2note(resultEventId)
 
       // Delete the Offer from the database, so that the user doesn't attempt
       // to take the offer more than once.
       // offerInfo.remove()
 
       // Return the P2WDB CID
-      return resultEventId
+      return { eventId: resultEventId, noteId }
 
       // return 'fake-hash'
     } catch (err) {
@@ -501,22 +517,68 @@ class OfferUseCases {
   // and broadcasts the transaction to accept the Counter Offer.
   async acceptCounterOffer (offerData) {
     try {
-      console.log(`acceptCounterOffer() offerData: ${JSON.stringify(offerData, null, 2)}`)
+      // console.log(`acceptCounterOffer() offerData: ${JSON.stringify(offerData, null, 2)}`)
+
+      // Quickly skip over offers that have already been processed.
+      const eventId = offerData.data.nostrEventId
+      if (this.seenOffers.includes(eventId)) {
+        // console.log(`Offer with event ID ${eventId} already processed. Skipping.`)
+        return false
+      }
 
       // See if this instance of bch-dex is managing the Order associated with
       // the incoming Counter Offer.
-      console.log('ping11')
+
       // Note : this should be handled by nostrEvent id or UtxoId?
       // const orderHash = offerData.data.nostrEventId
       let orderData = {}
       try {
         orderData = await this.orderUseCase.findOrderByUtxo(offerData)
-        console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
+        // console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
       } catch (err) {
         console.log('Order matching this Counter Offer is not managed by this instance of bch-dex. Skipping.')
+
+        // Add order to list of seen orders, so that we don't spent time trying to validate it again.
+        this.seenOffers.push(eventId)
+
         return 'N/A'
       }
-      console.log('ping12')
+
+      // Verify that the UTXO for sale is valid.
+      let utxoStatus = null
+      try {
+        // Get the status of the UTXO associate with this Offer.
+        const utxo = {
+          tx_hash: offerData.data.utxoTxid,
+          tx_pos: offerData.data.utxoVout
+        }
+        // console.log(`Checking this UTXO: ${JSON.stringify(utxo, null, 2)}`)
+
+        // utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
+        utxoStatus = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.utxoIsValid, utxo)
+        console.log('utxoStatus: ', utxoStatus)
+      } catch (err) {
+        console.log('acceptCounterOffer() err validating UTXO: ', err)
+
+        // Handle corner case of bad-data in the Offer model.
+        if (err.isAxiosError) {
+          console.log('Error trying to contact wallet service: ', err)
+          return 'N/A'
+        } else {
+          return 'N/A'
+        }
+      }
+
+      // If the Offer UTXO is spent, exit.
+      if (utxoStatus === false) {
+        // Add order to list of seen orders, so that we don't spent time trying to validate it again.
+        this.seenOffers.push(eventId)
+
+        console.log(`Aborting Counter Offer from Event ID ${eventId}`)
+        console.log(`https://astral.psfoundation.info/${this.adapters.nostr.eventId2note(eventId)}`)
+
+        return 'N/A'
+      }
 
       // Deserialize the partially signed transaction.
       const txHex = offerData.data.partialTxHex
@@ -718,7 +780,9 @@ class OfferUseCases {
           }
 
           if (offerObj.data.dataType === 'counter-offer') {
-            console.log('Counter offer detected: ', offerObj)
+            // console.log('Counter offer detected: ', offerObj)
+            // console.log('Counter offer detected: ', offerObj.data.nostrEventId)
+            console.log(`Counter offer detected: https://astral.psfoundation.info/${this.adapters.nostr.eventId2note(offerObj.data.nostrEventId)}`)
             await this.acceptCounterOffer(offerObj)
           }
 

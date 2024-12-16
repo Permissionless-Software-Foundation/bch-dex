@@ -30,6 +30,7 @@ class TimerControllers {
     this.gcOffers = this.gcOffers.bind(this)
     this.checkDupOffers = this.checkDupOffers.bind(this)
     this.loadOffers = this.loadOffers.bind(this)
+
     // State
     this.gcOrdersInt = null
     this.gcOffersInt = null
