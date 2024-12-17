@@ -3,9 +3,9 @@
 version: '3.9'
 
 services:
-  mongo-p2wdb-service:
+  mongo-dex:
     image: mongo:4.2.0
-    container_name: mongo-p2wdb-service
+    container_name: mongo-dex
     ports:
       - '5666:27017' # <host port>:<container port>
     volumes:
@@ -13,69 +13,11 @@ services:
     command: mongod --logpath=/dev/null # -- quiet
     restart: always
 
-  ipfs:
-    # https://github.com/christroutner/trickle-ipfs
-    image: christroutner/trickle-ipfs:v1.0.1
-    #build:
-    #  context: ./
-    #  dockerfile: Dockerfile
-    container_name: ipfs
-    environment:
-      IPFS_DAEMON_ARGUMENTS: '--enable-pubsub-experiment --migrate=true --agent-version-suffix=docker --routing=dhtclient'
-      UPLOAD_KBPS: '1000'
-      DOWNLOAD_KBPS: '1000'
-    logging:
-      driver: 'json-file'
-      options:
-        max-size: '10m'
-        max-file: '10'
-    mem_limit: 2000mb
-    ports:
-      - 4001:4001
-      - 4003:4003
-      - 172.17.0.1:5001:5001
-      - 172.17.0.1:8080:8080
-    command: [
-      './start-ipfs.sh'
-    ]
-    volumes:
-      - ../data/go-ipfs/data:/root/.ipfs
-    restart: always
-
-  p2wdb:
-    #build:
-    #  context: ./p2wdb/
-    #  dockerfile: Dockerfile
-    image: christroutner/p2wdb:v4.1.3
-    container_name: p2wdb
-    environment:
-      CONSUMER_URL: 'https://free-bch.fullstack.cash'
-      #ENABLE_BCH_PAYMENT: 1
-      DEBUG_LEVEL: 1
-    logging:
-      driver: 'json-file'
-      options:
-        max-size: '10m'
-        max-file: '10'
-    mem_limit: 1gb
-    links:
-      - mongo-p2wdb-service
-    ports:
-      # <host port>:<container port>
-      - 5667:5667 # REST API
-      #- 5668:5668 # IPFS TCP port
-      #- 5669:5669 # IPFS WS Port
-    volumes:
-      - ../data/ipfsdata/p2wdb:/home/safeuser/ipfs-p2wdb-service/.ipfsdata/p2wdb
-      - ./p2wdb/start-production.sh:/home/safeuser/ipfs-p2wdb-service/start-production.sh
-      #- ../scripts/wallet.json:/home/safeuser/ipfs-p2wdb-service/wallet.json
-    restart: always
-
   bch-dex:
-    #build:
-    #  context: ./bch-dex/
-    #  dockerfile: Dockerfile
-    image: christroutner/bch-dex:v2.2.4
+    build:
+      context: ./bch-dex/
+      dockerfile: Dockerfile
+    #image: christroutner/bch-dex:v2.2.4
     container_name: bch-dex
     environment:
       CONSUMER_URL: 'https://free-bch.fullstack.cash'
@@ -86,8 +28,8 @@ services:
         max-file: '10'
     mem_limit: 1000mb
     links:
-      - mongo-p2wdb-service
-      - p2wdb
+      - mongo-dex
+      #- p2wdb
     ports:
       - '5700:5700' # <host port>:<container port>
     volumes:
@@ -96,13 +38,13 @@ services:
     restart: always
 
   dex-ui:
-    #build:
-    #  context: ./bch-dex-ui/
-    #  dockerfile: Dockerfile
-    image: christroutner/bch-dex-ui:v1.2.4
+    build:
+      context: ./bch-dex-ui/
+      dockerfile: Dockerfile
+    #image: christroutner/bch-dex-ui:v1.2.4
     container_name: dex-ui
     environment:
-      SERVER: 'http://192.168.2.3'
+      SERVER: 'http://172.17.0.1'
     logging:
       driver: 'json-file'
       options:

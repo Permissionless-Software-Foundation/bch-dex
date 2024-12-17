@@ -12,7 +12,7 @@ RUN apt-get update
 RUN apt-get install -y sudo git curl nano gnupg wget
 
 #Install Node and NPM
-RUN curl -sL https://deb.nodesource.com/setup_16.x -o nodesource_setup.sh
+RUN curl -sL https://deb.nodesource.com/setup_20.x -o nodesource_setup.sh
 RUN bash nodesource_setup.sh
 RUN apt-get install -y nodejs build-essential
 
@@ -34,7 +34,7 @@ WORKDIR /home/safeuser
 
 # Update to the latest version of npm.
 #RUN npm install -g npm@7.23.0
-RUN npm install -g npm
+#RUN npm install -g npm
 
 # npm mirror to prevent direct dependency on npm.
 RUN npm set registry http://94.130.170.209:4873/
