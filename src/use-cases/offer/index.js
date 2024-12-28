@@ -121,6 +121,8 @@ class OfferUseCases {
       const offerEntity = this.offerEntity.validate(offerObj)
       // console.log('offerEntity: ', offerEntity)
 
+      console.log(`New Offer for token ID ${offerEntity.tokenId} detected from Nostr post ${eventId}`)
+
       // Get data about the token.
       const tokenId = offerEntity.tokenId
       // const tokenData = await this.adapters.wallet.bchWallet.getTokenData(tokenId)

@@ -42,7 +42,7 @@ class TimerControllers {
   startTimers () {
     this.gcOrdersInt = setInterval(this.gcOrders, 60000 * 5)
     this.gcOffersInt = setInterval(this.gcOffers, 60000 * 5)
-    this.checkDupOffersInt = setInterval(this.checkDupOffers, 60000 * 4.5)
+    // this.checkDupOffersInt = setInterval(this.checkDupOffers, 60000 * 4.5)
     this.loadOffersInt = setInterval(this.loadOffers, 60000 * 2)
     return true
   }
@@ -50,7 +50,7 @@ class TimerControllers {
   stopTimers () {
     clearInterval(this.gcOrdersInt)
     clearInterval(this.gcOffersInt)
-    clearInterval(this.checkDupOffers)
+    // clearInterval(this.checkDupOffers)
   }
 
   // Garbage Collect the Orders.
