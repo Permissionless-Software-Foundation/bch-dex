@@ -53,7 +53,7 @@ RUN git clone https://github.com/Permissionless-Software-Foundation/bch-dex-ui-v
 WORKDIR /home/safeuser/bch-dex-ui-v2
 
 # For development: switch to unstable branch
-RUN git checkout ct-unstable
+RUN git checkout fullstack
 
 # Install dependencies
 #RUN mkdir .ipfsdata
