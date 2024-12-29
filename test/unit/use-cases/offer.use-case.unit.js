@@ -48,6 +48,7 @@ describe('#offer-use-case', () => {
         )
       }
     })
+
     it('should throw an error if order use cases are not passed in', () => {
       try {
         uut = new OfferLib({ adapters })
@@ -72,6 +73,7 @@ describe('#offer-use-case', () => {
         assert.include(error.message, 'Cannot read properties of undefined')
       }
     })
+
     it('should return false if offer already exist', async () => {
       const offerObj = mockData.offerMockData
 
@@ -82,6 +84,7 @@ describe('#offer-use-case', () => {
       const result = await uut.createOffer(offerObj)
       assert.isFalse(result)
     })
+
     it('should return false for invalid utxo', async () => {
       const offerObj = mockData.offerMockData
 
@@ -147,6 +150,7 @@ describe('#offer-use-case', () => {
 
       assert.equal(result, 'fungible')
     })
+
     it('should unknow type', async () => {
       try {
         // Mock dependencies
@@ -191,6 +195,7 @@ describe('#offer-use-case', () => {
 
       assert.equal(result, false)
     })
+
     it('should handle error', async () => {
       try {
         // Mock dependencies and force desired code path.
@@ -204,6 +209,7 @@ describe('#offer-use-case', () => {
       }
     })
   })
+
   describe('#removeStaleOffers', () => {
     it('remove offer with wrong utxoState', async () => {
       // Mock dependencies and force desired code path.
@@ -212,6 +218,7 @@ describe('#offer-use-case', () => {
 
       await uut.removeStaleOffers()
     })
+
     it('remove offer with wrong txid', async () => {
       // Mock dependencies and force desired code path.
       sandbox.stub(uut.OfferModel, 'find').resolves([{ remove: async () => { } }])
@@ -219,6 +226,7 @@ describe('#offer-use-case', () => {
 
       await uut.removeStaleOffers()
     })
+
     it('remove expired offer ', async () => {
       const tsMock = new Date()
       tsMock.setMonth(tsMock.getMonth() - 3)
@@ -230,6 +238,7 @@ describe('#offer-use-case', () => {
 
       await uut.removeStaleOffers()
     })
+
     it('should handle axios error ', async () => {
       const testErr = new Error()
       testErr.isAxiosError = true
@@ -240,6 +249,7 @@ describe('#offer-use-case', () => {
 
       await uut.removeStaleOffers()
     })
+
     it('should handle error ', async () => {
       try {
         const testErr = new Error('unknow error')
@@ -255,6 +265,7 @@ describe('#offer-use-case', () => {
       }
     })
   })
+
   describe('#findOfferByTxid', () => {
     it('should throw an error if input is not provided', async () => {
       try {
@@ -264,6 +275,7 @@ describe('#offer-use-case', () => {
         assert.equal(error.message, 'utxoTxid must be a string')
       }
     })
+
     it('should throw an error if offer is not found', async () => {
       try {
         // Mock dependencies and force desired code path.
@@ -284,6 +296,7 @@ describe('#offer-use-case', () => {
       assert.isObject(result)
     })
   })
+
   describe('#detectNsfw', () => {
     it('should return false for wrong cid format', async () => {
       const result = await uut.detectNsfw({ mutableData: '' })
@@ -297,6 +310,7 @@ describe('#offer-use-case', () => {
       const result = await uut.detectNsfw({ mutableData: 'ipfs://bafybeibqnsmmh6bkf2wwextetki4tly65z4r4qkrrpl5xwgvzdzjley6wm' })
       assert.isTrue(result)
     })
+
     it('should return true if nft string detected', async () => {
       // Mock dependencies and force desired code path.
       sandbox.stub(uut.axios, 'get').resolves({ data: { nsfw: 'true' } })
@@ -304,6 +318,7 @@ describe('#offer-use-case', () => {
       const result = await uut.detectNsfw({ mutableData: 'ipfs://bafybeibqnsmmh6bkf2wwextetki4tly65z4r4qkrrpl5xwgvzdzjley6wm' })
       assert.isTrue(result)
     })
+
     it('should return false if nfsw property does not exist', async () => {
       // Mock dependencies and force desired code path.
       sandbox.stub(uut.axios, 'get').resolves({ data: {} })
@@ -311,6 +326,7 @@ describe('#offer-use-case', () => {
       const result = await uut.detectNsfw({ mutableData: 'ipfs://bafybeibqnsmmh6bkf2wwextetki4tly65z4r4qkrrpl5xwgvzdzjley6wm' })
       assert.isFalse(result)
     })
+
     it('should return false on error', async () => {
       // Mock dependencies and force desired code path.
       sandbox.stub(uut.axios, 'get').throws(new Error('test error'))
@@ -319,6 +335,7 @@ describe('#offer-use-case', () => {
       assert.isFalse(result)
     })
   })
+
   describe('#listOffers', () => {
     it('should handle error', async () => {
       try {
@@ -350,6 +367,7 @@ describe('#offer-use-case', () => {
       assert.isArray(result)
     })
   })
+
   describe('#listNftOffers', () => {
     it('should handle error', async () => {
       try {
@@ -380,6 +398,7 @@ describe('#offer-use-case', () => {
       assert.isArray(result)
     })
   })
+
   describe('#listFungibleOffers', () => {
     it('should handle error', async () => {
       try {
@@ -411,6 +430,7 @@ describe('#offer-use-case', () => {
       assert.isArray(result)
     })
   })
+
   describe('#takeOffer', () => {
     it('should handle error if input is not provided', async () => {
       try {
@@ -420,6 +440,7 @@ describe('#offer-use-case', () => {
         assert.include(err.message, 'eventId must be a string')
       }
     })
+
     it('should handle error for wrong offer status', async () => {
       try {
         // Mock dependencies
@@ -432,6 +453,7 @@ describe('#offer-use-case', () => {
         assert.include(err.message, 'offer status is not "posted", so offer is dead and can not be countered.')
       }
     })
+
     it('should handle error for invalid utxo', async () => {
       try {
         // Mock dependencies
@@ -460,6 +482,7 @@ describe('#offer-use-case', () => {
         assert.include(err.message, 'test error')
       }
     })
+
     it('should handle error if counter offer cant be calculated', async () => {
       try {
         // Mock dependencies
@@ -474,6 +497,7 @@ describe('#offer-use-case', () => {
         assert.include(err.message, 'Could not calculate the amount of BCH to generate counter offer')
       }
     })
+
     it('should handle error if counter offer cant be calculated', async () => {
       try {
         // Mock dependencies
@@ -488,6 +512,7 @@ describe('#offer-use-case', () => {
         assert.include(err.message, 'Could not calculate the amount of BCH to generate counter offer')
       }
     })
+
     it('should take offer', async () => {
       // Mock data
       const offerMock = Object.assign({}, mockData.offerMockData.data)
@@ -561,6 +586,7 @@ describe('#offer-use-case', () => {
         assert.include(err.message, 'Buy offers are not supported yet.')
       }
     })
+
     it('should return true', async () => {
       // Mock dependencies
       sandbox.stub(uut.adapters.p2wdb, 'checkForSufficientFunds').resolves(true)
@@ -570,6 +596,7 @@ describe('#offer-use-case', () => {
       assert.isTrue(result)
     })
   })
+
   describe('#findOrderByEvent', () => {
     it('should throw an error if hash is not provided', async () => {
       try {
@@ -579,6 +606,7 @@ describe('#offer-use-case', () => {
         assert.include(err.message, 'nostrEventId must be a string')
       }
     })
+
     it('should throw an error if order is not found!', async () => {
       try {
         // Mock dependencies
@@ -591,6 +619,7 @@ describe('#offer-use-case', () => {
         assert.include(err.message, 'offer not found')
       }
     })
+
     it('should return offer by eventId', async () => {
       // Mock dependencies
       sandbox.stub(uut.OfferModel, 'findOne').resolves({ toObject: () => { return { hash: 'hash' } } })
@@ -599,6 +628,7 @@ describe('#offer-use-case', () => {
       assert.isObject(result)
     })
   })
+
   describe('#flagOffer', () => {
     it('should throw an error if input is not provided', async () => {
       try {
@@ -608,6 +638,7 @@ describe('#offer-use-case', () => {
         assert.include(err.message, '"data" property is required')
       }
     })
+
     it('should throw an error if offer is not found!', async () => {
       try {
         // Mock dependencies
@@ -625,6 +656,7 @@ describe('#offer-use-case', () => {
         assert.include(err.message, 'not found in the database')
       }
     })
+
     it('should flag offer', async () => {
       // Mock dependencies
       sandbox.stub(uut, 'findOfferByEvent').resolves({ flags: ['a', 'b', 'c'], save: () => { } })
@@ -652,12 +684,14 @@ describe('#offer-use-case', () => {
         assert.include(err.message, 'test error')
       }
     })
+
     it('should skip internal function errors ', async () => {
       // Mock dependencies
       sandbox.stub(uut.adapters.nostr, 'read').resolves([mockData.offerMockData])
 
       await uut.loadOffers()
     })
+
     it('should review and load offers', async () => {
       // Mock dependencies
       sandbox.stub(uut.adapters.nostr, 'read').resolves([JSON.stringify(mockData.offerMockData)])
@@ -665,6 +699,7 @@ describe('#offer-use-case', () => {
       await uut.loadOffers()
     })
   })
+
   describe('#acceptCounterOffer', () => {
     it('should return if order is not found!', async () => {
       // Mock dependencies
@@ -673,6 +708,7 @@ describe('#offer-use-case', () => {
       const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
       assert.equal(result, 'N/A')
     })
+
     it('should handle error if counter offer cant be calculated', async () => {
       try {
         // Mock Data
@@ -681,28 +717,35 @@ describe('#offer-use-case', () => {
 
         // Mock dependencies
         sandbox.stub(uut.orderUseCase, 'findOrderByEvent').resolves(mock)
+        sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
 
-        await uut.acceptCounterOffer({ data: { /** .... */ } })
+        const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
+        console.log('result: ', result)
         assert.fail('unexpected code path')
       } catch (err) {
         assert.include(err.message, 'Could not calculate the amount of BCH offered in the Counter Offer')
       }
     })
+
     it('should handle error for wrong transaction output', async () => {
       try {
-        // Mock dependencies
+        // Mock Data
+        const mock = Object.assign({}, mockData.offerMockData.data)
 
+        // Mock dependencies
+        sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
         sandbox.stub(uut.orderUseCase, 'findOrderByEvent').resolves(mockData.offerMockData.data)
         sandbox.stub(uut.adapters.wallet.bchWallet.bchjs.BitcoinCash, 'toSatoshi').returns(0)
         sandbox.stub(uut.adapters.wallet, 'deseralizeTx').resolves(mockData.deserealizeTxMock)
 
-        await uut.acceptCounterOffer({ data: { /** .... */ } })
+        await uut.acceptCounterOffer({ data: mock })
         assert.fail('unexpected code path')
       } catch (err) {
         assert.include(err.message, 'The Counter Offer has an output of ')
         assert.include(err.message, 'which does not match the required')
       }
     })
+
     it('should handle error for wrong transaction output address', async () => {
       try {
         // Mock data
@@ -713,6 +756,7 @@ describe('#offer-use-case', () => {
 
         // Mock dependencies
         sandbox.stub(uut.orderUseCase, 'findOrderByEvent').resolves(mock)
+        sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
         sandbox.stub(uut.adapters.wallet.bchWallet.bchjs.BitcoinCash, 'toSatoshi').returns(0)
 
         sandbox.stub(uut.adapters.wallet, 'deseralizeTx').resolves(mockData.deserealizeTxMock)
@@ -724,6 +768,7 @@ describe('#offer-use-case', () => {
         assert.include(err.message, 'which does not match the Maker address')
       }
     })
+
     it('should return tx id', async () => {
       // Mock data
       const mock = Object.assign({}, mockData.offerMockData.data)

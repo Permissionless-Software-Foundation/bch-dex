@@ -166,7 +166,8 @@ const p2wdb = {
 
 const nostr = {
   post: async () => {return true },
-  read: async () => { return true }
+  read: async () => { return true },
+  eventId2note: () => { return 'testNoteId' }
 }
 
 export default { ipfs, localdb, bch, wallet, p2wdb, bchjs, nostr}

@@ -49,11 +49,25 @@ class OfferUseCases {
     this.retryQueue = new RetryQueue({ retryPeriod: 1000, attempts: 3 })
 
     // Bind 'this' object to functions
+    this.createOffer = this.createOffer.bind(this)
     this.detectNsfw = this.detectNsfw.bind(this)
+    this.categorizeToken = this.categorizeToken.bind(this)
+    this.listOffers = this.listOffers.bind(this)
+    this.listNftOffers = this.listNftOffers.bind(this)
+    this.listFungibleOffers = this.listFungibleOffers.bind(this)
+    this.takeOffer = this.takeOffer.bind(this)
+    this.ensureFunds = this.ensureFunds.bind(this)
+    this.findOfferByEvent = this.findOfferByEvent.bind(this)
+    this.findOfferByTxid = this.findOfferByTxid.bind(this)
+    this.acceptCounterOffer = this.acceptCounterOffer.bind(this)
+    this.removeDuplicateOffers = this.removeDuplicateOffers.bind(this)
+    this.removeStaleOffers = this.removeStaleOffers.bind(this)
+    this.flagOffer = this.flagOffer.bind(this)
     this.loadOffers = this.loadOffers.bind(this)
 
     // State
     this.seenOffers = []
+    this.seenCounterOffers = []
   }
 
   // This method is called by timer controller to load offers from a Nostr topic.
@@ -94,7 +108,7 @@ class OfferUseCases {
       }
       // const utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
       const utxoStatus = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.utxoIsValid, utxo)
-      console.log('utxoStatus: ', utxoStatus)
+      // console.log('utxoStatus: ', utxoStatus)
       // if (utxoStatus === null) return false
       if (!utxoStatus) return false
 
@@ -106,6 +120,8 @@ class OfferUseCases {
 
       const offerEntity = this.offerEntity.validate(offerObj)
       // console.log('offerEntity: ', offerEntity)
+
+      console.log(`New Offer for token ID ${offerEntity.tokenId} detected from Nostr post ${eventId}`)
 
       // Get data about the token.
       const tokenId = offerEntity.tokenId
@@ -175,7 +191,7 @@ class OfferUseCases {
       const nsfwSetTrue = mutableData.nsfw === true
       const nsfwStringTrue = mutableData.nsfw === 'true'
       const nsfwDetected = hasNsfw && (nsfwSetTrue || nsfwStringTrue)
-      console.log(`hasNsfw: ${hasNsfw}, nsfwSetTrue: ${nsfwSetTrue}, nsfwStringTrue: ${nsfwStringTrue}, nsfwDetected: ${nsfwDetected}`)
+      // console.log(`hasNsfw: ${hasNsfw}, nsfwSetTrue: ${nsfwSetTrue}, nsfwStringTrue: ${nsfwStringTrue}, nsfwDetected: ${nsfwDetected}`)
 
       if (nsfwDetected) {
         console.log('NSFW flag set as true')
@@ -318,7 +334,7 @@ class OfferUseCases {
 
       // Note : should be added to retry-queue?
       const utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
-      console.log('utxoStatus: ', utxoStatus)
+      // console.log('utxoStatus: ', utxoStatus)
       if (!utxoStatus) {
         console.log(`utxo txid: ${offerInfo.utxoTxid}, vout: ${offerInfo.utxoVout}`)
 
@@ -373,18 +389,20 @@ class OfferUseCases {
       // TODO: This will trigger the webhook. Find some way of triggering the
       // webhook on new offers, but not on counteroffers
       const nostrData = {
-        wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
-        data: takenOfferInfo,
-        appId: this.config.p2wdbAppId
+        // wif: this.adapters.wallet.bchWallet.walletInfo.privateKey,
+        data: takenOfferInfo
+        // appId: this.config.p2wdbAppId
       }
-      const resultEventId = await this.adapters.nostr.post(nostrData)
+      const resultEventId = await this.adapters.nostr.post(JSON.stringify(nostrData))
+
+      const noteId = this.adapters.nostr.eventId2note(resultEventId)
 
       // Delete the Offer from the database, so that the user doesn't attempt
       // to take the offer more than once.
-      offerInfo.remove()
+      // offerInfo.remove()
 
       // Return the P2WDB CID
-      return resultEventId
+      return { eventId: resultEventId, noteId }
 
       // return 'fake-hash'
     } catch (err) {
@@ -472,27 +490,27 @@ class OfferUseCases {
   }
 
   async findOfferByTxid (utxoTxid) {
-    try {
-      // try {
-      if (typeof utxoTxid !== 'string' || !utxoTxid) {
-        throw new Error('utxoTxid must be a string')
-      }
-
-      const offer = await this.OfferModel.findOne({ utxoTxid })
-
-      // TODO: Offer should be found by TXID, then if there is more than one
-      // result, they should be filtered by the vout property. That will leave
-      // one remaining UTXO.
-
-      if (!offer) {
-        throw new Error('offer not found')
-      }
-
-      return offer
-    } catch (error) {
-      console.error('Error in use-cases/offer/findOfferByTxid(): ', error.message)
-      throw error
+    // try {
+    // try {
+    if (typeof utxoTxid !== 'string' || !utxoTxid) {
+      throw new Error('utxoTxid must be a string')
     }
+
+    const offer = await this.OfferModel.findOne({ utxoTxid })
+
+    // TODO: Offer should be found by TXID, then if there is more than one
+    // result, they should be filtered by the vout property. That will leave
+    // one remaining UTXO.
+
+    if (!offer) {
+      throw new Error('offer not found')
+    }
+
+    return offer
+    // } catch (error) {
+    //   // console.error('Error in use-cases/offer/findOfferByTxid(): ', error.message)
+    //   throw error
+    // }
   }
 
   // This function is called by the P2WDB webhook REST API handler. When a
@@ -501,19 +519,66 @@ class OfferUseCases {
   // and broadcasts the transaction to accept the Counter Offer.
   async acceptCounterOffer (offerData) {
     try {
-      console.log(`acceptCounterOffer() offerData: ${JSON.stringify(offerData, null, 2)}`)
+      // console.log(`acceptCounterOffer() offerData: ${JSON.stringify(offerData, null, 2)}`)
+
+      // Quickly skip over offers that have already been processed.
+      const eventId = offerData.data.nostrEventId
+      if (this.seenOffers.includes(eventId)) {
+        // console.log(`Offer with event ID ${eventId} already processed. Skipping.`)
+        return false
+      }
 
       // See if this instance of bch-dex is managing the Order associated with
       // the incoming Counter Offer.
 
-      // Note : this should be handle by nostrEvent id or UtxoId?
-      const orderHash = offerData.data.nostrEventId
+      // Note : this should be handled by nostrEvent id or UtxoId?
+      // const orderHash = offerData.data.nostrEventId
       let orderData = {}
       try {
-        orderData = await this.orderUseCase.findOrderByEvent(orderHash)
-        console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
+        orderData = await this.orderUseCase.findOrderByUtxo(offerData)
+        // console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
       } catch (err) {
-        console.log('Order matching this Counter Offer is not managed by this instance of bch-dex. Exiting.')
+        console.log('Order matching this Counter Offer is not managed by this instance of bch-dex. Skipping.')
+
+        // Add order to list of seen orders, so that we don't spent time trying to validate it again.
+        this.seenOffers.push(eventId)
+
+        return 'N/A'
+      }
+
+      // Verify that the UTXO for sale is valid.
+      let utxoStatus = null
+      try {
+        // Get the status of the UTXO associate with this Offer.
+        const utxo = {
+          tx_hash: offerData.data.utxoTxid,
+          tx_pos: offerData.data.utxoVout
+        }
+        // console.log(`Checking this UTXO: ${JSON.stringify(utxo, null, 2)}`)
+
+        // utxoStatus = await this.adapters.wallet.bchWallet.utxoIsValid(utxo)
+        utxoStatus = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.utxoIsValid, utxo)
+        console.log('utxoStatus: ', utxoStatus)
+      } catch (err) {
+        console.log('acceptCounterOffer() err validating UTXO: ', err)
+
+        // Handle corner case of bad-data in the Offer model.
+        if (err.isAxiosError) {
+          console.log('Error trying to contact wallet service: ', err)
+          return 'N/A'
+        } else {
+          return 'N/A'
+        }
+      }
+
+      // If the Offer UTXO is spent, exit.
+      if (utxoStatus === false) {
+        // Add order to list of seen orders, so that we don't spent time trying to validate it again.
+        this.seenOffers.push(eventId)
+
+        console.log(`Aborting Counter Offer from Event ID ${eventId}`)
+        console.log(`https://astral.psfoundation.info/${this.adapters.nostr.eventId2note(eventId)}`)
+
         return 'N/A'
       }
 
@@ -549,7 +614,7 @@ class OfferUseCases {
 
       return txid
     } catch (err) {
-      console.error('Error in acceptCounterOffer()')
+      console.error('Error in acceptCounterOffer(): ', err)
       throw err
     }
   }
@@ -637,7 +702,7 @@ class OfferUseCases {
 
         // If the Offer UTXO is spent, delete the Offer model.
         if (utxoStatus === false) {
-          console.log('utxoStatus: ', utxoStatus)
+          // console.log('utxoStatus: ', utxoStatus)
           console.log(`Spent UTXO detected. Deleting this Offer: ${JSON.stringify(thisOffer, null, 2)}`)
           await thisOffer.remove()
         }
@@ -698,7 +763,7 @@ class OfferUseCases {
     try {
       // Retrieve offers array.
       const offers = await this.adapters.nostr.read()
-      console.log('offers: ', offers)
+      // console.log('offers: ', offers)
 
       for (let i = 0; i < offers.length; i++) {
         try {
@@ -709,9 +774,21 @@ class OfferUseCases {
 
           // Append the Nostr Event ID to the offer object
           offerObj.data.nostrEventId = offer.eventId
+          // console.log('loadOffers() offerObj: ', offerObj)
 
-          // Try to create new offer
-          await this.createOffer(offerObj)
+          if (offerObj.data.dataType === 'offer') {
+            // Try to create new offer
+            await this.createOffer(offerObj)
+          }
+
+          if (offerObj.data.dataType === 'counter-offer') {
+            // console.log('Counter offer detected: ', offerObj)
+            // console.log('Counter offer detected: ', offerObj.data.nostrEventId)
+            console.log(`Counter offer detected: https://astral.psfoundation.info/${this.adapters.nostr.eventId2note(offerObj.data.nostrEventId)}`)
+            await this.acceptCounterOffer(offerObj)
+          }
+
+          // Ignore the post if it doesn't fit the above filters.
         } catch (error) {
           /* exit quietly */
         }

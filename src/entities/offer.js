@@ -17,7 +17,7 @@ class OfferEntity {
       )
     }
 
-    console.log('offer entity validate() offerData: ', offerData)
+    // console.log('offer entity validate() offerData: ', offerData)
 
     const {
       messageType,
@@ -105,7 +105,7 @@ class OfferEntity {
       tokenType,
       nostrEventId
     }
-    console.log('offer entity validatedOfferData: ', validatedOfferData)
+    // console.log('offer entity validatedOfferData: ', validatedOfferData)
 
     return validatedOfferData
   }

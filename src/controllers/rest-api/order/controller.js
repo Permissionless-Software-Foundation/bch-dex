@@ -37,9 +37,9 @@ class OrderRESTControllerLib {
       const orderObj = ctx.request.body.order
       console.log('orderObj: ', orderObj)
 
-      const hash = await _this.useCases.order.createOrder(orderObj)
+      const { eventId, noteId } = await _this.useCases.order.createOrder(orderObj)
 
-      ctx.body = { hash }
+      ctx.body = { eventId, noteId }
     } catch (err) {
       // console.log(`err.message: ${err.message}`)
       // console.log('err: ', err)
