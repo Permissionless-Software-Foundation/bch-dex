@@ -67,11 +67,12 @@ describe('#Order-REST-Router', () => {
       }
 
       // Mock dependencies
-      sandbox.stub(uut.useCases.order, 'createOrder').resolves('testHash')
+      sandbox.stub(uut.useCases.order, 'createOrder').resolves({ eventId: 'testEventId', noteId: 'testNoteId' })
 
       await uut.createOrder(ctx)
 
-      assert.equal(ctx.body.hash, 'testHash')
+      assert.equal(ctx.body.eventId, 'testEventId')
+      assert.equal(ctx.body.noteId, 'testNoteId')
     })
 
     it('should catch and throw an error', async () => {

@@ -181,7 +181,8 @@ describe('#order-use-case', () => {
       const result = await uut.createOrder(entryObj)
       console.log('result: ', result)
 
-      assert.isString(result)
+      assert.property(result, 'eventId')
+      assert.property(result, 'noteId')
     })
 
     it('should catch and throw an error', async () => {
