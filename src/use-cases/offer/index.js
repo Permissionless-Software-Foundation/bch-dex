@@ -136,10 +136,9 @@ class OfferUseCases {
       offerEntity.displayCategory = displayCategory
 
       // Detect if user set the NSFW flag.
-      let nsfw = false
-      // nsfw = await this.detectNsfw(tokenData)
-      nsfw = await this.retryQueue.addToQueue(this.detectNsfw, tokenData)
-      offerEntity.nsfw = nsfw
+      // const nsfw = false
+      // nsfw = await this.retryQueue.addToQueue(this.detectNsfw, tokenData)
+      // offerEntity.nsfw = nsfw
 
       // Add offer to the local database.
       const offerModel = new this.OfferModel(offerEntity)
