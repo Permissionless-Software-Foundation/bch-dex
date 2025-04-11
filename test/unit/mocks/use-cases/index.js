@@ -58,6 +58,21 @@ class Order {
   }
   async removeStaleOrders(){
 
+class UsageUseCaseMock {
+  async cleanUsage() {
+    return {}
+  }
+
+  async getRestSummary() {
+    return true
+  }
+
+  async getTopIps(params) {
+    return true
+  }
+
+  async getTopEndpoints(existingUser, newData) {
+    return true
   }
 }
 
@@ -70,6 +85,7 @@ class UseCasesMock {
   entry = new EntryUseCaseMock()
   offer = new Offer()
   order = new Order()
+  usage = new UsageUseCaseMock()
 }
 
 export default UseCasesMock;

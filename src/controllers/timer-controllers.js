@@ -30,6 +30,9 @@ class TimerControllers {
     this.gcOffers = this.gcOffers.bind(this)
     this.checkDupOffers = this.checkDupOffers.bind(this)
     this.loadOffers = this.loadOffers.bind(this)
+    // Bind 'this' object to all subfunctions.
+    // this.exampleTimerFunc = this.exampleTimerFunc.bind(this)
+    this.cleanUsage = this.cleanUsage.bind(this)
 
     // State
     this.gcOrdersInt = null
@@ -44,6 +47,11 @@ class TimerControllers {
     this.gcOffersInt = setInterval(this.gcOffers, 60000 * 5)
     // this.checkDupOffersInt = setInterval(this.checkDupOffers, 60000 * 4.5)
     this.loadOffersInt = setInterval(this.loadOffers, 60000 * 2)
+    // Any new timer control functions can be added here. They will be started
+    // when the server starts.
+    // this.optimizeWalletHandle = setInterval(this.exampleTimerFunc, 60000 * 60)
+    this.cleanUsageHandle = setInterval(this.cleanUsage, 60000 * 60) // 1 hour
+
     return true
   }
 
@@ -51,6 +59,8 @@ class TimerControllers {
     clearInterval(this.gcOrdersInt)
     clearInterval(this.gcOffersInt)
     // clearInterval(this.checkDupOffers)
+    clearInterval(this.optimizeWalletHandle)
+    clearInterval(this.cleanusageHandle)
   }
 
   // Garbage Collect the Orders.
@@ -97,6 +107,20 @@ class TimerControllers {
     } catch (err) {
       // Do not throw an error. This is a top-level function.
       console.log('Error in timer-controllers.js/loadOffers(): ', err)
+      return false
+    }
+  }
+
+  // Clean the usage state so that stats reflect the last 24 hours.
+  cleanUsage () {
+    try {
+      this.useCases.usage.cleanUsage()
+
+      return true
+    } catch (err) {
+      console.error('Error in time-controller.js/cleanUsage(): ', err)
+
+      // Note: Do not throw an error. This is a top-level function.
       return false
     }
   }

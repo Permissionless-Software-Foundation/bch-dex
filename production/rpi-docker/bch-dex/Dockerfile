@@ -56,7 +56,7 @@ RUN git clone https://github.com/Permissionless-Software-Foundation/bch-dex
 WORKDIR /home/safeuser/bch-dex
 
 # For development: switch to unstable branch
-RUN git checkout ct-unstable
+RUN git checkout master
 
 # Install dependencies
 #RUN mkdir .ipfsdata
@@ -65,14 +65,6 @@ RUN npm install
 
 # Generate the API docs
 RUN npm run docs
-
-# Copy the wallet files
-#COPY wallet.json wallet.json
-
-#VOLUME /home/safeuser/keys
-
-# Expose the port the API will be served on.
-#EXPOSE 5010
 
 # Start the application.
 #COPY start-production.sh start-production.sh

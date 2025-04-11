@@ -4,10 +4,12 @@
   https://troutsblog.com/blog/clean-architecture
 */
 
+// Local libraries
 import UserUseCases from './user.js'
 import EntryUseCases from './entry.js'
 import OfferUseCases from './offer/index.js'
 import OrderUseCases from './order.js'
+import { UsageUseCases } from './usage-use-cases.js'
 
 class UseCases {
   constructor (localConfig = {}) {
@@ -24,6 +26,7 @@ class UseCases {
     this.order = new OrderUseCases(localConfig)
     localConfig.order = this.order
     this.offer = new OfferUseCases(localConfig)
+    this.usage = new UsageUseCases(localConfig)
   }
 
   // Run any startup Use Cases at the start of the app.
