@@ -17,6 +17,7 @@ import EntryRouter from './entry/index.js'
 import OfferRouter from './offer/index.js'
 import OrderRouter from './order/index.js'
 import P2WDBRouter from './p2wdb/index.js'
+import UsageRESTController from './usage/index.js'
 
 class RESTControllers {
   constructor (localConfig = {}) {
@@ -33,6 +34,9 @@ class RESTControllers {
         'Instance of Use Cases library required when instantiating REST Controller libraries.'
       )
     }
+
+    // Bind 'this' object to all subfunctions.
+    this.attachRESTControllers = this.attachRESTControllers.bind(this)
 
     // Encapsulate dependencies
     this.config = config
@@ -78,6 +82,10 @@ class RESTControllers {
 
     const p2wdbRouter = new P2WDBRouter(dependencies)
     p2wdbRouter.attach(app)
+
+    // Attach the REST API Controllers associated with the /usage route
+    const usageRESTController = new UsageRESTController(dependencies)
+    usageRESTController.attach(app)
   }
 }
 
