@@ -2,11 +2,11 @@
 
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com) [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
-`bch-dex` is a decentralized exchange *protocol* for permissionless trading of [SLP tokens](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md) and [NFTs](https://github.com/simpleledger/slp-specifications/blob/master/slp-nft-1.md). Trading fees are incredibly small, compared to other DEX platforms. The software is based entirely on open protocols and open source software. It's not a '.com' website that you visit, but software you run on your own computer, in the confort of your own home. So long as you have an internet connection and the technical knowledge to run this software, no one can stop you from trading tokens. `bch-dex` software is maintained by the [Permissionless Software Foundation](https://psfoundation.info).
+`bch-dex` is a decentralized exchange *protocol* for permissionless trading of [SLP tokens](https://github.com/simpleledger/slp-specifications/blob/master/slp-token-type-1.md) and [NFTs](https://github.com/simpleledger/slp-specifications/blob/master/slp-nft-1.md). Trading fees are incredibly small, compared to other DEX platforms. The software is based entirely on open protocols and open source software. `bch-dex` software is maintained by the [Permissionless Software Foundation](https://psfoundation.info).
 
 - [High-level Overview of bch-dex](https://youtu.be/LVX8CLi4sHw) (Video)
 
-This is a prototype web service that monitors a [Nostr relay](https://nostr.com) for trading signals, to trade BCH and SLP tokens. It's inspired by the [SWaP Protocol](https://github.com/vinarmani/swap-protocol/blob/master/swap-protocol-spec.md).
+This is a prototype web service that monitors one or more [Nostr relays](https://nostr.com) for trading signals, to trade BCH and SLP tokens. It's inspired by the [SWaP Protocol](https://github.com/vinarmani/swap-protocol/blob/master/swap-protocol-spec.md).
 
 This repository contains the back end code. The user interface is contained in the [bch-dex-ui-v3](https://github.com/Permissionless-Software-Foundation/bch-dex-ui-v3) repository.
 
