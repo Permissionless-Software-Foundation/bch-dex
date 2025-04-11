@@ -57,6 +57,9 @@ class Order {
     return {}
   }
   async removeStaleOrders(){
+    return {}
+  }
+}
 
 class UsageUseCaseMock {
   async cleanUsage() {
