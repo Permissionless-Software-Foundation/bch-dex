@@ -11,6 +11,7 @@ const User = new mongoose.Schema({
   name: { type: String },
   username: { type: String },
   password: { type: String, required: true },
+  mnemonic: { type: String, required: true },
   email: {
     type: String,
     required: true,

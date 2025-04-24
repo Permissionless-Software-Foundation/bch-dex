@@ -16,7 +16,7 @@ class UserLib {
         'Instance of adapters must be passed in when instantiating User Use Cases library.'
       )
     }
-
+    this.BchWallet = this.adapters.wallet.BchWallet
     // Encapsulate dependencies
     this.UserEntity = new UserEntity()
     this.UserModel = this.adapters.localdb.Users
@@ -29,6 +29,11 @@ class UserLib {
 
       const userEntity = this.UserEntity.validate(userObj)
       const user = new this.UserModel(userEntity)
+
+      const wallet = new this.BchWallet()
+      const walletInfo = await wallet.walletInfoPromise
+      const mnemonic = walletInfo.mnemonic
+      user.mnemonic = mnemonic
 
       // Enforce default value of 'user'
       user.type = 'user'
@@ -102,6 +107,7 @@ class UserLib {
 
       // Input Validation
       // Optional inputs, but they must be strings if included.
+
       if (newData.email && typeof newData.email !== 'string') {
         throw new Error("Property 'email' must be a string!")
       }
@@ -110,6 +116,9 @@ class UserLib {
       }
       if (newData.password && typeof newData.password !== 'string') {
         throw new Error("Property 'password' must be a string!")
+      }
+      if (newData.mnemonic) {
+        throw new Error("Property 'mnemonic' cannot be updated!")
       }
 
       // Save a copy of the original user type.
