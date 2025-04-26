@@ -1,5 +1,7 @@
 /*
   Adapter library for working with a wallet.
+  This library is specific to bch-dex. The other wallet adapter library is
+  inherited from ipfs-service-provider.
 */
 
 // Public npm libraries
@@ -41,7 +43,17 @@ class WalletAdapter {
     })
 
     // Bind the 'this' object
+    this.openWallet = this.openWallet.bind(this)
+    this.instanceWallet = this.instanceWallet.bind(this)
+    this.incrementNextAddress = this.incrementNextAddress.bind(this)
+    this.getKeyPair = this.getKeyPair.bind(this)
+    this.generateSignature = this.generateSignature.bind(this)
+    this.generatePartialTx = this.generatePartialTx.bind(this)
     this.moveTokens = this.moveTokens.bind(this)
+    this.moveBch = this.moveBch.bind(this)
+    this.deseralizeTx = this.deseralizeTx.bind(this)
+    this.completeTx = this.completeTx.bind(this)
+    this.reclaimTokens = this.reclaimTokens.bind(this)
   }
 
   // Open the wallet file, or create one if the file doesn't exist.
