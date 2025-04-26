@@ -117,6 +117,29 @@ describe('#users-use-case', () => {
         assert.include(err.message, 'test error')
       }
     })
+    it('should handle wallet errors', async () => {
+      try {
+        // Force an error with the database.
+        class MockErrorBchWallet {
+          constructor () {
+            this.walletInfoPromise = Promise.reject(new Error('test error'))
+          }
+        }
+        uut.BchWallet = MockErrorBchWallet
+
+        const usrObj = {
+          email: 'test@test.com',
+          password: 'password',
+          name: 'test'
+        }
+
+        await uut.createUser(usrObj)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
 
     it('should create a new user in the DB', async () => {
       // Note: The user created in this test is used by the getUser, update,
@@ -129,7 +152,6 @@ describe('#users-use-case', () => {
       }
 
       const { userData, token } = await uut.createUser(usrObj)
-
       testUser = userData
 
       // Commented out because there is some sophisticated mocking required that
@@ -324,6 +346,26 @@ describe('#users-use-case', () => {
         assert.include(
           err.message,
           "Property 'type' can only be changed by Admin user"
+        )
+      }
+    })
+    it('should throw an error if mnemonic is provided', async () => {
+      try {
+        const newData = {
+          email: 'test@test.com',
+          password: 'password',
+          name: 'test',
+          mnemonic: 'test'
+        }
+
+        await uut.updateUser(testUser, newData)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log(err)
+        assert.include(
+          err.message,
+          "Property 'mnemonic' cannot be updated!"
         )
       }
     })

@@ -173,6 +173,7 @@ if (!config.noMongo) {
         )
         assert.property(result.data, 'token', 'Token property exists.')
         assert.equal(result.data.user.type, 'user')
+        assert.property(result.data.user, 'mnemonic')
       })
     })
 
@@ -265,7 +266,7 @@ if (!config.noMongo) {
         const users = result.data.users
         // console.log(`users: ${util.inspect(users)}`)
 
-        assert.hasAnyKeys(users[0], ['type', '_id', 'email'])
+        assert.hasAnyKeys(users[0], ['type', '_id', 'email', 'mnemonic'])
         assert.isNumber(users.length)
       })
 
@@ -375,6 +376,7 @@ if (!config.noMongo) {
 
         assert.property(user, 'type')
         assert.property(user, 'email')
+        assert.property(user, 'mnemonic')
 
         assert.property(user, '_id')
         assert.equal(user._id, _id)

@@ -31,7 +31,8 @@ describe('#User-Adapter', () => {
     testuser = new User({
       email: 'test983@test.com',
       name: 'test983',
-      password: 'password'
+      password: 'password',
+      mnemonic: '12 words mnemonic'
     })
   })
 
