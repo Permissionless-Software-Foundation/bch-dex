@@ -54,6 +54,7 @@ class WalletAdapter {
     this.deseralizeTx = this.deseralizeTx.bind(this)
     this.completeTx = this.completeTx.bind(this)
     this.reclaimTokens = this.reclaimTokens.bind(this)
+    this.moveTokensFromCustomWallet = this.moveTokensFromCustomWallet.bind(this)
   }
 
   // Open the wallet file, or create one if the file doesn't exist.
@@ -572,6 +573,48 @@ class WalletAdapter {
       return txid
     } catch (err) {
       console.error('Error in wallet.js/reclaimTokens()')
+      throw err
+    }
+  }
+
+  async moveTokensFromCustomWallet (inObj = {}) {
+    try {
+      const { tokenId, qty, wallet } = inObj
+
+      const keyPair = await this.getKeyPair()
+      console.log('keyPair: ', keyPair)
+
+      const receiver = {
+        address: keyPair.cashAddress,
+        tokenId,
+        qty
+      }
+      console.log('receiver: ', receiver)
+
+      // Update the UTXO store of the wallet.
+      await wallet.initialize()
+
+      // Get the token type of the token being moved.
+      // Combine Fungible and NFT token UTXOs.
+      let tokenUtxos = wallet.utxos.utxoStore.slpUtxos.type1.tokens.concat(
+        wallet.utxos.utxoStore.slpUtxos.nft.tokens)
+      // Get token UTXOs that match the token in the order.
+      tokenUtxos = tokenUtxos.filter(
+        x => x.tokenId === tokenId
+      )
+
+      const txid = await wallet.sendTokens(receiver, 3)
+      console.log('txid: ', txid)
+      const utxoInfo = {
+        txid,
+        vout: 1,
+        hdIndex: wallet.walletInfo.hdIndex,
+        tokenType: tokenUtxos[0].tokenType
+      }
+
+      return utxoInfo
+    } catch (err) {
+      console.error('Error in wallet.js/moveTokens()')
       throw err
     }
   }

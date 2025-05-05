@@ -173,8 +173,9 @@ describe('#order-use-case', () => {
       // Mock dependencies and force expected code path
       sandbox.stub(uut.orderEntity, 'inputValidate').returns(entryObj)
       sandbox.stub(uut, 'ensureFunds').resolves()
+      sandbox.stub(uut.UserModel, 'findById').resolves({ mnemonic: 'testMnemonic' })
       sandbox.stub(uut.adapters.wallet.bchWallet.bchjs.Util, 'sleep').resolves()
-      sandbox.stub(uut.adapters.wallet, 'moveTokens').resolves({ txid: 'fakeTxid', vout: 0, hdIndex: 1 })
+      sandbox.stub(uut.adapters.wallet, 'moveTokensFromCustomWallet').resolves({ txid: 'fakeTxid', vout: 0, hdIndex: 1 })
       sandbox.stub(uut.adapters.wallet.bchWallet, 'initialize').resolves()
       sandbox.stub(uut.adapters.nostr, 'post').resolves('fakeEvenetId')
 
@@ -183,6 +184,55 @@ describe('#order-use-case', () => {
 
       assert.property(result, 'eventId')
       assert.property(result, 'noteId')
+    })
+    it('should create an order with consumer-api', async () => {
+      uut.config.useFullStackCash = false
+      const entryObj = {
+        lokadId: 'SWP',
+        messageType: 1,
+        messageClass: 1,
+        tokenId: 'token-id',
+        buyOrSell: 'sell',
+        rateInBaseUnit: 1000,
+        minUnitsToExchange: 1250,
+        numTokens: 1,
+        ticker: 'TEST'
+      }
+
+      // Mock dependencies and force expected code path
+      sandbox.stub(uut.orderEntity, 'inputValidate').returns(entryObj)
+      sandbox.stub(uut, 'ensureFunds').resolves()
+      sandbox.stub(uut.UserModel, 'findById').resolves({ mnemonic: 'testMnemonic' })
+      sandbox.stub(uut.adapters.wallet.bchWallet.bchjs.Util, 'sleep').resolves()
+      sandbox.stub(uut.adapters.wallet, 'moveTokensFromCustomWallet').resolves({ txid: 'fakeTxid', vout: 0, hdIndex: 1 })
+      sandbox.stub(uut.adapters.wallet.bchWallet, 'initialize').resolves()
+      sandbox.stub(uut.adapters.nostr, 'post').resolves('fakeEvenetId')
+
+      const result = await uut.createOrder(entryObj)
+      console.log('result: ', result)
+
+      assert.property(result, 'eventId')
+      assert.property(result, 'noteId')
+    })
+    it('should throw error if user is not found', async () => {
+      try {
+        const entryObj = {
+          lokadId: 'SWP',
+          messageType: 1,
+          messageClass: 1,
+          tokenId: 'token-id',
+          buyOrSell: 'sell',
+          rateInBaseUnit: 1000,
+          minUnitsToExchange: 1250,
+          numTokens: 1,
+          ticker: 'TEST'
+        }
+        await uut.createOrder(entryObj)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'user not found')
+      }
     })
 
     it('should catch and throw an error', async () => {

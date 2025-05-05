@@ -7,6 +7,7 @@ import Router from 'koa-router'
 
 // Local libraries.
 import OrderRESTControllerLib from './controller.js'
+import Validators from '../middleware/validators.js'
 
 let _this
 
@@ -32,12 +33,14 @@ class OrderRouter {
     }
 
     // Encapsulate dependencies.
+    this.validators = new Validators()
     this.orderRESTController = new OrderRESTControllerLib(dependencies)
 
     // Instantiate the router and set the base route.
     const baseUrl = '/order'
     this.router = new Router({ prefix: baseUrl })
 
+    this.createOrder = this.createOrder.bind(this)
     _this = this
   }
 
@@ -49,13 +52,18 @@ class OrderRouter {
     }
 
     // Define the routes and attach the controller.
-    this.router.post('/', _this.orderRESTController.createOrder)
+    this.router.post('/', this.createOrder)
     this.router.get('/list/all/:page', _this.orderRESTController.listOrders)
     this.router.post('/delete', _this.orderRESTController.deleteOrder)
 
     // Attach the Controller routes to the Koa app.
     app.use(_this.router.routes())
     app.use(_this.router.allowedMethods())
+  }
+
+  async createOrder (ctx, next) {
+    await _this.validators.ensureUser(ctx, next)
+    await _this.orderRESTController.createOrder(ctx, next)
   }
 }
 
