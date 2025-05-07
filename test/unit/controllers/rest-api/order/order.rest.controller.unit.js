@@ -65,6 +65,9 @@ describe('#Order-REST-Router', () => {
       ctx.request.body = {
         order: {}
       }
+      ctx.state.user = {
+        id: 'testUserId'
+      }
 
       // Mock dependencies
       sandbox.stub(uut.useCases.order, 'createOrder').resolves({ eventId: 'testEventId', noteId: 'testNoteId' })
@@ -79,6 +82,9 @@ describe('#Order-REST-Router', () => {
       try {
         ctx.request.body = {
           order: {}
+        }
+        ctx.state.user = {
+          id: 'testUserId'
         }
 
         // Force an error
