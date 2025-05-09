@@ -514,7 +514,7 @@ class OfferUseCases {
 
   // This function is called by the P2WDB webhook REST API handler. When a
   // Counter Offer is passed to bch-dex by the P2WDB, the data is then passed
-  // to this function. It does due dilligence on the Counter Offer, then signs
+  // to this function. It does due diligence on the Counter Offer, then signs
   // and broadcasts the transaction to accept the Counter Offer.
   async acceptCounterOffer (offerData) {
     try {
@@ -535,7 +535,7 @@ class OfferUseCases {
       let orderData = {}
       try {
         orderData = await this.orderUseCase.findOrderByUtxo(offerData)
-        // console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
+        console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
       } catch (err) {
         console.log('Order matching this Counter Offer is not managed by this instance of bch-dex. Skipping.')
 
