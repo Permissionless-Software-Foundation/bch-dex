@@ -468,6 +468,7 @@ class WalletAdapter {
   async completeTx (hex, hdIndex) {
     try {
       // console.log('hex: ', hex)
+      console.log('completeTx() hdIndex: ', hdIndex)
 
       const bchjs = this.bchWallet.bchjs
 
@@ -491,6 +492,8 @@ class WalletAdapter {
       //   csTransaction,
       //   'mainnet'
       // )
+
+      console.log('completeTx() this.walletInfo: ', this.walletInfo)
 
       // Get the keypair for the address used in the Order
       const keyPair = await this.getKeyPair(hdIndex)

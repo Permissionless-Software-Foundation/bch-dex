@@ -67,6 +67,7 @@ class OrderLib {
       await userWallet.initialize()
 
       // Specify the address to send payment.
+      console.log('userWallet.walletInfo: ', userWallet.walletInfo)
       entryObj.makerAddr = userWallet.walletInfo.cashAddress
       console.log('entryObj.makerAddr: ', entryObj.makerAddr)
       // console.log('entryObj.makerAddr: ', entryObj.makerAddr)
