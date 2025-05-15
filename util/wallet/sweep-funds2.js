@@ -16,7 +16,6 @@ import BchTokenSweep from 'bch-token-sweep'
 // Local libraries
 import WalletAdapter from '../../src/adapters/wallet.js'
 
-
 async function sweepFunds () {
   try {
     // Open the wallet files.
@@ -64,7 +63,6 @@ async function sweepFunds () {
 
         // console.log('Transaction ID', txid)
         console.log(`Swept HD index ${hdIndex}. TXID: ${txid}`)
-
 
         // Wait between loop iterations.
         await bchjs.Util.sleep(3000)
