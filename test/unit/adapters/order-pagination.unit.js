@@ -47,7 +47,15 @@ describe('#OrderPagination', () => {
       timestamp: 'timestamp',
       localTimestamp: 'localTimestamp',
       txid: 'txid',
-      p2wdbHash: 'p2wdbHash'
+      p2wdbHash: 'p2wdbHash',
+      hdIndex: 0,
+      nostrEventId: 'nostrEventId',
+      dataType: 'dataType',
+      makerAddr: 'makerAddr',
+      rateInBaseUnit: 'rateInBaseUnit',
+      minUnitsToExchange: 'minUnitsToExchange',
+      ticker: 'ticker',
+      tokenType: 1
     })
     await order.save()
   })

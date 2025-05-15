@@ -10,20 +10,20 @@ import mongoose from 'mongoose'
 
 const Order = new mongoose.Schema({
   // Token data
-  tokenId: { type: String },
-  utxoTxid: { type: String },
-  utxoVout: { type: Number },
-  ticker: { type: String },
-  tokenType: { type: Number },
+  tokenId: { type: String, required: true },
+  utxoTxid: { type: String, required: true },
+  utxoVout: { type: Number, required: true },
+  ticker: { type: String, required: true },
+  tokenType: { type: Number, required: true },
 
   // Trade data
-  buyOrSell: { type: String },
-  numTokens: { type: Number },
-  rateInBaseUnit: { type: String },
+  buyOrSell: { type: String, required: true },
+  numTokens: { type: Number, required: true },
+  rateInBaseUnit: { type: String, required: true },
   minUnitsToExchange: { type: String },
   p2wdbTxid: { type: String },
   p2wdbHash: { type: String },
-  makerAddr: { type: String },
+  makerAddr: { type: String, required: true },
 
   // Authentication data
   signature: { type: String },
@@ -32,13 +32,16 @@ const Order = new mongoose.Schema({
   offerPubKey: { type: String },
 
   // Wallet Data
-  hdIndex: { type: Number }, // HD index address holding the UTXO for this offer.
+  hdIndex: { type: Number, required: true }, // HD index address holding the UTXO for this offer.
 
   // SWaP Protocol Properties
   lokadId: { type: String },
   messageType: { type: Number },
   messageClass: { type: Number },
-  nostrEventId: { type: String } // Nostr Event Id.
+  nostrEventId: { type: String, required: true }, // Nostr Event Id.
+
+  // Additional properties found in createOrder
+  dataType: { type: String, required: true }
 })
 
 export default mongoose.model('order', Order)
