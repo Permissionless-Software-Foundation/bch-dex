@@ -362,7 +362,7 @@ class WalletAdapter {
       throw err
     }
 
-  // return true
+    // return true
   }
 
   // Move tokens to an address controlled by the HD wallet, to generate a
@@ -467,6 +467,13 @@ class WalletAdapter {
   // then broadcasting the transaction to the network.
   async completeTx (hex, hdIndex) {
     try {
+      // Input validation
+      if (!hex || typeof hex !== 'string') {
+        throw new Error('hex must be a string!')
+      }
+      if (typeof hdIndex !== 'number' || hdIndex < 0) {
+        throw new Error('hdIndex must be a non-negative number!')
+      }
       // console.log('hex: ', hex)
       console.log('completeTx() hdIndex: ', hdIndex)
 
@@ -583,6 +590,16 @@ class WalletAdapter {
   async moveTokensFromCustomWallet (inObj = {}) {
     try {
       const { tokenId, qty, wallet } = inObj
+      // Input validation
+      if (!tokenId || typeof tokenId !== 'string') {
+        throw new Error('tokenId must be a string!')
+      }
+      if (!qty) {
+        throw new Error('qty must be a number!')
+      }
+      if (!wallet) {
+        throw new Error('wallet is required!')
+      }
 
       const keyPair = await this.getKeyPair()
       console.log('keyPair: ', keyPair)
@@ -607,17 +624,16 @@ class WalletAdapter {
       )
 
       const txid = await wallet.sendTokens(receiver, 3)
-      console.log('txid: ', txid)
       const utxoInfo = {
         txid,
         vout: 1,
-        hdIndex: wallet.walletInfo.hdIndex,
+        hdIndex: keyPair.hdIndex,
         tokenType: tokenUtxos[0].tokenType
       }
 
       return utxoInfo
     } catch (err) {
-      console.error('Error in wallet.js/moveTokens()')
+      console.error('Error in wallet.js/moveTokensFromCustomWallet()')
       throw err
     }
   }
