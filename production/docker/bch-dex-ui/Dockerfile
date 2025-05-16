@@ -61,7 +61,6 @@ RUN git checkout ct-unstable
 RUN npm install
 
 # Build the site
-#RUN CI=true npm run build
 RUN npm run build
 
 # Load the NGINX image.
