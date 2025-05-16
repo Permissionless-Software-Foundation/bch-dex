@@ -46,11 +46,11 @@ WORKDIR /home/safeuser
 
 # Clone the rest.bitcoin.com repository
 WORKDIR /home/safeuser
-RUN git clone https://github.com/Permissionless-Software-Foundation/bch-dex-ui-v2
+RUN git clone https://github.com/Permissionless-Software-Foundation/bch-dex-ui-v3
 
 # Switch to the desired branch. `master` is usually stable,
 # and `stage` has the most up-to-date changes.
-WORKDIR /home/safeuser/bch-dex-ui-v2
+WORKDIR /home/safeuser/bch-dex-ui-v3
 
 # For development: switch to unstable branch
 RUN git checkout ct-unstable
@@ -61,13 +61,13 @@ RUN git checkout ct-unstable
 RUN npm install
 
 # Build the site
-RUN CI=true npm run build
+RUN npm run build
 
 # Load the NGINX image.
 FROM nginx
 EXPOSE 80
 
 # Copy the files built in the first container to the new NGINX container.
-COPY --from=builder /home/safeuser/bch-dex-ui-v2/build /usr/share/nginx/html
+COPY --from=builder /home/safeuser/bch-dex-ui-v3/build /usr/share/nginx/html
 
 #USER safeuser
