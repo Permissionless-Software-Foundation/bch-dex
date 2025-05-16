@@ -25,6 +25,7 @@ class OrderLib {
     // Encapsulate dependencies
     this.orderEntity = new OrderEntity()
     this.OrderModel = this.adapters.localdb.Order
+    this.UserModel = this.adapters.localdb.Users
     this.bch = this.adapters.bch
     this.config = config
     this.retryQueue = new RetryQueue({ retryPeriod: 1000, attempts: 3 })
@@ -43,8 +44,32 @@ class OrderLib {
 
       if (!entryObj.tokenId) throw new Error('entry does not contain required properties')
 
+      const user = await this.UserModel.findById(entryObj.userId)
+      if (!user) throw new Error('user not found')
+
+      console.log(`Using FullStack.cash: ${this.config.useFullStackCash}`)
+      const advancedConfig = {}
+      if (this.config.useFullStackCash) {
+        advancedConfig.interface = 'rest-api'
+        advancedConfig.restURL = this.config.apiServer
+        advancedConfig.apiToken = this.config.apiToken
+      } else {
+        advancedConfig.interface = 'consumer-api'
+        advancedConfig.restURL = this.config.consumerUrl
+      }
+
+      // Instantiate minimal-slp-wallet with the user's mnemonic.
+      const BchWallet = this.adapters.wallet.BchWallet
+      const userWallet = new BchWallet(user.mnemonic, advancedConfig)
+
+      // Wait for wallet to initialize.
+      await userWallet.walletInfoPromise
+      await userWallet.initialize()
+
       // Specify the address to send payment.
-      entryObj.makerAddr = this.adapters.wallet.bchWallet.walletInfo.cashAddress
+      console.log('userWallet.walletInfo: ', userWallet.walletInfo)
+      entryObj.makerAddr = userWallet.walletInfo.cashAddress
+      console.log('entryObj.makerAddr: ', entryObj.makerAddr)
       // console.log('entryObj.makerAddr: ', entryObj.makerAddr)
 
       // Input Validation
@@ -53,7 +78,8 @@ class OrderLib {
 
       // Optimize the wallet to speed up working with it.
       console.log('Optimizing wallet before creating new order.')
-      await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.optimize, {})
+      // await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.optimize, {})
+      await userWallet.optimize()
 
       // Ensure sufficient tokens exist to create the order.
       // await this.ensureFunds(orderEntity)
@@ -61,24 +87,26 @@ class OrderLib {
 
       // Get Ticker for token ID.
       // const tokenData = await this.adapters.wallet.bchWallet.getTxData([entryObj.tokenId])
-      const tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTxData, [entryObj.tokenId])
+      // const tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTxData, [entryObj.tokenId])
+      const tokenData = await userWallet.getTxData([entryObj.tokenId])
       // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
       orderEntity.ticker = tokenData[0].tokenTicker
 
       // Move the tokens to holding address.
       const moveObj = {
         tokenId: orderEntity.tokenId,
-        qty: orderEntity.numTokens
+        qty: orderEntity.numTokens,
+        wallet: userWallet
       }
       // const utxoInfo = await this.adapters.wallet.moveTokens(moveObj)
-      const utxoInfo = await this.retryQueue.addToQueue(this.adapters.wallet.moveTokens, moveObj)
+      const utxoInfo = await this.retryQueue.addToQueue(this.adapters.wallet.moveTokensFromCustomWallet, moveObj)
       // console.log('utxoInfo: ', utxoInfo)
 
       // Update the UTXO store for the wallet.
-      await this.adapters.wallet.bchWallet.bchjs.Util.sleep(3000)
+      await userWallet.bchjs.Util.sleep(3000)
       // await this.adapters.wallet.bchWallet.getUtxos()
-      await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.initialize, {})
-
+      // await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.initialize, {})
+      await userWallet.initialize()
       // Update the order with the new UTXO information.
       orderEntity.utxoTxid = utxoInfo.txid
       orderEntity.utxoVout = utxoInfo.vout
@@ -159,7 +187,7 @@ class OrderLib {
           )
         }
 
-      //
+        //
       } else {
         // Buy Order
         throw new Error('Buy orders are not supported yet.')
@@ -286,11 +314,11 @@ class OrderLib {
     try {
       const data = await this.OrderModel.find({})
 
-      // Sort entries so newest entries show first.
+        // Sort entries so newest entries show first.
         .sort('-timestamp')
-      // Skip to the start of the selected page.
+        // Skip to the start of the selected page.
         .skip(page * DEFAULT_ENTRIES_PER_PAGE)
-      // Only return 20 results.
+        // Only return 20 results.
         .limit(DEFAULT_ENTRIES_PER_PAGE)
 
       return data

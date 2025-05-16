@@ -35,6 +35,8 @@ class OrderRESTControllerLib {
       // console.log('body: ', ctx.request.body)
 
       const orderObj = ctx.request.body.order
+      const user = ctx.state.user
+      orderObj.userId = user._id
       console.log('orderObj: ', orderObj)
 
       const { eventId, noteId } = await _this.useCases.order.createOrder(orderObj)

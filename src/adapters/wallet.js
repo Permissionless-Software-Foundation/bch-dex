@@ -1,5 +1,7 @@
 /*
   Adapter library for working with a wallet.
+  This library is specific to bch-dex. The other wallet adapter library is
+  inherited from ipfs-service-provider.
 */
 
 // Public npm libraries
@@ -41,7 +43,18 @@ class WalletAdapter {
     })
 
     // Bind the 'this' object
+    this.openWallet = this.openWallet.bind(this)
+    this.instanceWallet = this.instanceWallet.bind(this)
+    this.incrementNextAddress = this.incrementNextAddress.bind(this)
+    this.getKeyPair = this.getKeyPair.bind(this)
+    this.generateSignature = this.generateSignature.bind(this)
+    this.generatePartialTx = this.generatePartialTx.bind(this)
     this.moveTokens = this.moveTokens.bind(this)
+    this.moveBch = this.moveBch.bind(this)
+    this.deseralizeTx = this.deseralizeTx.bind(this)
+    this.completeTx = this.completeTx.bind(this)
+    this.reclaimTokens = this.reclaimTokens.bind(this)
+    this.moveTokensFromCustomWallet = this.moveTokensFromCustomWallet.bind(this)
   }
 
   // Open the wallet file, or create one if the file doesn't exist.
@@ -349,7 +362,7 @@ class WalletAdapter {
       throw err
     }
 
-  // return true
+    // return true
   }
 
   // Move tokens to an address controlled by the HD wallet, to generate a
@@ -454,7 +467,15 @@ class WalletAdapter {
   // then broadcasting the transaction to the network.
   async completeTx (hex, hdIndex) {
     try {
+      // Input validation
+      if (!hex || typeof hex !== 'string') {
+        throw new Error('hex must be a string!')
+      }
+      if (typeof hdIndex !== 'number' || hdIndex < 0) {
+        throw new Error('hdIndex must be a non-negative number!')
+      }
       // console.log('hex: ', hex)
+      console.log('completeTx() hdIndex: ', hdIndex)
 
       const bchjs = this.bchWallet.bchjs
 
@@ -478,6 +499,8 @@ class WalletAdapter {
       //   csTransaction,
       //   'mainnet'
       // )
+
+      console.log('completeTx() this.walletInfo: ', this.walletInfo)
 
       // Get the keypair for the address used in the Order
       const keyPair = await this.getKeyPair(hdIndex)
@@ -560,6 +583,57 @@ class WalletAdapter {
       return txid
     } catch (err) {
       console.error('Error in wallet.js/reclaimTokens()')
+      throw err
+    }
+  }
+
+  async moveTokensFromCustomWallet (inObj = {}) {
+    try {
+      const { tokenId, qty, wallet } = inObj
+      // Input validation
+      if (!tokenId || typeof tokenId !== 'string') {
+        throw new Error('tokenId must be a string!')
+      }
+      if (!qty) {
+        throw new Error('qty must be a number!')
+      }
+      if (!wallet) {
+        throw new Error('wallet is required!')
+      }
+
+      const keyPair = await this.getKeyPair()
+      console.log('keyPair: ', keyPair)
+
+      const receiver = {
+        address: keyPair.cashAddress,
+        tokenId,
+        qty
+      }
+      console.log('receiver: ', receiver)
+
+      // Update the UTXO store of the wallet.
+      await wallet.initialize()
+
+      // Get the token type of the token being moved.
+      // Combine Fungible and NFT token UTXOs.
+      let tokenUtxos = wallet.utxos.utxoStore.slpUtxos.type1.tokens.concat(
+        wallet.utxos.utxoStore.slpUtxos.nft.tokens)
+      // Get token UTXOs that match the token in the order.
+      tokenUtxos = tokenUtxos.filter(
+        x => x.tokenId === tokenId
+      )
+
+      const txid = await wallet.sendTokens(receiver, 3)
+      const utxoInfo = {
+        txid,
+        vout: 1,
+        hdIndex: keyPair.hdIndex,
+        tokenType: tokenUtxos[0].tokenType
+      }
+
+      return utxoInfo
+    } catch (err) {
+      console.error('Error in wallet.js/moveTokensFromCustomWallet()')
       throw err
     }
   }

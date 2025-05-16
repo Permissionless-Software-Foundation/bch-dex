@@ -150,7 +150,9 @@ const wallet = {
     return { cashAddress: 'fakeAddr', wif: 'fakeWif', hdIndex: 1 }
   },
   bchWallet: new MockBchWallet(),
+  BchWallet: MockBchWallet,
   moveTokens: async () => {},
+  moveTokensFromCustomWallet: async () => {},
   moveBch: async () => {},
   reclaimTokens: async ()=>{},
   generatePartialTx: async ()=>{},

@@ -31,7 +31,12 @@ services:
       - mongo-dex
       #- p2wdb
     ports:
-      - '5700:5700' # <host port>:<container port>
+      # <host port>:<container port>
+      - '5700:5700' # REST API
+      - '4001:4001' # TCP
+      - '4003:4003' # Websockets
+      - '4005:4005' # WebRTC
+
     volumes:
       - ../scripts/wallet.json:/home/safeuser/bch-dex/wallet.json
       - ./bch-dex/start-production.sh:/home/safeuser/bch-dex/start-production.sh
