@@ -1,0 +1,11 @@
+{
+  "privateKey": "L4VyBDiWYYeeZhkM3xE3nsZigXJYmvRM29YBxoC7da4FzvubjxFo",
+  "publicKey": "028d6c77d865e6140db4b879a9bdf69ee4846593c0b6c48a82c448d5792806aab1",
+  "mnemonic": "split title trigger soda execute frost brush labor vague protect bicycle fiscal",
+  "cashAddress": "bitcoincash:qprrdk7en7m774gsafkycxcymc9ry209jus5v8wx5z",
+  "address": "bitcoincash:qprrdk7en7m774gsafkycxcymc9ry209jus5v8wx5z",
+  "legacyAddress": "17QG25rNUfnfj2NtdaFiyiqKSJatvEnMYd",
+  "hdPath": "m/44'/245'/0'/0/0",
+  "slpAddress": "simpleledger:qprrdk7en7m774gsafkycxcymc9ry209juu08umx2u",
+  "nextAddress": 1
+}

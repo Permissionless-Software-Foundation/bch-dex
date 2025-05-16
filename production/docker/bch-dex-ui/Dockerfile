@@ -53,7 +53,7 @@ RUN git clone https://github.com/Permissionless-Software-Foundation/bch-dex-ui-v
 WORKDIR /home/safeuser/bch-dex-ui-v3
 
 # For development: switch to unstable branch
-RUN git checkout fullstack
+RUN git checkout ct-unstable
 
 # Install dependencies
 #RUN mkdir .ipfsdata
@@ -61,7 +61,8 @@ RUN git checkout fullstack
 RUN npm install
 
 # Build the site
-RUN CI=true npm run build
+#RUN CI=true npm run build
+RUN npm run build
 
 # Load the NGINX image.
 FROM nginx
