@@ -184,7 +184,7 @@ export default {
   // Nostr
   nostrRelay: process.env.NOSTR_RELAY ? process.env.NOSTR_RELAY : 'wss://nostr-relay.psfoundation.info',
   nostrTopic: process.env.NOSTR_TOPIC ? process.env.NOSTR_TOPIC : 'bch-dex-test-topic-01',
-  
+
   // Account Configuration
   disableNewAccounts: process.env.DISABLE_NEW_ACCOUNTS ? true : false,
 
