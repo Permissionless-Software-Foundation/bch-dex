@@ -75,12 +75,12 @@ class UserRouter {
   }
 
   async getAll (ctx, next) {
-    await _this.validators.ensureUser(ctx, next)
+    await _this.validators.ensureAdmin(ctx, next)
     await _this.userRESTController.getUsers(ctx, next)
   }
 
   async getById (ctx, next) {
-    await _this.validators.ensureUser(ctx, next)
+    await _this.validators.ensureTargetUserOrAdmin(ctx, next)
     await _this.userRESTController.getUser(ctx, next)
   }
 
