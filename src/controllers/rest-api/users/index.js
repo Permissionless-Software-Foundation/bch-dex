@@ -10,6 +10,8 @@ import UserRESTControllerLib from './controller.js'
 
 import Validators from '../middleware/validators.js'
 
+import config from '../../../../config/index.js'
+
 let _this
 
 class UserRouter {
@@ -34,6 +36,7 @@ class UserRouter {
     }
 
     // Encapsulate dependencies.
+    this.config = config
     this.userRESTController = new UserRESTControllerLib(dependencies)
     this.validators = new Validators()
 
@@ -52,7 +55,7 @@ class UserRouter {
     }
 
     // Define the routes and attach the controller.
-    this.router.post('/', this.userRESTController.createUser)
+    this.router.post('/', this.createUser)
     this.router.get('/', this.getAll)
     this.router.get('/:id', this.getById)
     this.router.put('/:id', this.updateUser)
@@ -63,13 +66,21 @@ class UserRouter {
     app.use(this.router.allowedMethods())
   }
 
+  async createUser (ctx, next) {
+    if (process.env.DISABLE_NEW_ACCOUNTS) {
+      await _this.validators.ensureAdmin(ctx, next)
+    }
+    await _this.userRESTController.createUser(ctx, next)
+    return true
+  }
+
   async getAll (ctx, next) {
-    await _this.validators.ensureUser(ctx, next)
+    await _this.validators.ensureAdmin(ctx, next)
     await _this.userRESTController.getUsers(ctx, next)
   }
 
   async getById (ctx, next) {
-    await _this.validators.ensureUser(ctx, next)
+    await _this.validators.ensureTargetUserOrAdmin(ctx, next)
     await _this.userRESTController.getUser(ctx, next)
   }
 
