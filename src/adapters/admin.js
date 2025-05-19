@@ -56,7 +56,8 @@ class Admin {
         email: 'system@system.com',
         name: 'admin',
         password: _this.config.adminPassword || _this._randomString(20),
-        type: 'admin'
+        type: 'admin',
+        mnemonic: 'spread ivory oval pioneer flash gap merit nerve simple image entire trouble'
       }
       // Check if the user already exists
       let adminUser = await _this.User.findOne({ email: context.email })
