@@ -12,8 +12,8 @@ import fs from 'fs'
 // import User from '../../../src/adapters/localdb/models/users.js'
 
 // Customize these variables
-const EMAIL = 'someone@somewhere.com'
-const NAME = 'Someone'
+const EMAIL = 'test@test.com'
+const NAME = 'tester'
 const PASSWORD = 'test'
 
 async function createUser () {
