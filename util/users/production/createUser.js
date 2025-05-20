@@ -11,12 +11,12 @@ import axios from 'axios'
 // import User from '../../../src/adapters/localdb/models/users.js'
 
 // Customize these variables
-const EMAIL = 'someone@somewhere.com'
-const NAME = 'Someone'
-const PASSWORD = 'test'
+const EMAIL = 'chris.troutner@gmail.com'
+const NAME = 'Chris'
+const PASSWORD = '0mega16'
 
 const ADMIN_EMAIL = 'system@system.com'
-const ADMIN_PASSWORD = 'admin'
+const ADMIN_PASSWORD = 'decatur'
 
 async function createUser () {
   try {

@@ -31,4 +31,7 @@ export APP_ID=bch-dex-001
 
 #export P2WDB_URL=http://172.17.0.1:5667
 
+export DISABLE_NEW_ACCOUNTS=true
+export ADMIN_PASSWORD=decatur
+
 npm start
