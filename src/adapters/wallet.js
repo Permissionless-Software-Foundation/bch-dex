@@ -465,7 +465,7 @@ class WalletAdapter {
 
   // Complete the partially signed transaction by signing the first input,
   // then broadcasting the transaction to the network.
-  async completeTx (hex, hdIndex) {
+  async completeTx (hex, hdIndex, mnemonic) {
     try {
       // Input validation
       if (!hex || typeof hex !== 'string') {
@@ -474,10 +474,17 @@ class WalletAdapter {
       if (typeof hdIndex !== 'number' || hdIndex < 0) {
         throw new Error('hdIndex must be a non-negative number!')
       }
+      if (!mnemonic || typeof mnemonic !== 'string') {
+        throw new Error('mnemonic must be a string!')
+      }
       // console.log('hex: ', hex)
       console.log('completeTx() hdIndex: ', hdIndex)
+      console.log('completeTx() mnemonic: ', mnemonic)
 
-      const bchjs = this.bchWallet.bchjs
+      // Instantiate the user wallet
+      const userWallet = await this.instanceWallet({ mnemonic })
+
+      const bchjs = userWallet.bchjs
 
       // instance of transaction builder
       // const transactionBuilder = new bchjs.TransactionBuilder()
@@ -500,10 +507,10 @@ class WalletAdapter {
       //   'mainnet'
       // )
 
-      console.log('completeTx() this.walletInfo: ', this.walletInfo)
+      console.log('completeTx() userWallet.walletInfo: ', userWallet.walletInfo)
 
       // Get the keypair for the address used in the Order
-      const keyPair = await this.getKeyPair(hdIndex)
+      const keyPair = await userWallet.getKeyPair(hdIndex)
       console.log(`maker keyPair: ${JSON.stringify(keyPair, null, 2)}`)
       const makerECPair = bchjs.ECPair.fromWIF(keyPair.wif)
 

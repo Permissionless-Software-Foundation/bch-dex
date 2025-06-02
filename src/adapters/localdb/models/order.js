@@ -41,7 +41,9 @@ const Order = new mongoose.Schema({
   nostrEventId: { type: String, required: true }, // Nostr Event Id.
 
   // Additional properties found in createOrder
-  dataType: { type: String, required: true }
+  dataType: { type: String, required: true },
+
+  userId: { type: String, required: true }
 })
 
 export default mongoose.model('order', Order)
