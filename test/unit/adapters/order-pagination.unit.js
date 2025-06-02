@@ -55,7 +55,8 @@ describe('#OrderPagination', () => {
       rateInBaseUnit: 'rateInBaseUnit',
       minUnitsToExchange: 'minUnitsToExchange',
       ticker: 'ticker',
-      tokenType: 1
+      tokenType: 1,
+      userId: 'userId'
     })
     await order.save()
   })
