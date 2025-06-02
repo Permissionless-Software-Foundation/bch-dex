@@ -102,7 +102,7 @@ describe('#wallet', () => {
   })
   describe('#completeTx', () => {
     // TODO: This test needs to be refactored to use the new instanceWallet() method for loading the user wallet.
-    
+
     // it('should complete a transaction', async () => {
     //   sandbox.stub(uut, 'getKeyPair').resolves({
     //     cashAddress: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
