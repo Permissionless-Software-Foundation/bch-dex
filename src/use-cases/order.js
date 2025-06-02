@@ -114,6 +114,7 @@ class OrderLib {
 
       // Add P2WDB specific flag for signaling that this is a new offer.
       orderEntity.dataType = 'offer'
+      orderEntity.userId = user._id
 
       // Post the new Order information to Nostr under the topic set in the
       // config file.
