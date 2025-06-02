@@ -43,6 +43,7 @@ describe('#wallet', () => {
       })
 
       const customWallet = new MockBchWallet()
+      customWallet.getKeyPair = () => { return { cashAddress: 'cashAddress', wif: 'wif', hdIndex: 11 } }
       customWallet.sendTokens = () => { return 'move token tx id result' }
       customWallet.utxos.utxoStore.slpUtxos.type1.tokens = [
         {

@@ -161,10 +161,9 @@ class WalletAdapter {
     }
   }
 
+  // Note: This method uses the system wallet, not the user or admin wallet.
   // This method returns an object that contains a private key WIF, public address,
   // and the index of the HD wallet that the key pair was generated from.
-  // TODO: Allow input integer. If input is used, use that as the index. If no
-  // input is provided, then call incrementNextAddress().
   async getKeyPair (hdIndex = 0) {
     try {
       if (!hdIndex) {
@@ -173,6 +172,7 @@ class WalletAdapter {
       }
 
       const mnemonic = this.bchWallet.walletInfo.mnemonic
+      console.log(`getKeyPair() for HD index: ${hdIndex} called on mnemonic: ${mnemonic}`)
 
       // root seed buffer
       const rootSeed = await this.bchWallet.bchjs.Mnemonic.toSeed(mnemonic)
@@ -587,6 +587,8 @@ class WalletAdapter {
     }
   }
 
+  // This function is consumed by the use-cases/order.js/createOrder() function.
+  // Tokens are moved from the primary address to a holding address to protect the Order UTXO.
   async moveTokensFromCustomWallet (inObj = {}) {
     try {
       const { tokenId, qty, wallet } = inObj
@@ -601,7 +603,13 @@ class WalletAdapter {
         throw new Error('wallet is required!')
       }
 
-      const keyPair = await this.getKeyPair()
+      // Replace the system wallet with the user wallet.
+      // this.bchWallet = wallet
+
+      // DEV Note: Storing all token Offers in index 2 of the HD wallet.
+      // This makes them easy to sweep, and can be uniquely identified by their UTXO.
+      // Note: use walle.getKeyPair() to use the user wallet. this.getKeyPair uses the system wallet.
+      const keyPair = await wallet.getKeyPair(2)
       console.log('keyPair: ', keyPair)
 
       const receiver = {
