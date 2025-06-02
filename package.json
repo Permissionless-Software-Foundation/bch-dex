@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "test": "npm run test:all",
+    "test": "npm run test:unit",
     "test:all": "export BCH_DEX=test && c8 --reporter=text mocha --exit --timeout 15000 --recursive test/unit test/e2e/automated/",
     "test:unit": "export BCH_DEX=test && mocha --exit --timeout 15000 --recursive test/unit/",
     "test:e2e:auto": "export BCH_DEX=test && mocha --exit --timeout 30000 test/e2e/automated/",

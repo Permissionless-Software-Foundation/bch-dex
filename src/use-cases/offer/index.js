@@ -607,8 +607,19 @@ class OfferUseCases {
         throw new Error(`The Counter Offer has an output address of ${addrInCounterOffer}, which does not match the Maker address of ${makerAddr} in the Offer.`)
       }
 
+      // Get the User ID from the Order model.
+      const userId = orderData.userId
+
+      // Get the User model from the database.
+      this.UserModel = this.adapters.localdb.Users
+      const user = await this.UserModel.findById(userId)
+      console.log('user: ', user)
+
+      // Get the HD index from the Order model.
+      const hdIndex = orderData.hdIndex
+
       // Sign and broadcast the transaction.
-      const txid = await this.adapters.wallet.completeTx(txHex, orderData.hdIndex)
+      const txid = await this.adapters.wallet.completeTx(txHex, hdIndex, user.mnemonic)
       console.log('txid: ', txid)
 
       return txid
