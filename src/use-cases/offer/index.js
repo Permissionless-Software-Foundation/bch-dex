@@ -537,7 +537,7 @@ class OfferUseCases {
         orderData = await this.orderUseCase.findOrderByUtxo(offerData)
         console.log(`orderData: ${JSON.stringify(orderData, null, 2)}`)
       } catch (err) {
-        console.log('Order matching this Counter Offer is not managed by this instance of bch-dex. Skipping.')
+        console.log('Order matching this Counter Offer is not managed by this instance of bch-dex. Skipping.\n')
 
         // Add order to list of seen orders, so that we don't spent time trying to validate it again.
         this.seenOffers.push(eventId)

@@ -233,7 +233,7 @@ class OrderLib {
       const order = await this.OrderModel.findOne({ utxoTxid: offerData.data.utxoTxid, utxoVout: offerData.data.utxoVout })
       // const order = await this.OrderModel.findOne({ utxoTxid: offerData.data.utxoTxid })
       // const order = await this.OrderModel.findOne({ tokenId: offerData.data.tokenId })
-      console.log('findOrderByUtxo() order: ', order)
+      console.log('\nfindOrderByUtxo() order: ', order)
 
       if (!order) {
         throw new Error('order not found')
@@ -247,7 +247,10 @@ class OrderLib {
 
       return orderObject
     } catch (err) {
-      console.error('Error in findOrderByUtxo(): ', err)
+      if (!err.message.toString().includes('order not found')) {
+        console.error('Error in findOrderByUtxo(): ', err)
+      }
+
       throw err
     }
   }
