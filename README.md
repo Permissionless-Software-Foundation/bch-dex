@@ -39,11 +39,14 @@ Setup instructions:
   - `node create-wallet.js`
 1. Change directory to the `production/docker` folder.
 1. Pull the Docker images down from Docker Hub: `docker-compose pull`
-1. Build the core software: `docker-compose build --no-cache`
+1. Build the back end: `docker-compose build --no-cache bch-dex`
+1. Build the front end: `docker-compose build --no-cache dex-ui`
 1. Start the Docker containers with `docker-compose up -d`
+  - It will take about 10 minutes for the bch-dex to sync with the network and display tokens for sale.
 1. Open a web browser and navigate the `http://localhost:4500`. You'll be able to see new Offers as they come in and are detected by bch-dex.
-1. To take the other side of the trade, click the `Take` button in the UI.
-1. You can add the 12-word mnemonic from the `wallet.json` file to the the web wallet, which will mirror your wallet in the UI, and allow you to perform basic wallet functions (send and receive BCH and tokens).
+1. You will be presented with a login screen. Click the sign-up tab, enter an email and password to create an account. This information is stored locally on bch-dex, it is not set to a third party.
+1. Once logged in, you can retrieve your BCH and SLP addresses, to fund your wallet.
+
 
 ## Blockchain Infrastructure
 
