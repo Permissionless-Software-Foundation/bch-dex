@@ -43,7 +43,7 @@ Setup instructions:
 - Build the front end: `docker-compose build --no-cache dex-ui`
 - Start the Docker containers with `docker-compose up -d`
   - It will take about 10 minutes for the bch-dex to sync with the network and display tokens for sale.
-- Open a web browser and navigate the `http://localhost:4500`. You'll be able to see new Offers as they come in and are detected by bch-dex.
+- Open a web browser and navigate to `http://localhost:4500`.
 - You will be presented with a login screen. Click the sign-up tab, enter an email and password to create an account. This information is stored locally on bch-dex, it is not set to a third party.
 - Once logged in, you can retrieve your BCH and SLP addresses, to fund your wallet.
 
@@ -51,6 +51,11 @@ Setup instructions:
 ## Blockchain Infrastructure
 
 bch-dex requires a [Cash Stack](https://cashstack.info) back end in order to connect to the blockchain. By default, the Docker containers connect to [free-bch.fullstack.cash](https://free-bch.fullstack.cash/). Several community-provided servers are provided and can be [viewed here](https://consumers.psfoundation.info/consumers.json). The back end can be changed by setting the `CONSUMER_URL` environment variable in the `docker-compose.yml` file.
+
+## Environment Variables
+
+- `DISABLE_NEW_ACCOUNTS` - If set, only the admin user can create new accounts. The sign-up tab becomes non-functional. Useful for controlling access to your instance of bch-dex.
+- `ADMIN_PASSWORD` - Sets the password for the admin user. This can be used with the [createUser.js script](/util/users/production/createUser.js) to add new users to the system, if the `DISABLE_NEW_ACCOUNTS` env var is set.
 
 ## License
 
