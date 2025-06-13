@@ -42,7 +42,7 @@ Setup instructions:
 1. Build the back end: `docker-compose build --no-cache bch-dex`
 1. Build the front end: `docker-compose build --no-cache dex-ui`
 1. Start the Docker containers with `docker-compose up -d`
-  - It will take about 10 minutes for the bch-dex to sync with the network and display tokens for sale.
+  1. It will take about 10 minutes for the bch-dex to sync with the network and display tokens for sale.
 1. Open a web browser and navigate the `http://localhost:4500`. You'll be able to see new Offers as they come in and are detected by bch-dex.
 1. You will be presented with a login screen. Click the sign-up tab, enter an email and password to create an account. This information is stored locally on bch-dex, it is not set to a third party.
 1. Once logged in, you can retrieve your BCH and SLP addresses, to fund your wallet.
