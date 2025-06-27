@@ -31,23 +31,31 @@ The above software is orchestrated using [Docker](https://www.docker.com/) and D
 
 Setup instructions:
 
-1. Follow the direction in [this Gist](https://gist.github.com/christroutner/a39f656850dc022b60f25c9663dd1cdd) to install Node.js, Docker, and Docker Compose.
-1. Clone the repository with `git clone https://github.com/Permissionless-Software-Foundation/bch-dex` and enter it with `cd bch-dex`.
-1. Install dependencies by running `npm install`
-1. Create a wallet:
+- Follow the direction in [this Gist](https://gist.github.com/christroutner/a39f656850dc022b60f25c9663dd1cdd) to install Node.js, Docker, and Docker Compose.
+- Clone the repository with `git clone https://github.com/Permissionless-Software-Foundation/bch-dex` and enter it with `cd bch-dex`.
+- Install dependencies by running `npm install`
+- Create a wallet:
   - `cd production/scripts`
   - `node create-wallet.js`
-1. Change directory to the `production/docker` folder.
-1. Pull the Docker images down from Docker Hub: `docker-compose pull`
-1. Build the core software: `docker-compose build --no-cache`
-1. Start the Docker containers with `docker-compose up -d`
-1. Open a web browser and navigate the `http://localhost:4500`. You'll be able to see new Offers as they come in and are detected by bch-dex.
-1. To take the other side of the trade, click the `Take` button in the UI.
-1. You can add the 12-word mnemonic from the `wallet.json` file to the the web wallet, which will mirror your wallet in the UI, and allow you to perform basic wallet functions (send and receive BCH and tokens).
+- Change directory to the `production/docker` folder.
+- Pull the Docker images down from Docker Hub: `docker-compose pull`
+- Build the back end: `docker-compose build --no-cache bch-dex`
+- Build the front end: `docker-compose build --no-cache dex-ui`
+- Start the Docker containers with `docker-compose up -d`
+  - It will take about 10 minutes for the bch-dex to sync with the network and display tokens for sale.
+- Open a web browser and navigate to `http://localhost:4500`.
+- You will be presented with a login screen. Click the sign-up tab, enter an email and password to create an account. This information is stored locally on bch-dex, it is not set to a third party.
+- Once logged in, you can retrieve your BCH and SLP addresses, to fund your wallet.
+
 
 ## Blockchain Infrastructure
 
 bch-dex requires a [Cash Stack](https://cashstack.info) back end in order to connect to the blockchain. By default, the Docker containers connect to [free-bch.fullstack.cash](https://free-bch.fullstack.cash/). Several community-provided servers are provided and can be [viewed here](https://consumers.psfoundation.info/consumers.json). The back end can be changed by setting the `CONSUMER_URL` environment variable in the `docker-compose.yml` file.
+
+## Environment Variables
+
+- `DISABLE_NEW_ACCOUNTS` - If set, only the admin user can create new accounts. The sign-up tab becomes non-functional. Useful for controlling access to your instance of bch-dex.
+- `ADMIN_PASSWORD` - Sets the password for the admin user. This can be used with the [createUser.js script](/util/users/production/createUser.js) to add new users to the system, if the `DISABLE_NEW_ACCOUNTS` env var is set.
 
 ## License
 
