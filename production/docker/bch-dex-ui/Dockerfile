@@ -70,4 +70,7 @@ EXPOSE 80
 # Copy the files built in the first container to the new NGINX container.
 COPY --from=builder /home/safeuser/bch-dex-ui-v3/build /usr/share/nginx/html
 
+# Copy the NGINX configuration file.
+COPY default.conf /etc/nginx/conf.d/default.conf
+
 #USER safeuser
