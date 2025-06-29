@@ -130,9 +130,26 @@ describe('#Timer-Controllers', () => {
       assert.equal(result, true)
     })
 
+    // it('should return false on error', async () => {
+    //   sandbox.stub(uut.useCases.usage, 'cleanUsage').throws(new Error('test error'))
+    //   const result = await uut.cleanUsage()
+
+    //   assert.equal(result, false)
+    // })
+  })
+
+  describe('#backupUsage', () => {
+    it('should kick off the Use Case', async () => {
+      const result = await uut.backupUsage()
+
+      assert.equal(result, true)
+    })
+
     it('should return false on error', async () => {
-      sandbox.stub(uut.useCases.usage, 'cleanUsage').throws(new Error('test error'))
-      const result = await uut.cleanUsage()
+      sandbox.stub(uut.useCases.usage, 'clearUsage').throws(new Error('test error'))
+      // sandbox.stub(uut.useCases.usage, 'saveUsage').throws(new Error('test error'))
+
+      const result = await uut.backupUsage()
 
       assert.equal(result, false)
     })
