@@ -31,7 +31,7 @@ describe('#server', () => {
       sandbox.stub(uut.controllers, 'attachControllers').resolves()
       sandbox.stub(uut, 'sleep').resolves()
       uut.config.env = 'dev'
-
+      uut.config.port = 5040
       const result = await uut.startServer()
       // console.log('result: ', result)
 

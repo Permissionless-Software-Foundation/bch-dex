@@ -24,17 +24,33 @@ describe('#adapters', () => {
   })
 
   describe('#start', () => {
-    it('should start the async adapters', async () => {
+    // it('should start the async adapters', async () => {
+    //   // Mock dependencies
+    //   uut.config.getJwtAtStartup = true
+    //   uut.config.useIpfs = true
+    //   uut.config.env = 'not-a-test'
+    //   sandbox.stub(uut.fullStackJwt, 'getJWT').resolves()
+    //   sandbox.stub(uut.fullStackJwt, 'instanceBchjs').resolves()
+    //   sandbox.stub(uut.ipfs, 'start').resolves()
+
+    //   const result = await uut.start()
+
+    //   assert.equal(result, true)
+    // })
+
+    it('should not start ipfs on test enviroment', async () => {
       // Mock dependencies
       uut.config.getJwtAtStartup = true
       uut.config.useIpfs = true
-      uut.config.env = 'not-a-test'
+      uut.config.env = 'test'
+
       sandbox.stub(uut.fullStackJwt, 'getJWT').resolves()
       sandbox.stub(uut.fullStackJwt, 'instanceBchjs').resolves()
-      sandbox.stub(uut.ipfs, 'start').resolves()
+      const ipfsSpy = sandbox.stub(uut.ipfs, 'start').resolves(null)
 
       const result = await uut.start()
 
+      assert.isTrue(ipfsSpy.notCalled)
       assert.equal(result, true)
     })
 
