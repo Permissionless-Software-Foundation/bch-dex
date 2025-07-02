@@ -9,7 +9,8 @@ import mongoose from 'mongoose'
 
 const SmAccount = new mongoose.Schema({
   npub: { type: String, required: true },
-  bch: { type: String, required: true, default: '' }
+  bchAddr: { type: String, required: true, default: '' },
+  pubkey: { type: String, required: true }
 })
 
 export default mongoose.model('smAccount', SmAccount)
