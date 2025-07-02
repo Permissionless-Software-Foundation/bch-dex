@@ -10,7 +10,16 @@ import mongoose from 'mongoose'
 const SmAccount = new mongoose.Schema({
   npub: { type: String, required: true },
   bchAddr: { type: String, required: true, default: '' },
-  pubkey: { type: String, required: true }
+  pubkey: { type: String, required: true },
+  pfp: { type: String, default: '' },
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
+  followers: { type: Number, default: 0 },
+  following: { type: Number, default: 0 },
+  posts: { type: Number, default: 0 },
+  likes: { type: Number, default: 0 },
+  comments: { type: Number, default: 0 },
+  reposts: { type: Number, default: 0 }
 })
 
 export default mongoose.model('smAccount', SmAccount)

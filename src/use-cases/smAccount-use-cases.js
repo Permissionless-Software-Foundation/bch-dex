@@ -16,6 +16,7 @@ class smAccountUseCases {
 
     // Bind 'this' object to all methods
     this.checkForNewSmAccounts = this.checkForNewSmAccounts.bind(this)
+    this.listAccounts = this.listAccounts.bind(this)
   }
 
   // Check for new Social Media Accounts.
@@ -57,6 +58,18 @@ class smAccountUseCases {
       return true
     } catch (err) {
       console.error('Error in smAccount-use-cases.js/checkForNewSmAccounts(): ', err)
+      throw err
+    }
+  }
+
+  // List all Social Media Accounts.
+  async listAccounts (page = 0) {
+    try {
+      const SmAccount = await this.adapters.localdb.SmAccount
+      const accounts = await SmAccount.find({}).skip(page * 10).limit(10)
+      return accounts
+    } catch (err) {
+      console.error('Error in smAccount-use-cases.js/listAccounts(): ', err)
       throw err
     }
   }
