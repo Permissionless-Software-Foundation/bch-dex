@@ -26,6 +26,7 @@ class TimerControllers {
     // Constants
     this.cleanUsageInterval = 60000 * 60 // 1 hour
     this.backupUsageInterval = 60000 * 10 // 10 minutes
+    this.newSmAccountsInterval = 60000 * 60 // 60 minutes
 
     // Encapsulate dependencies
     this.config = config
@@ -36,17 +37,16 @@ class TimerControllers {
     this.gcOffers = this.gcOffers.bind(this)
     this.checkDupOffers = this.checkDupOffers.bind(this)
     this.loadOffers = this.loadOffers.bind(this)
-    // Bind 'this' object to all subfunctions.
-    // this.exampleTimerFunc = this.exampleTimerFunc.bind(this)
     this.cleanUsage = this.cleanUsage.bind(this)
+    this.backupUsage = this.backupUsage.bind(this)
+    this.newSmAccounts = this.newSmAccounts.bind(this)
 
     // State
     this.gcOrdersInt = null
     this.gcOffersInt = null
     this.checkDupOffersInt = null
     this.loadOffersInt = null
-    this.cleanUsage = this.cleanUsage.bind(this)
-    this.backupUsage = this.backupUsage.bind(this)
+    this.newSmAccountsInt = null
   }
 
   // Start all the time-based controllers.
@@ -55,10 +55,9 @@ class TimerControllers {
     this.gcOffersInt = setInterval(this.gcOffers, 60000 * 5)
     // this.checkDupOffersInt = setInterval(this.checkDupOffers, 60000 * 4.5)
     this.loadOffersInt = setInterval(this.loadOffers, 60000 * 2)
-    // Any new timer control functions can be added here. They will be started
-    // when the server starts.
     this.cleanUsageHandle = setInterval(this.cleanUsage, this.cleanUsageInterval)
     this.backupUsageHandle = setInterval(this.backupUsage, this.backupUsageInterval)
+    this.newSmAccountsInt = setInterval(this.newSmAccounts, this.newSmAccountsInterval)
 
     return true
   }
@@ -70,6 +69,7 @@ class TimerControllers {
     clearInterval(this.optimizeWalletHandle)
     clearInterval(this.cleanUsageHandle)
     clearInterval(this.backupUsageHandle)
+    clearInterval(this.newSmAccountsInt)
   }
 
   // Garbage Collect the Orders.
@@ -160,6 +160,19 @@ class TimerControllers {
       console.error('Error in time-controller.js/backupUsage(): ', err)
 
       this.backupUsageHandle = setInterval(this.backupUsage, this.backupUsageInterval)
+
+      // Note: Do not throw an error. This is a top-level function.
+      return false
+    }
+  }
+
+  // Check for new Social Media Accounts.
+  async newSmAccounts () {
+    try {
+      await this.useCases.smAccount.checkForNewSmAccounts()
+      return true
+    } catch (err) {
+      console.error('Error in time-controller.js/newSmAccounts(): ', err)
 
       // Note: Do not throw an error. This is a top-level function.
       return false

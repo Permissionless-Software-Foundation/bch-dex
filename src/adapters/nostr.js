@@ -12,6 +12,7 @@ class NostrAdapter {
   constructor (localConfig = { nostrRelay: '', nostrTopic: '' }) {
     this.relayWs = localConfig.nostrRelay //
     this.topic = localConfig.nostrTopic
+    this.globalFeed = localConfig.nostrGlobalFeed
 
     if (!this.relayWs) {
       throw new Error(
@@ -39,6 +40,8 @@ class NostrAdapter {
     this.post = this.post.bind(this)
     this.read = this.read.bind(this)
     this.eventId2note = this.eventId2note.bind(this)
+    this.pubkey2npub = this.pubkey2npub.bind(this)
+    this.readGlobalFeed = this.readGlobalFeed.bind(this)
   }
 
   // Create nostr keys.
@@ -130,6 +133,62 @@ class NostrAdapter {
   // This can be used to generate a link to Astral to display the post.
   eventId2note (eventId) {
     return nip19.noteEncode(eventId)
+  }
+
+  // Convert a pubkey into a `npubabc..` syntax that Astral expects.
+  pubkey2npub (pubkey) {
+    return nip19.npubEncode(pubkey)
+  }
+
+  // Read the global feed.
+  async readGlobalFeed (inObj = {}) {
+    try {
+      const { limit = 10 } = inObj
+
+      if (typeof limit !== 'number' || limit < 1) {
+        throw new Error('Limit must be greater than 0')
+      }
+
+      const relays = [this.relayWs]
+      const pool = this.RelayPool(relays)
+
+      const nostrData = new Promise((resolve, reject) => {
+        const messages = []
+
+        pool.on('open', (relay) => {
+          // relay.subscribe('REQ', { ids: [eventId] })
+          relay.subscribe('REQ', { limit, kinds: [1], '#t': [this.globalFeed] })
+        })
+
+        pool.on('eose', (relay) => {
+          relay.close()
+          resolve(messages)
+        })
+
+        pool.on('event', (relay, subId, ev) => {
+          // console.log('ev: ', ev)
+
+          const { content, id, tags, pubkey } = ev
+
+          const msg = {
+            content,
+            id,
+            tags,
+            npub: this.pubkey2npub(pubkey),
+            pubkey
+          }
+
+          messages.push(msg)
+        })
+      })
+
+      const messages = await nostrData
+
+      return messages
+    } catch (error) {
+      console.log(`Error in nostr.js/readGlobalFeed() ${error.message} `)
+      throw error
+    }
   }
 }
 
