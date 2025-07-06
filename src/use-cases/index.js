@@ -10,6 +10,7 @@ import EntryUseCases from './entry.js'
 import OfferUseCases from './offer/index.js'
 import OrderUseCases from './order.js'
 import { UsageUseCases } from './usage-use-cases.js'
+import SmAccountUseCases from './smAccount-use-cases.js'
 
 class UseCases {
   constructor (localConfig = {}) {
@@ -27,10 +28,14 @@ class UseCases {
     localConfig.order = this.order
     this.offer = new OfferUseCases(localConfig)
     this.usage = new UsageUseCases(localConfig)
+    this.smAccount = new SmAccountUseCases(localConfig)
   }
 
   // Run any startup Use Cases at the start of the app.
   async start () {
+    // Load the usage stats from the database
+    await this.usage.loadUsage()
+
     console.log('Async Use Cases have been started.')
 
     return true

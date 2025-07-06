@@ -79,4 +79,73 @@ describe('#Users-REST-Router', () => {
       }
     })
   })
+
+  describe('#createUser', () => {
+    it('should ignore admin validator when DISABLE_NEW_ACCOUNTS is not defined', async () => {
+      // Stub functions
+      const validationSpy = sandbox.stub(uut.validators, 'ensureAdmin').resolves(true)
+      sandbox.stub(uut.userRESTController, 'createUser').resolves(true)
+
+      // Call function
+      await uut.createUser()
+
+      // Assertions
+      assert.isTrue(validationSpy.notCalled, 'Admin validator should not be called')
+    })
+    it('should ensure admin when DISABLE_NEW_ACCOUNTS is defined', async () => {
+      // Set environment variable
+      process.env.DISABLE_NEW_ACCOUNTS = true
+
+      // Stub functions
+      const validationSpy = sandbox.stub(uut.validators, 'ensureAdmin').resolves(true)
+      sandbox.stub(uut.userRESTController, 'createUser').resolves(true)
+
+      // Call function
+      await uut.createUser()
+
+      // Assertions
+      assert.isTrue(validationSpy.calledOnce, 'Admin validator should be called')
+    })
+  })
+
+  // describe('#getAll', () => {
+  //   it('should route to controller', async () => {
+  //     sandbox.stub(uut.validators, 'ensureUser').resolves(true)
+  //     const spy = sandbox.stub(uut.userRESTController, 'getUsers').resolves(true)
+
+  //     await uut.getAll()
+  //     assert.isTrue(spy.calledOnce)
+  //   })
+  // })
+
+  // describe('#getById', () => {
+  //   it('should route to controller', async () => {
+  //     sandbox.stub(uut.validators, 'ensureUser').resolves(true)
+  //     const spy = sandbox.stub(uut.userRESTController, 'getUser').resolves(true)
+
+  //     await uut.getById()
+  //     assert.isTrue(spy.calledOnce)
+  //   })
+  // })
+
+  describe('#updateUser', () => {
+    it('should route to controller', async () => {
+      sandbox.stub(uut.validators, 'ensureTargetUserOrAdmin').resolves(true)
+      sandbox.stub(uut.userRESTController, 'getUser').resolves(true)
+      const spy = sandbox.stub(uut.userRESTController, 'updateUser').resolves(true)
+
+      await uut.updateUser()
+      assert.isTrue(spy.calledOnce)
+    })
+  })
+  describe('#deleteUser', () => {
+    it('should route to controller', async () => {
+      sandbox.stub(uut.validators, 'ensureTargetUserOrAdmin').resolves(true)
+      sandbox.stub(uut.userRESTController, 'getUser').resolves(true)
+      const spy = sandbox.stub(uut.userRESTController, 'deleteUser').resolves(true)
+
+      await uut.deleteUser()
+      assert.isTrue(spy.calledOnce)
+    })
+  })
 })

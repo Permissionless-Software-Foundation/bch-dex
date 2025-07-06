@@ -47,7 +47,8 @@ export default {
   useFullStackCash: process.env.USE_FULLSTACKCASH ? true : false,
   consumerUrl: process.env.CONSUMER_URL
     ? process.env.CONSUMER_URL
-    : 'https://free-bch.fullstack.cash',
+    // : 'https://free-bch.fullstack.cash',
+    : 'https://dev-consumer.psfoundation.info',
   // : 'https://wa-usa-bch-consumer.fullstackcash.nl',
 
   // P2WDB URL that will accept API calls from the p2wdb npm library.
@@ -184,6 +185,7 @@ export default {
   // Nostr
   nostrRelay: process.env.NOSTR_RELAY ? process.env.NOSTR_RELAY : 'wss://nostr-relay.psfoundation.info',
   nostrTopic: process.env.NOSTR_TOPIC ? process.env.NOSTR_TOPIC : 'bch-dex-test-topic-02',
+  nostrGlobalFeed: process.env.NOSTR_GLOBAL_FEED ? process.env.NOSTR_GLOBAL_FEED : 'slpdex-socialmedia',
 
   // Account Configuration
   disableNewAccounts: process.env.DISABLE_NEW_ACCOUNTS ? true : false,
