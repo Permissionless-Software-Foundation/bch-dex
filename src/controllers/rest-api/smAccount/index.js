@@ -53,6 +53,8 @@ class SmAccountRouter {
 
     // Define the routes and attach the controller.
     this.router.get('/list/all/:page', _this.smAccountRESTController.listAccounts)
+    this.router.get('/npub/:npub', _this.smAccountRESTController.getAccountByNpub)
+    this.router.get('/bchAddr/:bchAddr', _this.smAccountRESTController.getAccountByBchAddr)
 
     // Attach the Controller routes to the Koa app.
     app.use(_this.router.routes())
