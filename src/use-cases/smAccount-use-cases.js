@@ -17,6 +17,8 @@ class smAccountUseCases {
     // Bind 'this' object to all methods
     this.checkForNewSmAccounts = this.checkForNewSmAccounts.bind(this)
     this.listAccounts = this.listAccounts.bind(this)
+    this.getAccountByNpub = this.getAccountByNpub.bind(this)
+    this.getAccountByBchAddr = this.getAccountByBchAddr.bind(this)
   }
 
   // Check for new Social Media Accounts.
@@ -70,6 +72,32 @@ class smAccountUseCases {
       return accounts
     } catch (err) {
       console.error('Error in smAccount-use-cases.js/listAccounts(): ', err)
+      throw err
+    }
+  }
+
+  // Get a Social Media Account by Npub.
+  async getAccountByNpub (npub) {
+    try {
+      const SmAccount = await this.adapters.localdb.SmAccount
+      const account = await SmAccount.findOne({ npub })
+      return account
+    } catch (err) {
+      console.error('Error in smAccount-use-cases.js/getAccountByNpub(): ', err)
+      throw err
+    }
+  }
+
+  // Get a Social Media Account by BCH address.
+  async getAccountByBchAddr (bchAddr) {
+    try {
+      const SmAccount = await this.adapters.localdb.SmAccount
+      const account = await SmAccount.findOne({ bchAddr })
+      console.log('Account found: ', account)
+
+      return account
+    } catch (err) {
+      console.error('Error in smAccount-use-cases.js/getAccountByBchAddr(): ', err)
       throw err
     }
   }
