@@ -19,6 +19,7 @@ class smAccountUseCases {
     this.listAccounts = this.listAccounts.bind(this)
     this.getAccountByNpub = this.getAccountByNpub.bind(this)
     this.getAccountByBchAddr = this.getAccountByBchAddr.bind(this)
+    this.updateSmAccounts = this.updateSmAccounts.bind(this)
   }
 
   // Check for new Social Media Accounts.
@@ -98,6 +99,31 @@ class smAccountUseCases {
       return account
     } catch (err) {
       console.error('Error in smAccount-use-cases.js/getAccountByBchAddr(): ', err)
+      throw err
+    }
+  }
+
+  // Update metadata about social media accounts being tracked.
+  async updateSmAccounts () {
+    try {
+      console.log('Updating Social Media Accounts...')
+      const SmAccount = await this.adapters.localdb.SmAccount
+      const accounts = await SmAccount.find({})
+      for (let i = 0; i < accounts.length; i++) {
+        const account = accounts[i]
+        // console.log(`Account ${i}: `, account)
+
+        // Get the number of accounts following this account
+        const pubkey = account.pubkey
+        const followList = await this.adapters.nostr.getFollowers({ pubkey })
+        // console.log(`Follow list ${i}: `, JSON.stringify(followList, null, 2))
+
+        // Update the follower count for this account.
+        const followerCnt = followList.length
+        await SmAccount.updateOne({ _id: account._id }, { $set: { followerCnt } })
+      }
+    } catch (err) {
+      console.error('Error in smAccount-use-cases.js/updateSmAccounts(): ', err)
       throw err
     }
   }

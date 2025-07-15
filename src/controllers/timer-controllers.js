@@ -27,6 +27,7 @@ class TimerControllers {
     this.cleanUsageInterval = 60000 * 60 // 1 hour
     this.backupUsageInterval = 60000 * 10 // 10 minutes
     this.newSmAccountsInterval = 60000 * 60 // 60 minutes
+    this.updateSmAccountsInterval = 60000 * 10 // 10 minutes
 
     // Encapsulate dependencies
     this.config = config
@@ -40,6 +41,7 @@ class TimerControllers {
     this.cleanUsage = this.cleanUsage.bind(this)
     this.backupUsage = this.backupUsage.bind(this)
     this.newSmAccounts = this.newSmAccounts.bind(this)
+    this.updateSmAccounts = this.updateSmAccounts.bind(this)
 
     // State
     this.gcOrdersInt = null
@@ -47,6 +49,7 @@ class TimerControllers {
     this.checkDupOffersInt = null
     this.loadOffersInt = null
     this.newSmAccountsInt = null
+    this.updateSmAccountsInt = null
   }
 
   // Start all the time-based controllers.
@@ -58,7 +61,7 @@ class TimerControllers {
     this.cleanUsageHandle = setInterval(this.cleanUsage, this.cleanUsageInterval)
     this.backupUsageHandle = setInterval(this.backupUsage, this.backupUsageInterval)
     this.newSmAccountsInt = setInterval(this.newSmAccounts, this.newSmAccountsInterval)
-
+    this.updateSmAccountsInt = setInterval(this.updateSmAccounts, this.updateSmAccountsInterval)
     return true
   }
 
@@ -70,6 +73,7 @@ class TimerControllers {
     clearInterval(this.cleanUsageHandle)
     clearInterval(this.backupUsageHandle)
     clearInterval(this.newSmAccountsInt)
+    clearInterval(this.updateSmAccountsInt)
   }
 
   // Garbage Collect the Orders.
@@ -175,6 +179,17 @@ class TimerControllers {
       console.error('Error in time-controller.js/newSmAccounts(): ', err)
 
       // Note: Do not throw an error. This is a top-level function.
+      return false
+    }
+  }
+
+  // Update the Social Media Accounts.
+  async updateSmAccounts () {
+    try {
+      await this.useCases.smAccount.updateSmAccounts()
+      return true
+    } catch (err) {
+      console.error('Error in time-controller.js/updateSmAccounts(): ', err)
       return false
     }
   }
