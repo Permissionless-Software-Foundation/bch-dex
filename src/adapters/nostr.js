@@ -41,7 +41,9 @@ class NostrAdapter {
     this.read = this.read.bind(this)
     this.eventId2note = this.eventId2note.bind(this)
     this.pubkey2npub = this.pubkey2npub.bind(this)
+    this.npub2pubkey = this.npub2pubkey.bind(this)
     this.readGlobalFeed = this.readGlobalFeed.bind(this)
+    this.getFollowers = this.getFollowers.bind(this)
   }
 
   // Create nostr keys.
@@ -140,6 +142,10 @@ class NostrAdapter {
     return nip19.npubEncode(pubkey)
   }
 
+  npub2pubkey (npub) {
+    return nip19.decode(npub)
+  }
+
   // Read the global feed.
   async readGlobalFeed (inObj = {}) {
     try {
@@ -187,6 +193,57 @@ class NostrAdapter {
       return messages
     } catch (error) {
       console.log(`Error in nostr.js/readGlobalFeed() ${error.message} `)
+      throw error
+    }
+  }
+
+  async getFollowers (inObj = {}) {
+    try {
+      const { pubkey } = inObj
+
+      if (!pubkey || typeof pubkey !== 'string') {
+        throw new Error('pubkey must be a string!')
+      }
+
+      const relays = [this.relayWs]
+      const pool = this.RelayPool(relays)
+
+      const nostrData = new Promise((resolve, reject) => {
+        const followers = []
+
+        pool.on('open', (relay) => {
+          // Query for kind 3 events where the target pubkey appears in tags
+          // This finds all contact lists that include the target pubkey
+          relay.subscribe('subid', {
+            limit: 100,
+            kinds: [3],
+            '#p': [pubkey] // Filter by tag 'p' containing the target pubkey
+          })
+        })
+
+        pool.on('eose', relay => {
+          relay.close()
+          resolve(followers)
+        })
+
+        pool.on('event', (relay, subId, ev) => {
+          // Each event represents a contact list from someone who follows the target
+          // The author of this event is a follower
+          const follower = {
+            pubkey: ev.pubkey,
+            npub: this.pubkey2npub(ev.pubkey),
+            contactList: ev.tags,
+            createdAt: ev.created_at
+          }
+
+          followers.push(follower)
+        })
+      })
+
+      const followers = await nostrData
+      return followers
+    } catch (error) {
+      console.log(`Error in nostr.js/getFollowers() ${error.message} `)
       throw error
     }
   }
