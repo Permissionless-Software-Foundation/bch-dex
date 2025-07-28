@@ -8,8 +8,6 @@ import Router from 'koa-router'
 // Local libraries.
 import OfferRESTControllerLib from './controller.js'
 
-let _this
-
 class OfferRouter {
   constructor (localConfig = {}) {
     // Dependency Injection.
@@ -38,7 +36,8 @@ class OfferRouter {
     const baseUrl = '/offer'
     this.router = new Router({ prefix: baseUrl })
 
-    _this = this
+    // Bind 'this' object to all subfunctions.
+    this.attach = this.attach.bind(this)
   }
 
   attach (app) {
@@ -50,19 +49,20 @@ class OfferRouter {
 
     // 12/3/24 CT:
     // Note: The createOffer() path was used by a P2WDB webhook to generate an
-    // Offer from and Order. This has been deprecated and Offers are now created
+    // Offer from an Order. This has been deprecated and Offers are now created
     // by a Timer Controller monitoring a Nostr topic.
 
     // Define the routes and attach the controller.
     // this.router.post('/', _this.offerRESTController.createOffer) // Deprecated.
-    this.router.post('/take', _this.offerRESTController.takeOffer)
-    this.router.get('/list/all/:page', _this.offerRESTController.listOffers)
-    this.router.get('/list/nft/:page', _this.offerRESTController.listNftOffers)
-    this.router.get('/list/fungible/:page', _this.offerRESTController.listFungibleOffers)
+    this.router.post('/take', this.offerRESTController.takeOffer)
+    this.router.get('/list/all/:page', this.offerRESTController.listOffers)
+    this.router.get('/list/nft/:page', this.offerRESTController.listNftOffers)
+    this.router.get('/list/fungible/:page', this.offerRESTController.listFungibleOffers)
+    this.router.get('/list/addr/:addr', this.offerRESTController.listOffersByAddress)
 
     // Attach the Controller routes to the Koa app.
-    app.use(_this.router.routes())
-    app.use(_this.router.allowedMethods())
+    app.use(this.router.routes())
+    app.use(this.router.allowedMethods())
   }
 }
 

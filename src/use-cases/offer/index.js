@@ -64,6 +64,7 @@ class OfferUseCases {
     this.removeStaleOffers = this.removeStaleOffers.bind(this)
     this.flagOffer = this.flagOffer.bind(this)
     this.loadOffers = this.loadOffers.bind(this)
+    this.listOffersByAddress = this.listOffersByAddress.bind(this)
 
     // State
     this.seenOffers = []
@@ -806,6 +807,17 @@ class OfferUseCases {
     } catch (error) {
       console.error('Error in loadOffers(): ', error)
       throw error
+    }
+  }
+
+  // List all offers being made by a given address.
+  async listOffersByAddress (addr) {
+    try {
+      const offers = await this.OfferModel.find({ makerAddr: addr })
+      return offers
+    } catch (err) {
+      console.error('Error in listOffersByAddress(): ', err)
+      throw err
     }
   }
 }
