@@ -1,5 +1,8 @@
 /*
   REST API Controller library for the /offer route
+
+  TODO:
+  - Add api-doc documentation for all endpoints in this file.
 */
 
 import wlogger from '../../../adapters/wlogger.js'
@@ -30,6 +33,7 @@ class OfferRESTControllerLib {
     this.listNftOffers = this.listNftOffers.bind(this)
     this.listFungibleOffers = this.listFungibleOffers.bind(this)
     this.takeOffer = this.takeOffer.bind(this)
+    this.listOffersByAddress = this.listOffersByAddress.bind(this)
     this.handleError = this.handleError.bind(this)
   }
 
@@ -111,6 +115,21 @@ class OfferRESTControllerLib {
       ctx.body = { eventId, noteId }
     } catch (err) {
       wlogger.error('Error in takeOffer() REST API handler.')
+      this.handleError(ctx, err)
+    }
+  }
+
+  // List all offers being made by a given address.
+  // curl -X GET http://localhost:5700/offer/list/addr/bitcoincash:qrpxtnrlhfz9wsuuse7z5k2mxmvw0r3pu5qepyhmq2
+  async listOffersByAddress (ctx) {
+    try {
+      const addr = ctx.params.addr
+
+      const offers = await this.useCases.offer.listOffersByAddress(addr)
+
+      ctx.body = offers
+    } catch (err) {
+      console.log('Error in listOffersByAddress REST API handler: ', err)
       this.handleError(ctx, err)
     }
   }
