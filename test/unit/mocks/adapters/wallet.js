@@ -12,8 +12,18 @@ const mockWallet = {
     nextAddress: 1
 };
 
-class MockBchWallet {
+
+class AdapterRoute {
     constructor() {
+        this.sendTx = async () => {
+            return 'fakeTxid';
+        }
+    }
+}
+
+class MockBchWallet {
+    constructor(mnemonic, advancedOptions) {
+        this.advancedOptions = advancedOptions
         this.walletInfoPromise = true;
         this.walletInfo = mockWallet;
         this.initialize = async () => {}
@@ -22,6 +32,9 @@ class MockBchWallet {
             return { success: true, txid: 'txid' };
         };
         this.sendTokens = async () => {
+            return 'fakeTxid';
+        };
+        this.send = async () => {
             return 'fakeTxid';
         };
         this.utxoIsValid =async ()=>{}
@@ -33,7 +46,15 @@ class MockBchWallet {
                     tokenTicker: 'TROUT'
                 }];
         };
+        this.getKeyPair = async () => {
+            return {
+                cashAddress: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+                wif: 'L5D2UAam8tvo3uii5kpgaGyjvVMimdrXu8nWGQSQjuuAix6ji1YQ',
+                hdIndex: 11
+            }
+        };
         this.optimize = async () => { };
+        this.ar = new AdapterRoute()
         // Environment variable is used by wallet-balance.unit.js to force an error.
         if (process.env.NO_UTXO) {
             this.utxos = {};

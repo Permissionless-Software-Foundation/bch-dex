@@ -65,4 +65,51 @@ describe('#Webhook-Adapter', () => {
       assert.isString(result.id)
     })
   })
+  describe('#deleteWebhook', () => {
+    it('should throw error if input is not provided', async () => {
+      try {
+        await uut.deleteWebhook()
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'url must be a string')
+      }
+    })
+    it('should delete webhook', async () => {
+      sandbox.stub(uut.axios, 'delete').resolves({ data: { success: true } })
+      const url = 'https://test.com/my-webhook'
+      const result = await uut.deleteWebhook(url)
+      assert.isObject(result)
+      assert.property(result, 'success')
+    })
+  })
+  describe('#waitUntilSuccess', () => {
+    it('should handle error', async () => {
+      try {
+        sandbox.stub(uut, 'sleep').throws(new Error('test error'))
+        sandbox.stub(uut, 'deleteWebhook')
+          .onCall(0).throws(new Error('test error'))
+
+        sandbox.stub(uut, 'createWebhook')
+          .onCall(0).throws(new Error('test error'))
+          .onCall(1).resolves({ data: { success: true } })
+        await uut.waitUntilSuccess()
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+    it('should wait until success', async () => {
+      uut.sleepTime = 100
+
+      sandbox.stub(uut, 'deleteWebhook')
+        .onCall(0).throws(new Error('test error'))
+
+      sandbox.stub(uut, 'createWebhook')
+        .onCall(0).throws(new Error('test error'))
+        .onCall(1).resolves({ data: { success: true } })
+
+      const result = await uut.waitUntilSuccess()
+      assert.isTrue(result)
+    })
+  })
 })
