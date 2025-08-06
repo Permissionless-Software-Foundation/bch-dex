@@ -66,6 +66,9 @@ class Bch {
   //   }
   // }
 
+  /** DEV NOTE: This function are deprecated.?
+   *  https://github.com/Permissionless-Software-Foundation/bch-message-lib/pull/41
+  */
   async getMerit (slpAddr) {
     try {
       if (!slpAddr || typeof slpAddr !== 'string') {

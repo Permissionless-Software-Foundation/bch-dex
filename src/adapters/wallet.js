@@ -34,6 +34,7 @@ class WalletAdapter {
     this.config = config
     this.bitcoinJs = bitcoinJs
     this.BchWallet = BchWallet
+    this.BchTokenSweep = BchTokenSweep
     this.bchWallet = {} // Will be replaced when initialized.
     // this.advancedConfig = localConfig.advancedConfig
     this.retryQueue = new RetryQueue({
@@ -205,7 +206,9 @@ class WalletAdapter {
   // Generate a cryptographic signature, required to write to the P2WDB.
   async generateSignature (message) {
     try {
-      // TODO: Add input validation for message.
+      if (!message || typeof message !== 'string') {
+        throw new Error('message is required!')
+      }
 
       const privKey = this.bchWallet.walletInfo.privateKey
 
@@ -370,6 +373,12 @@ class WalletAdapter {
   async moveTokens (inObj = {}) {
     try {
       const { tokenId, qty } = inObj
+      if (!tokenId || typeof tokenId !== 'string') {
+        throw new Error('tokenId must be a string!')
+      }
+      if (!qty || typeof qty !== 'number') {
+        throw new Error('qty must be a number!')
+      }
 
       const keyPair = await this.getKeyPair()
       console.log('keyPair: ', keyPair)
@@ -392,6 +401,10 @@ class WalletAdapter {
         x => x.tokenId === tokenId
       )
 
+      if (tokenUtxos.length === 0) {
+        throw new Error('tokenId not found!')
+      }
+
       const txid = await this.bchWallet.sendTokens(receiver, 3)
 
       const utxoInfo = {
@@ -412,6 +425,10 @@ class WalletAdapter {
   // generate a segregated UTXO.
   async moveBch (amountSat) {
     try {
+      if (!amountSat) {
+        throw new Error('amountSat is required!')
+      }
+
       const keyPair = await this.getKeyPair()
       console.log('keyPair: ', keyPair)
 
@@ -444,6 +461,10 @@ class WalletAdapter {
   // representing the transaction.
   async deseralizeTx (txHex) {
     try {
+      // Input validation
+      if (!txHex || typeof txHex !== 'string') {
+        throw new Error('hex must be a string!')
+      }
       // Ensure the URL points at FullStack.cash, since the web 3 infra does not
       // yet support this call.
       const oldUrl = this.bchWallet.bchjs.RawTransactions.restURL
@@ -555,8 +576,12 @@ class WalletAdapter {
 
   // Given an Order database object, this function sends the tokens from the
   // HD index where they are stored, back to the root address of the wallet.
-  async reclaimTokens (orderData) {
+  async reclaimTokens (orderData = {}) {
     try {
+      if (!orderData.hdIndex) {
+        throw new Error('orderData.hdIndex is required!')
+      }
+
       // Get the key pair from the Order.
       const keyPair = await this.getKeyPair(orderData.hdIndex)
       console.log('keyPair: ', keyPair)
@@ -576,7 +601,7 @@ class WalletAdapter {
       // const txid = await tempWallet.sendTokens(receiver)
 
       // Sweep the tokens to the root address.
-      const sweeper = new BchTokenSweep(
+      const sweeper = new this.BchTokenSweep(
         keyPair.wif,
         this.bchWallet.walletInfo.privateKey,
         this.bchWallet,

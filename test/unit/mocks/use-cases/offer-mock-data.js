@@ -115,6 +115,7 @@ const fungibleTokenData01 = {
     "documentUri": "troutsblog.com",
     "documentHash": "",
     "decimals": 2,
+    "tokenDecimals": 2,
     "mintBatonIsActive": true,
     "tokensInCirculationBN": "100097954686",
     "tokensInCirculationStr": "100097954686",

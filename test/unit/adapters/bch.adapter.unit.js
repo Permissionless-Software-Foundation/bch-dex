@@ -135,18 +135,19 @@ describe('bch', () => {
       }
     })
 
-    // it('should return the merit ', async () => {
-    //   try {
-    //     // Mock live network calls.
-    //     sandbox.stub(uut.msgLib.merit, 'agMerit').resolves(100)
-    //
-    //     const slpAddr =
-    //       'simpleledger:qqgnksc6zr4nzxrye69fq625wu2myxey6uh9kzjy96'
-    //     const merit = await uut.getMerit(slpAddr)
-    //     assert.isNumber(merit)
-    //   } catch (err) {
-    //     assert.fail('Unexpected result')
-    //   }
-    // })
+    /*     it('should return the merit ', async () => {
+      try {
+        // Mock live network calls.
+        sandbox.stub(uut.msgLib.merit, 'agMerit').resolves(100)
+
+        const slpAddr =
+          'simpleledger:qqgnksc6zr4nzxrye69fq625wu2myxey6uh9kzjy96'
+        const merit = await uut.getMerit(slpAddr)
+        assert.isNumber(merit)
+      } catch (err) {
+        console.log('err: ', err)
+        assert.fail('Unexpected result')
+      }
+    }) */
   })
 })

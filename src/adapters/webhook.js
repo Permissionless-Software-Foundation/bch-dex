@@ -6,13 +6,15 @@ import config from '../../config/index.js'
 
 import axios from 'axios'
 
-let _this
-
 class WebHook {
   constructor () {
-    _this = this
-    _this.config = config
-    _this.axios = axios
+    this.config = config
+    this.axios = axios
+    this.sleepTime = 2000
+    this.createWebhook = this.createWebhook.bind(this)
+    this.deleteWebhook = this.deleteWebhook.bind(this)
+    this.waitUntilSuccess = this.waitUntilSuccess.bind(this)
+    this.sleep = this.sleep.bind(this)
   }
 
   // REST petition to create a webhook in p2wdb-service
@@ -22,14 +24,14 @@ class WebHook {
         throw new Error('url must be a string')
       }
 
-      const endpoint = _this.config.webhookService
+      const endpoint = this.config.webhookService
 
       const obj = {
         appId: this.config.p2wdbAppId,
         url
       }
 
-      const result = await axios.post(endpoint, obj)
+      const result = await this.axios.post(endpoint, obj)
 
       return result.data
     } catch (err) {
@@ -45,14 +47,14 @@ class WebHook {
         throw new Error('url must be a string')
       }
 
-      const endpoint = _this.config.webhookService
+      const endpoint = this.config.webhookService
 
       const obj = {
         appId: this.config.p2wdbAppId,
         url
       }
 
-      const result = await axios.delete(endpoint, { data: obj })
+      const result = await this.axios.delete(endpoint, { data: obj })
 
       return result.data
     } catch (err) {
@@ -86,7 +88,7 @@ class WebHook {
         } catch (err) {
           const now = new Date()
           console.log(`${now.toLocaleString()}: Error trying to create webhook with P2WDB. Trying again...`)
-          await sleep(2000)
+          await this.sleep(this.sleepTime)
         }
       } while (!success)
 
@@ -96,10 +98,10 @@ class WebHook {
       throw err
     }
   }
-}
 
-function sleep (ms) {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  async sleep (ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
+  }
 }
 
 export default WebHook
