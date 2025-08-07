@@ -1,6 +1,6 @@
 /*
   Offer Entity
-  An ffer is created when a new Signal is detected via the P2WDB webhook.
+  An offer is created when a new Signal is detected via the P2WDB webhook.
   It's destroyed when the UTXO described in the Signal has been detected as spent.
 */
 
