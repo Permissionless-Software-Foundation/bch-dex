@@ -185,6 +185,7 @@ describe('#order-use-case', () => {
       assert.property(result, 'eventId')
       assert.property(result, 'noteId')
     })
+
     it('should create an order with consumer-api', async () => {
       uut.config.useFullStackCash = false
       const entryObj = {
@@ -214,6 +215,7 @@ describe('#order-use-case', () => {
       assert.property(result, 'eventId')
       assert.property(result, 'noteId')
     })
+    
     it('should throw error if user is not found', async () => {
       try {
         const entryObj = {
