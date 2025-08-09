@@ -111,7 +111,10 @@ class OfferUseCases {
       const utxoStatus = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.utxoIsValid, utxo)
       // console.log('utxoStatus: ', utxoStatus)
       // if (utxoStatus === null) return false
-      if (!utxoStatus) return false
+      if (!utxoStatus) {
+        console.log(`UTXO txid: ${offerObj.data.utxoTxid}, vout: ${offerObj.data.utxoVout} has been spent. Skipping.`)
+        return false
+      }
 
       // A new offer gets a status of 'posted'
       offerObj.data.offerStatus = 'posted'

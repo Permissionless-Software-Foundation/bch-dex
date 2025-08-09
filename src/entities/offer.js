@@ -33,7 +33,9 @@ class OfferEntity {
       makerAddr,
       ticker,
       tokenType,
-      nostrEventId
+      nostrEventId,
+      operatorAddress,
+      operatorPercentage
     } = offerData.data
 
     // Input Validation
@@ -78,6 +80,14 @@ class OfferEntity {
     }
     if (!nostrEventId || typeof nostrEventId !== 'string') {
       throw new Error("Property 'nostrEventId' must be a string.")
+    }
+
+    // Add the operator address and percentage to the offer.
+    if (!operatorAddress || typeof operatorAddress !== 'string') {
+      throw new Error("Property 'operatorAddress' must be a string.")
+    }
+    if (!operatorPercentage || typeof operatorPercentage !== 'number') {
+      throw new Error("Property 'operatorPercentage' must be a number.")
     }
 
     // Convert the timestamp to a number.

@@ -35,8 +35,11 @@ const Offer = new mongoose.Schema({
   lokadId: { type: String },
   messageType: { type: Number },
   messageClass: { type: Number },
-  nostrEventId: { type: String } // Nostr Event Id.
+  nostrEventId: { type: String }, // Nostr Event Id.
 
+  // Operator fee and address
+  operatorAddress: { type: String },
+  operatorPercentage: { type: Number }
 })
 
 export default mongoose.model('offer', Offer)
