@@ -215,7 +215,7 @@ describe('#order-use-case', () => {
       assert.property(result, 'eventId')
       assert.property(result, 'noteId')
     })
-    
+
     it('should throw error if user is not found', async () => {
       try {
         const entryObj = {
