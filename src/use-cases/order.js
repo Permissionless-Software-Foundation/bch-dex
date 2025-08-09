@@ -44,6 +44,7 @@ class OrderLib {
 
       if (!entryObj.tokenId) throw new Error('entry does not contain required properties')
 
+      // Get the user data from the database, for the user creating the new Order.
       const user = await this.UserModel.findById(entryObj.userId)
       if (!user) throw new Error('user not found')
 
@@ -81,13 +82,7 @@ class OrderLib {
       // await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.optimize, {})
       await userWallet.optimize()
 
-      // Ensure sufficient tokens exist to create the order.
-      // await this.ensureFunds(orderEntity)
-      // await this.retryQueue.addToQueue(this.ensureFunds, orderEntity)
-
       // Get Ticker for token ID.
-      // const tokenData = await this.adapters.wallet.bchWallet.getTxData([entryObj.tokenId])
-      // const tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTxData, [entryObj.tokenId])
       const tokenData = await userWallet.getTxData([entryObj.tokenId])
       // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
       orderEntity.ticker = tokenData[0].tokenTicker
@@ -107,14 +102,19 @@ class OrderLib {
       // await this.adapters.wallet.bchWallet.getUtxos()
       // await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.initialize, {})
       await userWallet.initialize()
+
       // Update the order with the new UTXO information.
       orderEntity.utxoTxid = utxoInfo.txid
       orderEntity.utxoVout = utxoInfo.vout
       orderEntity.tokenType = utxoInfo.tokenType
 
-      // Add P2WDB specific flag for signaling that this is a new offer.
+      // Add flag to signal that this is a new offer.
       orderEntity.dataType = 'offer'
       orderEntity.userId = user._id
+
+      // Add the operator address and percentage to the order.
+      orderEntity.operatorAddress = this.config.operatorAddress
+      orderEntity.operatorPercentage = this.config.operatorPercentage
 
       // Post the new Order information to Nostr under the topic set in the
       // config file.
