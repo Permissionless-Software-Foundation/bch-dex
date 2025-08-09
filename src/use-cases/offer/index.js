@@ -516,9 +516,8 @@ class OfferUseCases {
     // }
   }
 
-  // This function is called by the P2WDB webhook REST API handler. When a
-  // Counter Offer is passed to bch-dex by the P2WDB, the data is then passed
-  // to this function. It does due diligence on the Counter Offer, then signs
+  // This function is called by loadOffers().
+  // It does due diligence on the Counter Offer, then signs
   // and broadcasts the transaction to accept the Counter Offer.
   async acceptCounterOffer (offerData) {
     try {
@@ -530,6 +529,8 @@ class OfferUseCases {
         // console.log(`Offer with event ID ${eventId} already processed. Skipping.`)
         return false
       }
+
+      console.log(`New counter offer detected: https://astral.psfoundation.info/${this.adapters.nostr.eventId2note(offerData.data.nostrEventId)}`)
 
       // See if this instance of bch-dex is managing the Order associated with
       // the incoming Counter Offer.
@@ -590,6 +591,16 @@ class OfferUseCases {
       const txObj = await this.adapters.wallet.deseralizeTx(txHex)
       console.log(`txObj: ${JSON.stringify(txObj, null, 2)}`)
 
+      // Ensure the Counter Offer has an output for the Operator of bch-dex.
+      if (!txObj.vout[3]) {
+        console.log('The Counter Offer does not have an output for the Operator.')
+
+        // Add order to list of seen orders, so that we don't spent time trying to validate it again.
+        this.seenOffers.push(eventId)
+
+        return 'N/A'
+      }
+
       // Ensure the 3rd output (vout=2) contains the required amount of BCH.
       const satsToReceive = Math.ceil(orderData.numTokens * parseInt(orderData.rateInBaseUnit))
       console.log('Ceil', satsToReceive)
@@ -609,6 +620,24 @@ class OfferUseCases {
       const hasCorrectAddr = makerAddr === addrInCounterOffer
       if (!hasCorrectAddr) {
         throw new Error(`The Counter Offer has an output address of ${addrInCounterOffer}, which does not match the Maker address of ${makerAddr} in the Offer.`)
+      }
+
+      // Ensure the 4th output (vout=3) is going to the operator address specified in the Offer.
+      const operatorAddr = orderData.operatorAddress
+      const hasCorrectOperatorAddr = operatorAddr === txObj.vout[3].scriptPubKey.addresses[0]
+      if (!hasCorrectOperatorAddr) {
+        throw new Error(`The Counter Offer has an output address of ${txObj.vout[3].scriptPubKey.addresses[0]}, which does not match the Operator address of ${operatorAddr} in the Offer.`)
+      }
+
+      // Ensure the 4th output (vout=3) contains the required amount of BCH.
+      const operatorSatsToReceive = Math.ceil(orderData.numTokens * parseInt(orderData.rateInBaseUnit))
+      if (isNaN(operatorSatsToReceive)) {
+        throw new Error('Could not calculate the amount of BCH offered in the Counter Offer')
+      }
+      const operatorSatsOut = this.adapters.wallet.bchWallet.bchjs.BitcoinCash.toSatoshi(txObj.vout[3].value)
+      const estimatedOperatorFee = Math.floor(txObj.vout[2].scriptPubKey.addresses[0] * orderData.operatorPercentage / 100)
+      if (operatorSatsOut < estimatedOperatorFee) {
+        throw new Error(`The Counter Offer has an output of ${operatorSatsOut}, which is less than the estimated operator fee of ${estimatedOperatorFee}.`)
       }
 
       // Get the User ID from the Order model.
@@ -721,7 +750,8 @@ class OfferUseCases {
           await thisOffer.remove()
         }
 
-        // If the Offer is older than 7 days, delete it.
+        // TODO: Instead of deleting the offer, send the token back to the Makers wallet.
+        // If the Offer is older than a threshold, delete it.
         const nowMs = now.getTime()
         const eightWeeks = 1000 * 60 * 60 * 24 * 7 * 8
         const eightWeeksAgo = nowMs - eightWeeks
@@ -798,7 +828,7 @@ class OfferUseCases {
           if (offerObj.data.dataType === 'counter-offer') {
             // console.log('Counter offer detected: ', offerObj)
             // console.log('Counter offer detected: ', offerObj.data.nostrEventId)
-            console.log(`Counter offer detected: https://astral.psfoundation.info/${this.adapters.nostr.eventId2note(offerObj.data.nostrEventId)}`)
+            // console.log(`Counter offer detected: https://astral.psfoundation.info/${this.adapters.nostr.eventId2note(offerObj.data.nostrEventId)}`)
             await this.acceptCounterOffer(offerObj)
           }
 
