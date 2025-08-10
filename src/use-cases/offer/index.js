@@ -591,16 +591,6 @@ class OfferUseCases {
       const txObj = await this.adapters.wallet.deseralizeTx(txHex)
       console.log(`txObj: ${JSON.stringify(txObj, null, 2)}`)
 
-      // Ensure the Counter Offer has an output for the Operator of bch-dex.
-      if (!txObj.vout[3]) {
-        console.log('The Counter Offer does not have an output for the Operator.')
-
-        // Add order to list of seen orders, so that we don't spent time trying to validate it again.
-        this.seenOffers.push(eventId)
-
-        return 'N/A'
-      }
-
       // Ensure the 3rd output (vout=2) contains the required amount of BCH.
       const satsToReceive = Math.ceil(orderData.numTokens * parseInt(orderData.rateInBaseUnit))
       console.log('Ceil', satsToReceive)
@@ -611,6 +601,16 @@ class OfferUseCases {
       const hasRequiredAmount = satsOut === satsToReceive
       if (!hasRequiredAmount) {
         throw new Error(`The Counter Offer has an output of ${satsOut}, which does not match the required ${satsToReceive} in the Offer.`)
+      }
+
+      // Ensure the Counter Offer has an output for the Operator of bch-dex.
+      if (!txObj.vout[3]) {
+        console.log('The Counter Offer does not have an output for the Operator.')
+
+        // Add order to list of seen orders, so that we don't spent time trying to validate it again.
+        this.seenOffers.push(eventId)
+
+        return 'N/A'
       }
 
       // Ensure the 3rd output (vout=2) is going to the maker address specified
