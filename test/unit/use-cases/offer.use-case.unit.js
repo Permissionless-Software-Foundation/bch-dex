@@ -746,6 +746,24 @@ describe('#offer-use-case', () => {
       }
     })
 
+    it('should skip transactions that do not have an output for the operator', async () => {
+      // Mock data
+      const mock = Object.assign({}, mockData.offerMockData.data)
+      mock.makerAddr = 'bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7477' // Unknow Adress
+      mock.rateInBaseUnit = 0
+      mock.numTokens = 0
+
+      // Mock dependencies
+      sandbox.stub(uut.orderUseCase, 'findOrderByEvent').resolves(mock)
+      sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
+      sandbox.stub(uut.adapters.wallet.bchWallet.bchjs.BitcoinCash, 'toSatoshi').returns(0)
+
+      sandbox.stub(uut.adapters.wallet, 'deseralizeTx').resolves(mockData.deserealizeTxMockNoOperatorOut)
+
+      const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
+      assert.equal(result, 'N/A')
+    })
+
     it('should handle error for wrong transaction output address', async () => {
       try {
         // Mock data

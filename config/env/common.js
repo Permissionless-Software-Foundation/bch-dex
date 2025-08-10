@@ -191,5 +191,9 @@ export default {
   disableNewAccounts: process.env.DISABLE_NEW_ACCOUNTS ? true : false,
 
   // Admin password
-  adminPassword: process.env.ADMIN_PASSWORD
+  adminPassword: process.env.ADMIN_PASSWORD,
+
+  // The Operator of BCH DEX can elect to receive a percentage of each sale.
+  operatorAddress: process.env.OPERATOR_ADDRESS ? process.env.OPERATOR_ADDRESS : 'bitcoincash:qqsrke9lh257tqen99dkyy2emh4uty0vky9y0z0lsr',
+  operatorPercentage: process.env.OPERATOR_PERCENTAGE ? parseFloat(process.env.OPERATOR_PERCENTAGE) : 2.0
 }

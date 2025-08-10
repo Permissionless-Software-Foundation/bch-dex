@@ -286,7 +286,9 @@ describe('#Offer-Entity', () => {
           makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
           ticker: 'TROUT',
           tokenType: 1,
-          nostrEventId: 'test'
+          nostrEventId: 'test',
+          operatorAddress: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+          operatorPercentage: 10
         },
         timestamp: '2021-09-20T17:54:26.395Z',
         localTimeStamp: '9/20/2021, 10:54:26 AM',

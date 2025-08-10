@@ -115,6 +115,7 @@ const fungibleTokenData01 = {
     "documentUri": "troutsblog.com",
     "documentHash": "",
     "decimals": 2,
+    "tokenDecimals": 2,
     "mintBatonIsActive": true,
     "tokensInCirculationBN": "100097954686",
     "tokensInCirculationStr": "100097954686",
@@ -141,13 +142,46 @@ const offerMockData = {
     utxoVout: 0,
     makerAddr: 'address',
     tokenType: 1,
-    nostrEventId: 'test'
+    nostrEventId: 'test',
+    operatorAddress: 'bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7478',
+    operatorPercentage: 10
   }
+}
+
+const deserealizeTxMockNoOperatorOut = {
+  //...
+  vout: [
+    {
+      value: 0,
+      scriptPubKey: {
+        addresses: ['bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7478']
+      }
+    },
+    {
+      value: 0,
+      scriptPubKey: {
+        addresses: ['bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7478']
+      }
+    },
+    {
+      value: 0,
+      scriptPubKey: {
+        addresses: ['bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7478']
+      }
+    },
+    //...
+  ]
 }
 
 const deserealizeTxMock = {
   //...
   vout: [
+    {
+      value: 0,
+      scriptPubKey: {
+        addresses: ['bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7478']
+      }
+    },
     {
       value: 0,
       scriptPubKey: {
@@ -178,5 +212,6 @@ export default {
   fungibleOffer01,
   fungibleTokenData01,
   offerMockData,
+  deserealizeTxMockNoOperatorOut,
   deserealizeTxMock
 };
