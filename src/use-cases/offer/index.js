@@ -635,9 +635,16 @@ class OfferUseCases {
         throw new Error('Could not calculate the amount of BCH offered in the Counter Offer')
       }
       const operatorSatsOut = this.adapters.wallet.bchWallet.bchjs.BitcoinCash.toSatoshi(txObj.vout[3].value)
-      const estimatedOperatorFee = Math.floor(txObj.vout[2].scriptPubKey.addresses[0] * orderData.operatorPercentage / 100)
+      let estimatedOperatorFee = Math.floor(txObj.vout[3].value * orderData.operatorPercentage / 100)
+      if (estimatedOperatorFee < 546) estimatedOperatorFee = 546
+      console.log('operatorSatsOut: ', operatorSatsOut, 'estimatedOperatorFee: ', estimatedOperatorFee)
       if (operatorSatsOut < estimatedOperatorFee) {
-        throw new Error(`The Counter Offer has an output of ${operatorSatsOut}, which is less than the estimated operator fee of ${estimatedOperatorFee}.`)
+        console.log(`Skipping: The Counter Offer has an output of ${operatorSatsOut}, which is less than the estimated operator fee of ${estimatedOperatorFee}.`)
+
+        // Add order to list of seen orders, so that we don't spent time trying to validate it again.
+        this.seenOffers.push(eventId)
+
+        return 'N/A'
       }
 
       // Get the User ID from the Order model.
