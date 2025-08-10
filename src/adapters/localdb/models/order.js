@@ -43,7 +43,11 @@ const Order = new mongoose.Schema({
   // Additional properties found in createOrder
   dataType: { type: String, required: true },
 
-  userId: { type: String, required: true }
+  userId: { type: String, required: true },
+
+  // Operator fee and address
+  operatorAddress: { type: String },
+  operatorPercentage: { type: Number }
 })
 
 export default mongoose.model('order', Order)
