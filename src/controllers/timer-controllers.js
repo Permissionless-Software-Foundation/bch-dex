@@ -105,6 +105,7 @@ class TimerControllers {
       console.error('Error in time-controller.js/cleanUsage(): ', err)
 
       this.cleanUsageHandle = setInterval(this.cleanUsage, this.cleanUsageInterval)
+      return false
     }
   }
 

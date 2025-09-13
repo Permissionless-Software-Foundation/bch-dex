@@ -237,6 +237,113 @@ describe('#Offer-Entity', () => {
       }
     })
 
+    it('should throw an error if makerAddr is not included', () => {
+      try {
+        const offerData = {
+          data: {
+            messageType: 1,
+            messageClass: 1,
+            tokenId: 'fakeId',
+            buyOrSell: 'buy',
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
+            numTokens: 1,
+            utxoTxid: 'fakeTxid',
+            utxoVout: 0,
+            offerStatus: 'posted',
+            operatorAddress: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+            operatorPercentage: 10
+          }
+        }
+        uut.validate(offerData)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log(err)
+        assert.include(err.message, "Property 'makerAddr' must be a string.")
+      }
+    })
+    it('should throw an error if makerAddr is not a string', () => {
+      try {
+        const offerData = {
+          data: {
+            messageType: 1,
+            messageClass: 1,
+            tokenId: 'fakeId',
+            buyOrSell: 'buy',
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
+            numTokens: 1,
+            utxoTxid: 'fakeTxid',
+            utxoVout: 0,
+            offerStatus: 'posted',
+            makerAddr: 1234567890
+          }
+        }
+        uut.validate(offerData)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log(err)
+        assert.include(err.message, "Property 'makerAddr' must be a string.")
+      }
+    })
+
+    it('should throw an error if tokenType is not included', () => {
+      try {
+        const offerData = {
+          data: {
+            messageType: 1,
+            messageClass: 1,
+            tokenId: 'fakeId',
+            buyOrSell: 'buy',
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
+            numTokens: 1,
+            utxoTxid: 'fakeTxid',
+            utxoVout: 0,
+            offerStatus: 'posted',
+            makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+            operatorAddress: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+            operatorPercentage: 10
+          }
+        }
+        uut.validate(offerData)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log(err)
+        assert.include(err.message, "Property 'tokenType' must be a number.")
+      }
+    })
+
+    it('should throw an error if tokenType is not a number', () => {
+      try {
+        const offerData = {
+          data: {
+            messageType: 1,
+            messageClass: 1,
+            tokenId: 'fakeId',
+            buyOrSell: 'buy',
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
+            numTokens: 1,
+            utxoTxid: 'fakeTxid',
+            utxoVout: 0,
+            offerStatus: 'posted',
+            makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+            tokenType: 'notANumber'
+          }
+        }
+        uut.validate(offerData)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log(err)
+        assert.include(err.message, "Property 'tokenType' must be a number.")
+      }
+    })
+
     it('should throw an error if nostrEventId is not included', () => {
       try {
         const offerData = {
@@ -264,6 +371,124 @@ describe('#Offer-Entity', () => {
           err.message,
           "Property 'nostrEventId' must be a string."
         )
+      }
+    })
+
+    it('should throw an error if operatorAddress is not included', () => {
+      try {
+        const offerData = {
+          data: {
+            messageType: 1,
+            messageClass: 1,
+            tokenId: 'fakeId',
+            buyOrSell: 'buy',
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
+            numTokens: 1,
+            utxoTxid: 'fakeTxid',
+            utxoVout: 0,
+            offerStatus: 'posted',
+            makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+            tokenType: 1,
+            nostrEventId: 'test',
+            operatorPercentage: 10
+          }
+        }
+        uut.validate(offerData)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log(err)
+        assert.include(err.message, "Property 'operatorAddress' must be a string.")
+      }
+    })
+
+    it('should throw an error if operatorAddress is not a string', () => {
+      try {
+        const offerData = {
+          data: {
+            messageType: 1,
+            messageClass: 1,
+            tokenId: 'fakeId',
+            buyOrSell: 'buy',
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
+            numTokens: 1,
+            utxoTxid: 'fakeTxid',
+            utxoVout: 0,
+            offerStatus: 'posted',
+            makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+            tokenType: 1,
+            nostrEventId: 'test',
+            operatorAddress: 1234567890,
+            operatorPercentage: 10
+          }
+        }
+        uut.validate(offerData)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log(err)
+        assert.include(err.message, "Property 'operatorAddress' must be a string.")
+      }
+    })
+
+    it('should throw an error if operatorPercentage is not included', () => {
+      try {
+        const offerData = {
+          data: {
+            messageType: 1,
+            messageClass: 1,
+            tokenId: 'fakeId',
+            buyOrSell: 'buy',
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
+            numTokens: 1,
+            utxoTxid: 'fakeTxid',
+            utxoVout: 0,
+            offerStatus: 'posted',
+            makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+            tokenType: 1,
+            nostrEventId: 'test',
+            operatorAddress: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00'
+          }
+        }
+        uut.validate(offerData)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log(err)
+        assert.include(err.message, "Property 'operatorPercentage' must be a number.")
+      }
+    })
+
+    it('should throw an error if operatorPercentage is not a number', () => {
+      try {
+        const offerData = {
+          data: {
+            messageType: 1,
+            messageClass: 1,
+            tokenId: 'fakeId',
+            buyOrSell: 'buy',
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
+            numTokens: 1,
+            utxoTxid: 'fakeTxid',
+            utxoVout: 0,
+            offerStatus: 'posted',
+            makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+            tokenType: 1,
+            nostrEventId: 'test',
+            operatorAddress: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+            operatorPercentage: 'notANumber'
+          }
+        }
+        uut.validate(offerData)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log(err)
+        assert.include(err.message, "Property 'operatorPercentage' must be a number.")
       }
     })
 

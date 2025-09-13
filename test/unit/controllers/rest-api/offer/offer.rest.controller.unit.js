@@ -91,25 +91,143 @@ describe('#Offer-REST-Router', () => {
       // assert.equal(ctx.body.hash, 'testHash')
     })
 
-    // it('should catch and throw an error', async () => {
-    //   try {
-    //     ctx.request.body = {
-    //       offer: {}
-    //     }
-    //
-    //     // Force an error
-    //     sandbox
-    //       .stub(uut.useCases.offer, 'createOffer')
-    //       .rejects(new Error('test error'))
-    //
-    //     await uut.createOffer(ctx)
-    //
-    //     assert.fail('Unexpected code path')
-    //   } catch (err) {
-    //     // console.log('err: ', err)
-    //     assert.include(err.message, 'test error')
-    //   }
-    // })
+    it('should catch and throw an error', async () => {
+      try {
+        ctx.request.body = {
+          offer: {}
+        }
+
+        // Force an error
+        sandbox
+          .stub(uut.useCases.offer, 'createOffer')
+          .rejects(new Error('test error'))
+
+        await uut.createOffer(ctx)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log('err: ', err)
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
+
+  describe('#listOffers', () => {
+    it('should list offers', async () => {
+      ctx.params = { page: 0 }
+      sandbox.stub(uut.useCases.offer, 'listOffers').resolves([])
+      await uut.listOffers(ctx)
+      assert.isArray(ctx.body)
+    })
+    it('should catch and throw an error', async () => {
+      try {
+        ctx.params = { }
+        sandbox
+          .stub(uut.useCases.offer, 'listOffers')
+          .throws(new Error('test error'))
+
+        await uut.listOffers(ctx)
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
+
+  describe('#listNftOffers', () => {
+    it('should list nft offers', async () => {
+      ctx.params = { page: 0 }
+      sandbox.stub(uut.useCases.offer, 'listNftOffers').resolves([])
+      await uut.listNftOffers(ctx)
+      assert.isArray(ctx.body)
+    })
+    it('should catch and throw an error', async () => {
+      try {
+        ctx.params = { page: 0 }
+        sandbox
+          .stub(uut.useCases.offer, 'listNftOffers')
+          .throws(new Error('test error'))
+
+        await uut.listNftOffers(ctx)
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
+
+  describe('#listFungibleOffers', () => {
+    it('should list fungible offers', async () => {
+      ctx.params = { page: 0 }
+      sandbox.stub(uut.useCases.offer, 'listFungibleOffers').resolves([])
+      await uut.listFungibleOffers(ctx)
+      assert.isArray(ctx.body)
+    })
+    it('should catch and throw an error', async () => {
+      try {
+        ctx.params = { page: 0 }
+        sandbox
+          .stub(uut.useCases.offer, 'listFungibleOffers')
+          .throws(new Error('test error'))
+
+        await uut.listFungibleOffers(ctx)
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
+
+  describe('#takeOffer', () => {
+    it('should take an offer', async () => {
+      ctx.request.body = {
+        nostrEventId: 'testEventId'
+      }
+
+      sandbox.stub(uut.useCases.offer, 'takeOffer').resolves({ eventId: 'testEventId', noteId: 'testNoteId' })
+      await uut.takeOffer(ctx)
+      assert.isObject(ctx.body)
+      assert.property(ctx.body, 'eventId')
+      assert.property(ctx.body, 'noteId')
+    })
+    it('should catch and throw an error', async () => {
+      try {
+        ctx.request.body = {
+          nostrEventId: 'testEventId'
+        }
+
+        sandbox
+          .stub(uut.useCases.offer, 'takeOffer')
+          .throws(new Error('test error'))
+
+        await uut.takeOffer(ctx)
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
+
+  describe('#listOffersByAddress', () => {
+    it('should list offers by address', async () => {
+      ctx.params = { addr: 'testAddress' }
+      sandbox.stub(uut.useCases.offer, 'listOffersByAddress').resolves([])
+      await uut.listOffersByAddress(ctx)
+      assert.isArray(ctx.body)
+    })
+    it('should catch and throw an error', async () => {
+      try {
+        ctx.params = { addr: 'testAddress' }
+        sandbox
+          .stub(uut.useCases.offer, 'listOffersByAddress')
+          .throws(new Error('test error'))
+
+        await uut.listOffersByAddress(ctx)
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
   })
 
   describe('#handleError', () => {

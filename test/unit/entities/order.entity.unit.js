@@ -130,5 +130,71 @@ describe('#Order-Entity', () => {
         assert.include(err.message, "Property 'numTokens' must be a number.")
       }
     })
+    it('should throw an error if numTokens is not a number', () => {
+      try {
+        const data = {
+          messageType: 1,
+          messageClass: 1,
+          tokenId: 'fakeId',
+          buyOrSell: 'buy',
+          rateInBaseUnit: 1000,
+          minUnitsToExchange: 350,
+          numTokens: 'notANumber'
+        }
+        uut.inputValidate(data)
+      } catch (err) {
+        // console.log(err)
+        assert.include(err.message, "Property 'numTokens' must be a number.")
+      }
+    })
+    it('should throw an error if makerAddress is not included', () => {
+      try {
+        const data = {
+          messageType: 1,
+          messageClass: 1,
+          tokenId: 'fakeId',
+          buyOrSell: 'buy',
+          rateInBaseUnit: 1000,
+          minUnitsToExchange: 350,
+          numTokens: 1000
+        }
+        uut.inputValidate(data)
+      } catch (err) {
+        // console.log(err)
+        assert.include(err.message, "Property 'makerAddr' must be a string.")
+      }
+    })
+    it('should throw an error if makerAddress is not a string', () => {
+      try {
+        const data = {
+          messageType: 1,
+          messageClass: 1,
+          tokenId: 'fakeId',
+          buyOrSell: 'buy',
+          rateInBaseUnit: 1000,
+          minUnitsToExchange: 350,
+          numTokens: 1000,
+          makerAddr: 1234567890
+        }
+        uut.inputValidate(data)
+      } catch (err) {
+        // console.log(err)
+        assert.include(err.message, "Property 'makerAddr' must be a string.")
+      }
+    })
+    it('should return the correct data', () => {
+      const data = {
+        messageType: 1,
+        messageClass: 1,
+        tokenId: 'fakeId',
+        buyOrSell: 'buy',
+        rateInBaseUnit: 1000,
+        minUnitsToExchange: 350,
+        numTokens: 1000,
+        makerAddr: 'fakeAddr'
+      }
+      const result = uut.inputValidate(data)
+      assert.deepEqual(result, data)
+    })
   })
 })

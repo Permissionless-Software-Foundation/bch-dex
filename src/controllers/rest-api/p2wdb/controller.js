@@ -64,6 +64,7 @@ class P2WDBRESTControllerLib {
         await _this.useCases.offer.flagOffer(flagData)
       } else {
         console.log('Could not route P2WDB webhook data.')
+        // NOTE: Should we throw an error here?
       }
 
       // const orderObj = ctx.request.body.order

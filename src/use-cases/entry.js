@@ -30,11 +30,12 @@ class EntryLib {
       if (!isValidSignature) {
         throw new Error('Invalid signature')
       }
-
       // Verify psf tokens balance
       // const psfBalance = await this.bch.getPSFTokenBalance(
       //   entryEntity.slpAddress
       // )
+      // NOTE: this.bch.getPSFTokenBalance , does not exist , should be created?
+
       const psfBalance = 1
 
       if (psfBalance < 10) {
