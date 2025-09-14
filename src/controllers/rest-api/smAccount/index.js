@@ -40,7 +40,6 @@ class SmAccountRouter {
     const baseUrl = '/sm'
     this.router = new Router({ prefix: baseUrl })
 
-    this.listAccounts = this.listAccounts.bind(this)
     _this = this
   }
 
@@ -59,11 +58,6 @@ class SmAccountRouter {
     // Attach the Controller routes to the Koa app.
     app.use(_this.router.routes())
     app.use(_this.router.allowedMethods())
-  }
-
-  async listAccounts (ctx, next) {
-    // await _this.validators.ensureUser(ctx, next)
-    await _this.smAccountRESTController.listAccounts(ctx, next)
   }
 }
 

@@ -153,6 +153,18 @@ const localdb = {
     async save () {
       return {}
     }
+  },
+  SmAccount: class SmAccount {
+    constructor (obj) {}
+
+    static findById () {}
+    static find () {}
+    static findOne () {}
+    static updateOne () {}  
+
+    async save () {
+      return {}
+    }
   }
 }
 
@@ -202,7 +214,9 @@ const p2wdb = {
 const nostr = {
   post: async () => {return true },
   read: async () => { return true },
-  eventId2note: () => { return 'testNoteId' }
+  eventId2note: () => { return 'testNoteId' },
+  readGlobalFeed: async () => { return [] },
+  getFollowers: async () => { return [] }
 }
 
 export default { ipfs, localdb, bch, wallet, p2wdb, bchjs, nostr}

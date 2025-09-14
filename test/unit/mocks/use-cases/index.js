@@ -50,6 +50,27 @@ class Offer {
   async loadOffers(){
     
   }
+  async listOffers() {
+    return []
+  }
+  async listNftOffers() {
+    return []
+  }
+  async listFungibleOffers() {
+    return []
+  }
+  async takeOffer() {
+    return []
+  }
+  async listOffersByAddress() {
+    return []
+  }
+  async flagOffer() {
+    return {}
+  }
+  async acceptCounterOffer() {
+    return {}
+  }
 }
 
 class Order {
@@ -58,6 +79,12 @@ class Order {
   }
   async removeStaleOrders(){
     return {}
+  }
+  async listOrders() {
+    return []
+  }
+  async deleteOrder() {
+    return 'testTxid'
   }
 }
 
@@ -87,6 +114,24 @@ class UsageUseCaseMock {
   }
 }
 
+class SmAccountUseCaseMock {
+  async listAccounts() {
+    return []
+  }
+  async getAccountByNpub() {
+    return {}
+  }
+  async getAccountByBchAddr() {
+    return {}
+  }
+  async checkForNewSmAccounts() {
+    return true
+  }
+  async updateSmAccounts() {
+    return true
+  }
+}
+
 class UseCasesMock {
   constuctor(localConfig = {}) {
     // this.user = new UserUseCaseMock(localConfig)
@@ -97,6 +142,7 @@ class UseCasesMock {
   offer = new Offer()
   order = new Order()
   usage = new UsageUseCaseMock()
+  smAccount = new SmAccountUseCaseMock()
 }
 
 export default UseCasesMock;

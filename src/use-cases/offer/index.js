@@ -598,7 +598,9 @@ class OfferUseCases {
         throw new Error('Could not calculate the amount of BCH offered in the Counter Offer')
       }
       const satsOut = this.adapters.wallet.bchWallet.bchjs.BitcoinCash.toSatoshi(txObj.vout[2].value)
+
       const hasRequiredAmount = satsOut === satsToReceive
+
       if (!hasRequiredAmount) {
         throw new Error(`The Counter Offer has an output of ${satsOut}, which does not match the required ${satsToReceive} in the Offer.`)
       }
@@ -615,25 +617,25 @@ class OfferUseCases {
 
       // Ensure the 3rd output (vout=2) is going to the maker address specified
       // in the Offer.
+
       const addrInCounterOffer = txObj.vout[2].scriptPubKey.addresses[0]
       const makerAddr = orderData.makerAddr
       const hasCorrectAddr = makerAddr === addrInCounterOffer
+
       if (!hasCorrectAddr) {
         throw new Error(`The Counter Offer has an output address of ${addrInCounterOffer}, which does not match the Maker address of ${makerAddr} in the Offer.`)
       }
 
       // Ensure the 4th output (vout=3) is going to the operator address specified in the Offer.
+      // NOTE: This is the operator of the bch-dex intance, NOT the seller of the token.
       const operatorAddr = orderData.operatorAddress
+
       const hasCorrectOperatorAddr = operatorAddr === txObj.vout[3].scriptPubKey.addresses[0]
       if (!hasCorrectOperatorAddr) {
         throw new Error(`The Counter Offer has an output address of ${txObj.vout[3].scriptPubKey.addresses[0]}, which does not match the Operator address of ${operatorAddr} in the Offer.`)
       }
 
       // Ensure the 4th output (vout=3) contains the required amount of BCH.
-      const operatorSatsToReceive = Math.ceil(orderData.numTokens * parseInt(orderData.rateInBaseUnit))
-      if (isNaN(operatorSatsToReceive)) {
-        throw new Error('Could not calculate the amount of BCH offered in the Counter Offer')
-      }
       const operatorSatsOut = this.adapters.wallet.bchWallet.bchjs.BitcoinCash.toSatoshi(txObj.vout[3].value)
       let estimatedOperatorFee = Math.floor(txObj.vout[3].value * orderData.operatorPercentage / 100)
       if (estimatedOperatorFee < 546) estimatedOperatorFee = 546
@@ -814,7 +816,7 @@ class OfferUseCases {
     try {
       // Retrieve offers array.
       const offers = await this.adapters.nostr.read()
-      // console.log('offers: ', offers)
+      console.log('offers: ', offers)
 
       for (let i = 0; i < offers.length; i++) {
         try {
@@ -825,7 +827,7 @@ class OfferUseCases {
 
           // Append the Nostr Event ID to the offer object
           offerObj.data.nostrEventId = offer.eventId
-          // console.log('loadOffers() offerObj: ', offerObj)
+          console.log('loadOffers() offerObj: ', offerObj)
 
           if (offerObj.data.dataType === 'offer') {
             // Try to create new offer

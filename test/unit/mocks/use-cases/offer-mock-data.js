@@ -169,6 +169,7 @@ const deserealizeTxMockNoOperatorOut = {
         addresses: ['bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7478']
       }
     },
+    
     //...
   ]
 }

@@ -1,5 +1,5 @@
 /*
-  Unit tests for the REST API handler for the /users endpoints.
+  Unit tests for the REST API handler for the /p2wdb endpoints.
 */
 
 // Public npm libraries
@@ -9,7 +9,7 @@ import sinon from 'sinon'
 // Local support libraries
 import adapters from '../../../mocks/adapters/index.js'
 import UseCasesMock from '../../../mocks/use-cases/index.js'
-import OrderRouter from '../../../../../src/controllers/rest-api/order/index.js'
+import P2WDBRouter from '../../../../../src/controllers/rest-api/p2wdb/index.js'
 
 let uut
 let sandbox
@@ -17,12 +17,12 @@ let sandbox
 
 // const mockContext = require('../../../../unit/mocks/ctx-mock').context
 
-describe('#Order-REST-Router', () => {
+describe('#P2WDB-REST-Router', () => {
   // const testUser = {}
 
   beforeEach(() => {
     const useCases = new UseCasesMock()
-    uut = new OrderRouter({ adapters, useCases })
+    uut = new P2WDBRouter({ adapters, useCases })
 
     sandbox = sinon.createSandbox()
 
@@ -35,26 +35,26 @@ describe('#Order-REST-Router', () => {
   describe('#constructor', () => {
     it('should throw an error if adapters are not passed in', () => {
       try {
-        uut = new OrderRouter()
+        uut = new P2WDBRouter()
 
         assert.fail('Unexpected code path')
       } catch (err) {
         assert.include(
           err.message,
-          'Instance of Adapters library required when instantiating /order REST Controller.'
+          'Instance of Adapters library required when instantiating /p2wdb REST Controller.'
         )
       }
     })
 
     it('should throw an error if useCases are not passed in', () => {
       try {
-        uut = new OrderRouter({ adapters })
+        uut = new P2WDBRouter({ adapters })
 
         assert.fail('Unexpected code path')
       } catch (err) {
         assert.include(
           err.message,
-          'Instance of Use Cases library required when instantiating /order REST Controller.'
+          'Instance of Use Cases library required when instantiating /p2wdb REST Controller.'
         )
       }
     })
@@ -72,15 +72,6 @@ describe('#Order-REST-Router', () => {
           'Must pass app object when attached REST API controllers.'
         )
       }
-    })
-  })
-  describe('#createOrder', () => {
-    it('should route to controller', async () => {
-      sandbox.stub(uut.validators, 'ensureUser').resolves(true)
-      const spy = sandbox.stub(uut.orderRESTController, 'createOrder').resolves(true)
-
-      await uut.createOrder()
-      assert.isTrue(spy.calledOnce)
     })
   })
 })

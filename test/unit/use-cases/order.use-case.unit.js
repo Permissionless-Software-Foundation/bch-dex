@@ -158,6 +158,7 @@ describe('#order-use-case', () => {
 
   describe('#createOrder', () => {
     it('should create an order and return the hash', async () => {
+      uut.config.useFullStackCash = true
       const entryObj = {
         lokadId: 'SWP',
         messageType: 1,
@@ -384,6 +385,57 @@ describe('#order-use-case', () => {
       sandbox.stub(uut.adapters.wallet, 'reclaimTokens').resolves('txid')
       const result = await uut.deleteOrder()
       assert.isString(result)
+    })
+  })
+
+  describe('#findOrderByUtxo', () => {
+    it('should throw an error if data is not provided', async () => {
+      try {
+        await uut.findOrderByUtxo({})
+      } catch (err) {
+        assert.include(err.message, 'Cannot read properties of undefined')
+      }
+    })
+    it('should throw an error if order is not found', async () => {
+      try {
+        sandbox.stub(uut.OrderModel, 'findOne').resolves(null)
+        const offerData = {
+          data: {
+            utxoTxid: 'utxoTxid',
+            utxoVout: 'utxoVout'
+          }
+        }
+        await uut.findOrderByUtxo(offerData)
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'order not found')
+      }
+    })
+    it('should throw an error if order event id is not found', async () => {
+      try {
+        sandbox.stub(uut.OrderModel, 'findOne').resolves({ nostrEventId: null })
+        const offerData = {
+          data: {
+            utxoTxid: 'utxoTxid',
+            utxoVout: 'utxoVout'
+          }
+        }
+        await uut.findOrderByUtxo(offerData)
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'order not found')
+      }
+    })
+    it('should return order by utxo', async () => {
+      sandbox.stub(uut.OrderModel, 'findOne').resolves({ toObject: () => { return {} }, nostrEventId: 'nostrEventId' })
+      const offerData = {
+        data: {
+          utxoTxid: 'utxoTxid',
+          utxoVout: 'utxoVout'
+        }
+      }
+      const result = await uut.findOrderByUtxo(offerData)
+      assert.isObject(result)
     })
   })
 })
