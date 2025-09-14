@@ -101,7 +101,47 @@ describe('#Order-REST-Router', () => {
       }
     })
   })
+  describe('#listOrders', () => {
+    it('should list orders', async () => {
+      ctx.params = { page: 0 }
+      sandbox.stub(uut.useCases.order, 'listOrders').resolves([])
+      await uut.listOrders(ctx)
+      assert.isArray(ctx.body)
+    })
+    it('should catch and throw an error', async () => {
+      try {
+        ctx.params = { page: 0 }
+        sandbox.stub(uut.useCases.order, 'listOrders').throws(new Error('test error'))
+        await uut.listOrders(ctx)
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
 
+  describe('#deleteOrder', () => {
+    it('should delete an order', async () => {
+      ctx.request.body = {
+        nostrEventId: 'testEventId'
+      }
+      sandbox.stub(uut.useCases.order, 'deleteOrder').resolves('testTxid')
+      await uut.deleteOrder(ctx)
+      assert.equal(ctx.body.txid, 'testTxid')
+    })
+    it('should catch and throw an error', async () => {
+      try {
+        ctx.request.body = {
+          nostrEventId: 'testEventId'
+        }
+        sandbox.stub(uut.useCases.order, 'deleteOrder').throws(new Error('test error'))
+        await uut.deleteOrder(ctx)
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
   describe('#handleError', () => {
     it('should still throw error if there is no message', () => {
       try {
