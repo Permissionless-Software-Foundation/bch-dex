@@ -627,6 +627,7 @@ class OfferUseCases {
       }
 
       // Ensure the 4th output (vout=3) is going to the operator address specified in the Offer.
+      // NOTE: This is the operator of the bch-dex intance, NOT the seller of the token.
       const operatorAddr = orderData.operatorAddress
 
       const hasCorrectOperatorAddr = operatorAddr === txObj.vout[3].scriptPubKey.addresses[0]
@@ -634,13 +635,7 @@ class OfferUseCases {
         throw new Error(`The Counter Offer has an output address of ${txObj.vout[3].scriptPubKey.addresses[0]}, which does not match the Operator address of ${operatorAddr} in the Offer.`)
       }
 
-      /*
-            NOTE: Condition already validated above  at line 597
       // Ensure the 4th output (vout=3) contains the required amount of BCH.
-            const operatorSatsToReceive = Math.ceil(orderData.numTokens * parseInt(orderData.rateInBaseUnit))
-            if (isNaN(operatorSatsToReceive)) {
-              throw new Error('Could not calculate the amount of BCH offered in the Counter Offer')
-            } */
       const operatorSatsOut = this.adapters.wallet.bchWallet.bchjs.BitcoinCash.toSatoshi(txObj.vout[3].value)
       let estimatedOperatorFee = Math.floor(txObj.vout[3].value * orderData.operatorPercentage / 100)
       if (estimatedOperatorFee < 546) estimatedOperatorFee = 546

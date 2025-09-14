@@ -1,6 +1,9 @@
 /*
   Entry Entity
+
+  TODO: Explain what an entry is and how it works.
 */
+
 class Entry {
   validate ({
     entry,

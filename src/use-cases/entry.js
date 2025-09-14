@@ -1,3 +1,8 @@
+/*
+  Entry use-case library.
+
+  TODO: Explain what an entry is and how it works.
+*/
 
 // local libraries
 import wlogger from '../adapters/wlogger.js'
