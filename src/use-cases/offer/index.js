@@ -816,7 +816,7 @@ class OfferUseCases {
     try {
       // Retrieve offers array.
       const offers = await this.adapters.nostr.read()
-      console.log('offers: ', offers)
+      // console.log('offers: ', offers)
 
       for (let i = 0; i < offers.length; i++) {
         try {
