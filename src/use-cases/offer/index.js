@@ -816,7 +816,7 @@ class OfferUseCases {
     try {
       // Retrieve offers array.
       const offers = await this.adapters.nostr.read()
-      console.log('offers: ', offers)
+      // console.log('offers: ', offers)
 
       for (let i = 0; i < offers.length; i++) {
         try {
@@ -827,7 +827,7 @@ class OfferUseCases {
 
           // Append the Nostr Event ID to the offer object
           offerObj.data.nostrEventId = offer.eventId
-          console.log('loadOffers() offerObj: ', offerObj)
+          // console.log('loadOffers() offerObj: ', offerObj)
 
           if (offerObj.data.dataType === 'offer') {
             // Try to create new offer
