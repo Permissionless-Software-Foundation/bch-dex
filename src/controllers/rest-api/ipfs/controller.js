@@ -40,11 +40,23 @@ class IpfsRESTControllerLib {
    * @api {get} /ipfs Get status on IPFS infrastructure
    * @apiPermission public
    * @apiName GetIpfsStatus
-   * @apiGroup REST BCH
+   * @apiGroup REST IPFS
    *
    * @apiExample Example usage:
    * curl -H "Content-Type: application/json" -X GET localhost:5001/ipfs
    *
+   * @apiSuccess {Object} status          IPFS status object
+   * @apiSuccess {String} status.ipfsId   IPFS ID
+   * @apiSuccess {String} status.multiaddrs   IPFS multiaddrs
+
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "status": {
+   *         "ipfsId": "1234567890",
+   *         "multiaddrs": ["/ip4/123.45.67.89/tcp/4001/p2p/1234567890"]
+   *       }
+   *     }
    */
   async getStatus (ctx) {
     try {
@@ -58,6 +70,16 @@ class IpfsRESTControllerLib {
     }
   }
 
+  /**
+   * @api {POST} /ipfs/peers Get IPFS peers
+   * @apiPermission public
+   * @apiName GetIpfsPeers
+   * @apiGroup REST IPFS
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X POST -d '{ "showAll": true }' localhost:5001/ipfs/peers
+   *
+   */
   // Return information on IPFS peers this node is connected to.
   async getPeers (ctx) {
     try {
@@ -73,6 +95,18 @@ class IpfsRESTControllerLib {
     }
   }
 
+  /**
+   * @api {POST} /ipfs/relays Get IPFS relays
+   * @apiPermission public
+   * @apiName GetIpfsRelays
+   * @apiGroup REST IPFS
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X POST localhost:5001/ipfs/relays
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   */
   // Get data about the known Circuit Relays. Hydrate with data from peers list.
   async getRelays (ctx) {
     try {
@@ -86,6 +120,17 @@ class IpfsRESTControllerLib {
     }
   }
 
+  /**
+   *
+   * @api {POST} /ipfs/connect Connect to an IPFS peer
+   * @apiPermission public
+   * @apiName ConnectToIpfsPeer
+   * @apiGroup REST IPFS
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X POST -d '{ "multiaddr": "/ip4/123.45.67.89/tcp/4001/p2p/1234567890", "getDetails": true }' localhost:5001/ipfs/connect
+   *
+   */
   async connect (ctx) {
     try {
       const multiaddr = ctx.request.body.multiaddr
@@ -107,7 +152,7 @@ class IpfsRESTControllerLib {
    * @api {get} /ipfs/node Get a copy of the thisNode object from helia-coord
    * @apiPermission public
    * @apiName GetThisNode
-   * @apiGroup REST BCH
+   * @apiGroup REST IPFS
    *
    * @apiExample Example usage:
    * curl -H "Content-Type: application/json" -X GET localhost:5001/ipfs/node

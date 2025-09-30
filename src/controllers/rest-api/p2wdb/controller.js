@@ -31,7 +31,25 @@ class P2WDBRESTControllerLib {
     _this = this
   }
 
-  // No api-doc documentation because this wont be a public endpoint
+  /**
+   * @api {post} /p2wdb Route a P2WDB webhook
+   * @apiPermission public
+   * @apiName RouteWebhook
+   * @apiGroup REST P2WDB
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X POST -d '{"data": {"dataType": "offer"} } ' localhost:5001/p2wdb
+   *
+   * @apiSuccess {String} success Success message
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "success": true
+   *     }
+   */
+
+  // Note: verify if this is a private endpoint, needs to be authenticated
   async routeWebhook (ctx) {
     try {
       console.log('p2wdb REST API handler: body: ', ctx.request.body)
