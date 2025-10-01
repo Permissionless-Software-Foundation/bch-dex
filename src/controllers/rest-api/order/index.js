@@ -54,7 +54,7 @@ class OrderRouter {
     // Define the routes and attach the controller.
     this.router.post('/', this.createOrder)
     this.router.get('/list/all/:page', _this.orderRESTController.listOrders)
-    this.router.post('/delete', _this.orderRESTController.deleteOrder)
+    this.router.post('/delete', this.deleteOrder)
 
     // Attach the Controller routes to the Koa app.
     app.use(_this.router.routes())
@@ -64,6 +64,11 @@ class OrderRouter {
   async createOrder (ctx, next) {
     await _this.validators.ensureUser(ctx, next)
     await _this.orderRESTController.createOrder(ctx, next)
+  }
+
+  async deleteOrder (ctx, next) {
+    await _this.validators.ensureUser(ctx, next)
+    await _this.orderRESTController.deleteOrder(ctx, next)
   }
 }
 
