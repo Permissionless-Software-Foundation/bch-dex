@@ -83,4 +83,13 @@ describe('#Order-REST-Router', () => {
       assert.isTrue(spy.calledOnce)
     })
   })
+  describe('#deleteOrder', () => {
+    it('should route to controller', async () => {
+      sandbox.stub(uut.validators, 'ensureUser').resolves(true)
+      const spy = sandbox.stub(uut.orderRESTController, 'deleteOrder').resolves(true)
+
+      await uut.deleteOrder()
+      assert.isTrue(spy.calledOnce)
+    })
+  })
 })
