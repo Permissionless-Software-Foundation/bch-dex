@@ -71,16 +71,25 @@ class IpfsRESTControllerLib {
   }
 
   /**
-   * @api {POST} /ipfs/peers Get IPFS peers
+   * @api {post} /ipfs/peers Get information on IPFS peers this node is connected to
    * @apiPermission public
    * @apiName GetIpfsPeers
    * @apiGroup REST IPFS
    *
-   * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X POST -d '{ "showAll": true }' localhost:5001/ipfs/peers
+   * @apiParam {Boolean} [showAll=false] Whether to include detailed peer data
    *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X POST localhost:5001/ipfs/peers \
+   *   -d '{"showAll": false}'
+   *
+   * @apiSuccess {Object[]} peers Array of peer objects
+   * @apiSuccess {String} peers[].peer Peer ID
+   * @apiSuccess {String} peers[].name Peer name
+   * @apiSuccess {String} peers[].protocol Protocol used by the peer
+   * @apiSuccess {String} peers[].version Peer version
+   * @apiSuccess {String} peers[].connectionAddr Connection address
+   * @apiSuccess {Object} [peers[].peerData] Detailed peer data (when showAll=true)
    */
-  // Return information on IPFS peers this node is connected to.
   async getPeers (ctx) {
     try {
       const showAll = ctx.request.body.showAll
@@ -96,16 +105,22 @@ class IpfsRESTControllerLib {
   }
 
   /**
-   * @api {POST} /ipfs/relays Get IPFS relays
+   * @api {post} /ipfs/relays Get data about the known Circuit Relays
    * @apiPermission public
    * @apiName GetIpfsRelays
    * @apiGroup REST IPFS
    *
+   * @apiDescription Returns information about Circuit Relays, both v1 and v2, that this node knows about. V2 relays are hydrated with peer data from the connected peers list.
+   *
    * @apiExample Example usage:
    * curl -H "Content-Type: application/json" -X POST localhost:5001/ipfs/relays
    *
-   * @apiSuccessExample {json} Success-Response:
-   *     HTTP/1.1 200 OK
+   * @apiSuccess {Object} relays Object containing relay information
+   * @apiSuccess {Object[]} relays.v2Relays Array of v2 Circuit Relay objects
+   * @apiSuccess {String} relays.v2Relays[].ipfsId IPFS ID of the relay
+   * @apiSuccess {String} relays.v2Relays[].name Name of the relay (hydrated from peer data)
+   * @apiSuccess {String} relays.v2Relays[].description Description of the relay (hydrated from peer data)
+   * @apiSuccess {Object[]} relays.v1Relays Array of v1 Circuit Relay configurations
    */
   // Get data about the known Circuit Relays. Hydrate with data from peers list.
   async getRelays (ctx) {
@@ -121,15 +136,22 @@ class IpfsRESTControllerLib {
   }
 
   /**
-   *
-   * @api {POST} /ipfs/connect Connect to an IPFS peer
+   * @api {post} /ipfs/connect Connect to a specific IPFS peer
    * @apiPermission public
    * @apiName ConnectToIpfsPeer
    * @apiGroup REST IPFS
    *
-   * @apiExample Example usage:
-   * curl -H "Content-Type: application/json" -X POST -d '{ "multiaddr": "/ip4/123.45.67.89/tcp/4001/p2p/1234567890", "getDetails": true }' localhost:5001/ipfs/connect
+   * @apiDescription Attempts to establish a connection to a specific IPFS peer using the provided multiaddr. Optionally returns detailed information about the connection.
    *
+   * @apiParam {String} multiaddr Multiaddress of the peer to connect to (required)
+   * @apiParam {Boolean} [getDetails=false] Whether to return detailed connection information
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X POST localhost:5001/ipfs/connect \
+   *   -d '{"multiaddr": "/ip4/161.35.99.207/tcp/4001/p2p/12D3KooWDtj9cfj1SKuLbDNKvKRKSsGN8qivq9M8CYpLPDpcD5pu", "getDetails": false}'
+   *
+   * @apiSuccess {Boolean} success Indicates whether the connection attempt was successful
+   * @apiSuccess {Object} [details] Additional connection details (when getDetails=true)
    */
   async connect (ctx) {
     try {
