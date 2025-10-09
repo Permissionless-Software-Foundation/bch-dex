@@ -267,7 +267,7 @@ class OfferUseCases {
     }
   }
 
-  async listNftOffers (page = 0, nsfw = false) {
+  /*   async listNftOffers (page = 0, nsfw = false) {
     try {
       const data = await this.OfferModel.find({
         displayCategory: { $ne: 'fungible' },
@@ -283,6 +283,42 @@ class OfferUseCases {
       // console.log('listNftOffers() returning this data: ', data)
 
       return data
+    } catch (error) {
+      console.error('Error in use-cases/offer/listNftOffers()')
+      throw error
+    }
+  } */
+
+  async listNftOffers (page = 0, nsfw = false) {
+    try {
+      const query = {
+        displayCategory: { $ne: 'fungible' },
+        nsfw
+      }
+      // Total query offers
+      const totalOffers = await this.OfferModel.countDocuments(query)
+      // Total pages
+      const totalPages = Math.ceil(totalOffers / NFT_ENTRIES_PER_PAGE)
+
+      const data = await this.OfferModel.find(query)
+        // Sort entries so newest entries show first.
+        .sort('-timestamp')
+        // Skip to the start of the selected page.
+        .skip(page * NFT_ENTRIES_PER_PAGE)
+        // Only return 20 results.
+        .limit(NFT_ENTRIES_PER_PAGE)
+
+      // console.log('listNftOffers() returning this data: ', data)
+
+      return {
+        data,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalOffers,
+          pageSize: NFT_ENTRIES_PER_PAGE
+        }
+      }
     } catch (error) {
       console.error('Error in use-cases/offer/listNftOffers()')
       throw error

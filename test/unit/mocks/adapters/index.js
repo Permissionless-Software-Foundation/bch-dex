@@ -149,7 +149,7 @@ const localdb = {
     static findById () {}
     static find () {}
     static findOne () {}
-
+    static countDocuments(){}
     async save () {
       return {}
     }
