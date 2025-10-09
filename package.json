@@ -10,6 +10,7 @@
     "test:all": "export BCH_DEX=test && c8 --reporter=text mocha --exit --timeout 15000 --recursive test/unit test/e2e/automated/",
     "test:unit": "export BCH_DEX=test && c8 --reporter=text mocha --exit --timeout 15000 --recursive test/unit/",
     "test:e2e:auto": "export BCH_DEX=test && mocha --exit --timeout 30000 test/e2e/automated/",
+    "start:e2e:server": "export BCH_DEX=test && node index.js",
     "test:integration": "export BCH_DEX=test && mocha --exit --timeout 45000 --recursive test/integration",
     "test:temp": "export BCH_DEX=test && mocha --exit --timeout 15000 -g '#rate-limit' test/unit/json-rpc/",
     "lint": "standard --env mocha --fix",

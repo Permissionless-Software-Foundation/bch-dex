@@ -39,7 +39,15 @@ const Offer = new mongoose.Schema({
 
   // Operator fee and address
   operatorAddress: { type: String },
-  operatorPercentage: { type: Number }
+  operatorPercentage: { type: Number },
+
+  // Token Data
+  immutableDataCid: { type: String, default: null },
+  mutableDataCid: { type: String, default: null },
+  tokenIconUrl: { type: String, default: null },
+  tokenCategories: { type: Array, default: [] },
+  tokenTags: { type: Array, default: [] },
+  lastUpdatedTokenData: { type: String, default: null } // ISO timestamp of the last time token data was updated.
 })
 
 export default mongoose.model('offer', Offer)

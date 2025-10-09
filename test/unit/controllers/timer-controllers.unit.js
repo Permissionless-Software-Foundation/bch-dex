@@ -130,12 +130,12 @@ describe('#Timer-Controllers', () => {
       assert.equal(result, true)
     })
 
-    // it('should return false on error', async () => {
-    //   sandbox.stub(uut.useCases.usage, 'cleanUsage').throws(new Error('test error'))
-    //   const result = await uut.cleanUsage()
+    it('should return false on error', async () => {
+      sandbox.stub(uut.useCases.usage, 'cleanUsage').throws(new Error('test error'))
+      const result = await uut.cleanUsage()
 
-    //   assert.equal(result, false)
-    // })
+      assert.equal(result, false)
+    })
   })
 
   describe('#backupUsage', () => {
@@ -150,6 +150,39 @@ describe('#Timer-Controllers', () => {
       // sandbox.stub(uut.useCases.usage, 'saveUsage').throws(new Error('test error'))
 
       const result = await uut.backupUsage()
+
+      assert.equal(result, false)
+    })
+  })
+
+  describe('#newSmAccounts', () => {
+    it('should kick off the Use Case', async () => {
+      const result = await uut.newSmAccounts()
+
+      assert.equal(result, true)
+    })
+
+    it('should return false on error', async () => {
+      sandbox.stub(uut.useCases.smAccount, 'checkForNewSmAccounts').throws(new Error('test error'))
+      // sandbox.stub(uut.useCases.usage, 'saveUsage').throws(new Error('test error'))
+
+      const result = await uut.newSmAccounts()
+
+      assert.equal(result, false)
+    })
+  })
+  describe('#updateSmAccounts', () => {
+    it('should kick off the Use Case', async () => {
+      const result = await uut.updateSmAccounts()
+
+      assert.equal(result, true)
+    })
+
+    it('should return false on error', async () => {
+      sandbox.stub(uut.useCases.smAccount, 'updateSmAccounts').throws(new Error('test error'))
+      // sandbox.stub(uut.useCases.usage, 'saveUsage').throws(new Error('test error'))
+
+      const result = await uut.updateSmAccounts()
 
       assert.equal(result, false)
     })

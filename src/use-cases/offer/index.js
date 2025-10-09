@@ -267,7 +267,7 @@ class OfferUseCases {
     }
   }
 
-  async listNftOffers (page = 0, nsfw = false) {
+  /*   async listNftOffers (page = 0, nsfw = false) {
     try {
       const data = await this.OfferModel.find({
         displayCategory: { $ne: 'fungible' },
@@ -283,6 +283,42 @@ class OfferUseCases {
       // console.log('listNftOffers() returning this data: ', data)
 
       return data
+    } catch (error) {
+      console.error('Error in use-cases/offer/listNftOffers()')
+      throw error
+    }
+  } */
+
+  async listNftOffers (page = 0, nsfw = false) {
+    try {
+      const query = {
+        displayCategory: { $ne: 'fungible' },
+        nsfw
+      }
+      // Total query offers
+      const totalOffers = await this.OfferModel.countDocuments(query)
+      // Total pages
+      const totalPages = Math.ceil(totalOffers / NFT_ENTRIES_PER_PAGE)
+
+      const data = await this.OfferModel.find(query)
+        // Sort entries so newest entries show first.
+        .sort('-timestamp')
+        // Skip to the start of the selected page.
+        .skip(page * NFT_ENTRIES_PER_PAGE)
+        // Only return 20 results.
+        .limit(NFT_ENTRIES_PER_PAGE)
+
+      // console.log('listNftOffers() returning this data: ', data)
+
+      return {
+        data,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalOffers,
+          pageSize: NFT_ENTRIES_PER_PAGE
+        }
+      }
     } catch (error) {
       console.error('Error in use-cases/offer/listNftOffers()')
       throw error
@@ -598,7 +634,9 @@ class OfferUseCases {
         throw new Error('Could not calculate the amount of BCH offered in the Counter Offer')
       }
       const satsOut = this.adapters.wallet.bchWallet.bchjs.BitcoinCash.toSatoshi(txObj.vout[2].value)
+
       const hasRequiredAmount = satsOut === satsToReceive
+
       if (!hasRequiredAmount) {
         throw new Error(`The Counter Offer has an output of ${satsOut}, which does not match the required ${satsToReceive} in the Offer.`)
       }
@@ -615,25 +653,25 @@ class OfferUseCases {
 
       // Ensure the 3rd output (vout=2) is going to the maker address specified
       // in the Offer.
+
       const addrInCounterOffer = txObj.vout[2].scriptPubKey.addresses[0]
       const makerAddr = orderData.makerAddr
       const hasCorrectAddr = makerAddr === addrInCounterOffer
+
       if (!hasCorrectAddr) {
         throw new Error(`The Counter Offer has an output address of ${addrInCounterOffer}, which does not match the Maker address of ${makerAddr} in the Offer.`)
       }
 
       // Ensure the 4th output (vout=3) is going to the operator address specified in the Offer.
+      // NOTE: This is the operator of the bch-dex intance, NOT the seller of the token.
       const operatorAddr = orderData.operatorAddress
+
       const hasCorrectOperatorAddr = operatorAddr === txObj.vout[3].scriptPubKey.addresses[0]
       if (!hasCorrectOperatorAddr) {
         throw new Error(`The Counter Offer has an output address of ${txObj.vout[3].scriptPubKey.addresses[0]}, which does not match the Operator address of ${operatorAddr} in the Offer.`)
       }
 
       // Ensure the 4th output (vout=3) contains the required amount of BCH.
-      const operatorSatsToReceive = Math.ceil(orderData.numTokens * parseInt(orderData.rateInBaseUnit))
-      if (isNaN(operatorSatsToReceive)) {
-        throw new Error('Could not calculate the amount of BCH offered in the Counter Offer')
-      }
       const operatorSatsOut = this.adapters.wallet.bchWallet.bchjs.BitcoinCash.toSatoshi(txObj.vout[3].value)
       let estimatedOperatorFee = Math.floor(txObj.vout[3].value * orderData.operatorPercentage / 100)
       if (estimatedOperatorFee < 546) estimatedOperatorFee = 546

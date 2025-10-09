@@ -29,7 +29,36 @@ class EntryRESTControllerLib {
     _this = this
   }
 
+  /**
+   * @api {post} /entry Create an entry
+   * @apiPermission public
+   * @apiName CreateEntry
+   * @apiGroup REST Entry
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X POST -d '{"entry": "1234567890", "description": "1234567890", "slpAddress": "1234567890", "signature": "1234567890", "category": "1234567890"}' localhost:5001/entry
+   *
+   * @apiSuccess {Object} entry          Entry object
+   * @apiSuccess {String} entry.id   Entry ID
+   * @apiSuccess {String} entry.description   Entry description
+   * @apiSuccess {String} entry.slpAddress   Entry slp address
+   * @apiSuccess {String} entry.signature   Entry signature
+   * @apiSuccess {String} entry.category   Entry category
+
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "entry": {
+   *         "id": "1234567890",
+   *         "description": "1234567890",
+   *         "slpAddress": "1234567890",
+   *         "signature": "1234567890",
+   *         "category": "1234567890"
+   *       }
+   *     }
+   */
   // No api-doc documentation because this wont be a public endpoint
+  // Note: this is a private endpoint, needs to be authenticated
   async createEntry (ctx) {
     try {
       console.log('body: ', ctx.request.body)

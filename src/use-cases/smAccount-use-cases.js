@@ -10,7 +10,7 @@ class smAccountUseCases {
     this.adapters = localConfig.adapters
     if (!this.adapters) {
       throw new Error(
-        'Instance of adapters must be passed in when instantiating Order Use Cases library.'
+        'Instance of adapters must be passed in when instantiating SM Account Use Cases library.'
       )
     }
 
@@ -28,6 +28,7 @@ class smAccountUseCases {
       console.log('Checking for new Social Media Accounts...')
 
       const messages = await this.adapters.nostr.readGlobalFeed()
+      console.log('messages: ', messages)
       for (let i = 0; i < messages.length; i++) {
         const msg = messages[i]
         // const { content, id, tags, npub, pubkey } = msg
@@ -122,6 +123,7 @@ class smAccountUseCases {
         const followerCnt = followList.length
         await SmAccount.updateOne({ _id: account._id }, { $set: { followerCnt } })
       }
+      return true
     } catch (err) {
       console.error('Error in smAccount-use-cases.js/updateSmAccounts(): ', err)
       throw err

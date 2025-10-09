@@ -12,13 +12,13 @@ class SmAccountRESTControllerLib {
     this.adapters = localConfig.adapters
     if (!this.adapters) {
       throw new Error(
-        'Instance of Adapters library required when instantiating /order REST Controller.'
+        'Instance of Adapters library required when instantiating /sm REST Controller.'
       )
     }
     this.useCases = localConfig.useCases
     if (!this.useCases) {
       throw new Error(
-        'Instance of Use Cases library required when instantiating /order REST Controller.'
+        'Instance of Use Cases library required when instantiating /sm REST Controller.'
       )
     }
 

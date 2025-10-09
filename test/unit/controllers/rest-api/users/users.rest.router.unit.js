@@ -108,25 +108,25 @@ describe('#Users-REST-Router', () => {
     })
   })
 
-  // describe('#getAll', () => {
-  //   it('should route to controller', async () => {
-  //     sandbox.stub(uut.validators, 'ensureUser').resolves(true)
-  //     const spy = sandbox.stub(uut.userRESTController, 'getUsers').resolves(true)
+  describe('#getAll', () => {
+    it('should route to controller', async () => {
+      sandbox.stub(uut.validators, 'ensureAdmin').resolves(true)
+      const spy = sandbox.stub(uut.userRESTController, 'getUsers').resolves(true)
 
-  //     await uut.getAll()
-  //     assert.isTrue(spy.calledOnce)
-  //   })
-  // })
+      await uut.getAll()
+      assert.isTrue(spy.calledOnce)
+    })
+  })
 
-  // describe('#getById', () => {
-  //   it('should route to controller', async () => {
-  //     sandbox.stub(uut.validators, 'ensureUser').resolves(true)
-  //     const spy = sandbox.stub(uut.userRESTController, 'getUser').resolves(true)
+  describe('#getById', () => {
+    it('should route to controller', async () => {
+      sandbox.stub(uut.validators, 'ensureTargetUserOrAdmin').resolves(true)
+      const spy = sandbox.stub(uut.userRESTController, 'getUser').resolves(true)
 
-  //     await uut.getById()
-  //     assert.isTrue(spy.calledOnce)
-  //   })
-  // })
+      await uut.getById()
+      assert.isTrue(spy.calledOnce)
+    })
+  })
 
   describe('#updateUser', () => {
     it('should route to controller', async () => {
