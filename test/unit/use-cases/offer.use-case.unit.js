@@ -400,7 +400,7 @@ describe('#offer-use-case', () => {
       }
     })
 
-    it('should list orders', async () => {
+    it('should list offers', async () => {
       const queryMock = {
         sort () {
           return this
@@ -414,7 +414,11 @@ describe('#offer-use-case', () => {
       sandbox.stub(uut.OfferModel, 'find').returns(queryMock)
 
       const result = await uut.listNftOffers(1, true)
-      assert.isArray(result)
+      assert.isObject(result)
+      assert.property(result, 'data')
+      assert.property(result, 'pagination')
+      assert.isArray(result.data)
+      assert.isObject(result.pagination)
     })
   })
 
