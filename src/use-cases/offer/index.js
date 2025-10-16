@@ -133,6 +133,24 @@ class OfferUseCases {
       const tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTokenData, tokenId)
       // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
 
+      // Store the mutable and immutable data cids.
+      const mutableDataCid = tokenData.mutableData
+      const immutableDataCid = tokenData.immutableData
+      offerEntity.mutableDataCid = mutableDataCid
+      offerEntity.immutableDataCid = immutableDataCid
+      // Get the mutable data from the cid if it exists.
+      if (mutableDataCid && typeof mutableDataCid === 'string') {
+        const mutableData = await this.retryQueue.addToQueue(this.adapters.wallet.cid2json, mutableDataCid)
+        // console.log('mutableData: ', mutableData)
+        if (mutableData) {
+          offerEntity.tokenIconUrl = mutableData.tokenIcon
+          offerEntity.tokenCategories = mutableData.category
+          offerEntity.tokenTags = mutableData.tags
+          offerEntity.lastUpdatedTokenData = new Date().getTime()
+        }
+      }
+
+      console.log('offerEntity: ', offerEntity)
       // Generate a 'display category' for the token. This will allow the
       // front end UI to figure out how to display the token.
       const displayCategory = this.categorizeToken(offerEntity, tokenData)
