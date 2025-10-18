@@ -56,6 +56,7 @@ class WalletAdapter {
     this.completeTx = this.completeTx.bind(this)
     this.reclaimTokens = this.reclaimTokens.bind(this)
     this.moveTokensFromCustomWallet = this.moveTokensFromCustomWallet.bind(this)
+    this.cid2json = this.cid2json.bind(this)
   }
 
   // Open the wallet file, or create one if the file doesn't exist.
@@ -674,6 +675,25 @@ class WalletAdapter {
       return utxoInfo
     } catch (err) {
       console.error('Error in wallet.js/moveTokensFromCustomWallet()')
+      throw err
+    }
+  }
+
+  async cid2json (urlOrCid) {
+    try {
+      // Input validation
+      if (!urlOrCid || typeof urlOrCid !== 'string') {
+        throw new Error('urlOrCid must be a string!')
+      }
+      // Extract the cid from the url or cid.
+      const cid = urlOrCid.split('/').pop()
+      console.log('cid to json: ', cid)
+      const jsonRes = await this.bchWallet.cid2json({ cid })
+      const json = jsonRes.json
+      // console.log('json: ', json)
+      return json
+    } catch (err) {
+      console.error('Error in wallet.js/cid2json()', err.message)
       throw err
     }
   }

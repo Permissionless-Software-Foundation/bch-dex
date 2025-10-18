@@ -54,6 +54,7 @@ class MockBchWallet {
             }
         };
         this.optimize = async () => { };
+        this.cid2json = async () => {};
         this.ar = new AdapterRoute()
         // Environment variable is used by wallet-balance.unit.js to force an error.
         if (process.env.NO_UTXO) {

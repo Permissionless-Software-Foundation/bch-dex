@@ -493,4 +493,35 @@ describe('#wallet', () => {
       }
     })
   })
+  describe('#cid2json', () => {
+    it('should throw error if cid is not provided', async () => {
+      try {
+        await uut.cid2json()
+        assert.fail('Unexpected code path')
+      } catch (error) {
+        assert.equal(error.message, 'urlOrCid must be a string!')
+      }
+    })
+
+    it('should convert cid to json', async () => {
+      try {
+        sandbox.stub(uut.bchWallet, 'cid2json').resolves({ json: offerMockData.mutableDataMock })
+        const cid = 'bafkreidr6wfd6mcmwpea7abm5uk5rrprc2wfbcvo5wdcmtlolrpjab5oqm'
+        const result = await uut.cid2json(cid)
+        assert.isObject(result)
+      } catch (error) {
+        assert.fail('Unexpected code path')
+      }
+    })
+    it('should convert ipfs url to json', async () => {
+      try {
+        sandbox.stub(uut.bchWallet, 'cid2json').resolves({ json: offerMockData.mutableDataMock })
+        const url = 'https://ipfs.io/ipfs/bafkreidr6wfd6mcmwpea7abm5uk5rrprc2wfbcvo5wdcmtlolrpjab5oqm'
+        const result = await uut.cid2json(url)
+        assert.isObject(result)
+      } catch (error) {
+        assert.fail('Unexpected code path')
+      }
+    })
+  })
 })
