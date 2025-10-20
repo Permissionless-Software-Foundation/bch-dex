@@ -112,7 +112,22 @@ describe('#offer-use-case', () => {
       const tokenDataMock = mockData.nftTokenData01
       const offerObj = mockData.offerMockData
       const mutableDataMock = mockData.mutableDataMock
-      console.log('mutableDataMock: ', mutableDataMock)
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves({}) // Utxo Status call
+        .onCall(1).resolves(tokenDataMock) // Token Data call
+        .onCall(2).resolves(mutableDataMock)
+
+      const result = await uut.createOffer(offerObj)
+      assert.isTrue(result)
+    })
+    it('should skip userData stringify error', async () => {
+      const tokenDataMock = mockData.nftTokenData01
+      const offerObj = mockData.offerMockData
+      const mutableDataMock = mockData.mutableDataMock
+      mutableDataMock.userData = { n: 10n }
       // Mock dependencies
       // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
       sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))

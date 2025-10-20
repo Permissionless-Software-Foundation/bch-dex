@@ -141,12 +141,18 @@ class OfferUseCases {
       // Get the mutable data from the cid if it exists.
       if (mutableDataCid && typeof mutableDataCid === 'string') {
         const mutableData = await this.retryQueue.addToQueue(this.adapters.wallet.cid2json, mutableDataCid)
-        // console.log('mutableData: ', mutableData)
+        console.log('mutableData: ', mutableData)
         if (mutableData) {
-          offerEntity.tokenIconUrl = mutableData.tokenIcon
-          offerEntity.tokenCategories = mutableData.category
-          offerEntity.tokenTags = mutableData.tags
-          offerEntity.lastUpdatedTokenData = new Date().getTime()
+          try {
+            offerEntity.tokenIconUrl = mutableData.tokenIcon
+            offerEntity.tokenCategories = mutableData.category
+            offerEntity.tokenTags = mutableData.tags
+            offerEntity.lastUpdatedTokenData = new Date().getTime()
+
+            offerEntity.userDataStr = JSON.stringify(mutableData.userData)
+          } catch (error) {
+            // skip error
+          }
         }
       }
 
