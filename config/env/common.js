@@ -48,7 +48,7 @@ export default {
   consumerUrl: process.env.CONSUMER_URL
     ? process.env.CONSUMER_URL
     : 'https://free-bch.fullstack.cash',
-    // : 'https://dev-consumer.psfoundation.info',
+  // : 'https://dev-consumer.psfoundation.info',
   // : 'https://wa-usa-bch-consumer.fullstackcash.nl',
 
   // P2WDB URL that will accept API calls from the p2wdb npm library.
