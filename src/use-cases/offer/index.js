@@ -174,7 +174,7 @@ class OfferUseCases {
 
       return true
     } catch (err) {
-      console.error('Error in createOffer()', err.message)
+      console.error('\n\nError in createOffer()', err.message, '\n\n')
       throw err
     }
   }
