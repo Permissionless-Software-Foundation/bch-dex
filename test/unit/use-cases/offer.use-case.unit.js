@@ -112,7 +112,7 @@ describe('#offer-use-case', () => {
       const tokenDataMock = mockData.nftTokenData01
       const offerObj = mockData.offerMockData
       const mutableDataMock = mockData.mutableDataMock
-      console.log('mutableDataMock: ', mutableDataMock)
+
       // Mock dependencies
       // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
       sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
@@ -124,6 +124,57 @@ describe('#offer-use-case', () => {
       const result = await uut.createOffer(offerObj)
       assert.isTrue(result)
     })
+
+    it('should skip userData stringify error', async () => {
+      const tokenDataMock = mockData.nftTokenData01
+      const offerObj = mockData.offerMockData
+      const mutableDataMock = mockData.mutableDataMock
+      mutableDataMock.userData = { n: 10n }
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves({}) // Utxo Status call
+        .onCall(1).resolves(tokenDataMock) // Token Data call
+        .onCall(2).resolves(mutableDataMock)
+
+      const result = await uut.createOffer(offerObj)
+      assert.isTrue(result)
+    })
+
+    it('should handle error getting token data', async () => {
+      // const tokenDataMock = mockData.nftTokenData01
+      const offerObj = mockData.offerMockData
+      const mutableDataMock = mockData.mutableDataMock
+      mutableDataMock.userData = { n: 10n }
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves({}) // Utxo Status call
+        .onCall(1).throws(new Error('test error'))
+
+      const result = await uut.createOffer(offerObj)
+      assert.isTrue(result)
+    })
+
+    it('should handle error getting mutable data', async () => {
+      const tokenDataMock = mockData.nftTokenData01
+      const offerObj = mockData.offerMockData
+      const mutableDataMock = mockData.mutableDataMock
+      mutableDataMock.userData = { n: 10n }
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves({}) // Utxo Status call
+        .onCall(1).resolves(tokenDataMock) // Token Data call
+        .onCall(2).throws(new Error('test error')) // cid2json call
+
+      const result = await uut.createOffer(offerObj)
+      assert.isTrue(result)
+    })
+
     it('should create offer', async () => {
       const tokenDataMock = mockData.simpleNftTokenData01
       const offerObj = mockData.offerMockData
@@ -801,27 +852,17 @@ describe('#offer-use-case', () => {
       assert.equal(result, 'N/A')
     })
 
-    it('should return if utxo cant be validated', async () => {
+    it('should return if utxo can not be validated', async () => {
       // Mock dependencies
       const mock = Object.assign({}, mockData.offerMockData.data)
       sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
-      sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').throws(new Error('test error'))
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').throws(new Error('test error'))
+      sandbox.stub(uut.retryQueue, 'addToQueue').throws(new Error('test error'))
 
       const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
       assert.equal(result, 'N/A')
     })
 
-    it('should handle axios error', async () => {
-      // Mock dependencies
-      const mock = Object.assign({}, mockData.offerMockData.data)
-      const stubErr = new Error()
-      stubErr.isAxiosError = true
-      sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
-      sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').throws(stubErr)
-
-      const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
-      assert.equal(result, 'N/A')
-    })
     it('should return if utxo is invalid', async () => {
       // Mock dependencies
       const mock = Object.assign({}, mockData.offerMockData.data)

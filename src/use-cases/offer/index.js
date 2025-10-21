@@ -129,38 +129,57 @@ class OfferUseCases {
 
       // Get data about the token.
       const tokenId = offerEntity.tokenId
-      // const tokenData = await this.adapters.wallet.bchWallet.getTokenData(tokenId)
-      const tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTokenData, tokenId)
-      // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
-
-      // Store the mutable and immutable data cids.
-      const mutableDataCid = tokenData.mutableData
-      const immutableDataCid = tokenData.immutableData
-      offerEntity.mutableDataCid = mutableDataCid
-      offerEntity.immutableDataCid = immutableDataCid
-      // Get the mutable data from the cid if it exists.
-      if (mutableDataCid && typeof mutableDataCid === 'string') {
-        const mutableData = await this.retryQueue.addToQueue(this.adapters.wallet.cid2json, mutableDataCid)
-        // console.log('mutableData: ', mutableData)
-        if (mutableData) {
-          offerEntity.tokenIconUrl = mutableData.tokenIcon
-          offerEntity.tokenCategories = mutableData.category
-          offerEntity.tokenTags = mutableData.tags
-          offerEntity.lastUpdatedTokenData = new Date().getTime()
-        }
+      let tokenData = null
+      try {
+        tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTokenData, tokenId)
+      } catch (err) {
+        console.error('Error in OfferUseCases/createOffer() getting token data: ', err.message)
       }
 
-      console.log('offerEntity: ', offerEntity)
-      // Generate a 'display category' for the token. This will allow the
-      // front end UI to figure out how to display the token.
-      const displayCategory = this.categorizeToken(offerEntity, tokenData)
-      console.log('displayCategory: ', displayCategory)
-      offerEntity.displayCategory = displayCategory
+      // Do additional data analysis if the token data was successfully retrieved.
+      if (tokenData) {
+        // Store the mutable and immutable data cids.
+        const mutableDataCid = tokenData.mutableData
+        const immutableDataCid = tokenData.immutableData
+        offerEntity.mutableDataCid = mutableDataCid
+        offerEntity.immutableDataCid = immutableDataCid
 
-      // Detect if user set the NSFW flag.
-      // const nsfw = false
-      // nsfw = await this.retryQueue.addToQueue(this.detectNsfw, tokenData)
-      // offerEntity.nsfw = nsfw
+        // Get the mutable data from the cid if it exists.
+        if (mutableDataCid && typeof mutableDataCid === 'string') {
+          let mutableData = null
+          try {
+            mutableData = await this.retryQueue.addToQueue(this.adapters.wallet.cid2json, mutableDataCid)
+          } catch (err) {
+            console.error('Error in OfferUseCases/createOffer() getting mutable data: ', err.message)
+          }
+          console.log('mutableData: ', mutableData)
+
+          if (mutableData) {
+            try {
+              offerEntity.tokenIconUrl = mutableData.tokenIcon
+              offerEntity.tokenCategories = mutableData.category
+              offerEntity.tokenTags = mutableData.tags
+              offerEntity.lastUpdatedTokenData = new Date().getTime()
+
+              offerEntity.userDataStr = JSON.stringify(mutableData.userData)
+            } catch (error) {
+              // skip error
+            }
+          }
+        }
+        console.log('offerEntity: ', offerEntity)
+
+        // Generate a 'display category' for the token. This will allow the
+        // front end UI to figure out how to display the token.
+        const displayCategory = this.categorizeToken(offerEntity, tokenData)
+        console.log('displayCategory: ', displayCategory)
+        offerEntity.displayCategory = displayCategory
+
+        // Detect if user set the NSFW flag.
+        // const nsfw = false
+        // nsfw = await this.retryQueue.addToQueue(this.detectNsfw, tokenData)
+        // offerEntity.nsfw = nsfw
+      }
 
       // Add offer to the local database.
       const offerModel = new this.OfferModel(offerEntity)
@@ -168,7 +187,7 @@ class OfferUseCases {
 
       return true
     } catch (err) {
-      console.error('Error in createOffer()', err.message)
+      console.error('\n\nError in createOffer()', err.message, '\n\n', err)
       throw err
     }
   }

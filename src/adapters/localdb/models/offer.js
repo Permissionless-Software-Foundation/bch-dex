@@ -47,6 +47,7 @@ const Offer = new mongoose.Schema({
   tokenIconUrl: { type: String, default: null },
   tokenCategories: { type: Array, default: [] },
   tokenTags: { type: Array, default: [] },
+  userDataStr: { type: String }, // Token user data
   lastUpdatedTokenData: { type: String, default: null } // ISO timestamp of the last time token data was updated.
 })
 
