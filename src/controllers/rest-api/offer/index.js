@@ -55,6 +55,7 @@ class OfferRouter {
     // Define the routes and attach the controller.
     // this.router.post('/', _this.offerRESTController.createOffer) // Deprecated.
     this.router.post('/take', this.offerRESTController.takeOffer)
+    this.router.post('/mutable/sync/', this.offerRESTController.syncOfferMutableData)
     this.router.get('/list/all/:page', this.offerRESTController.listOffers)
     this.router.get('/list/nft/:page', this.offerRESTController.listNftOffers)
     this.router.get('/list/fungible/:page', this.offerRESTController.listFungibleOffers)

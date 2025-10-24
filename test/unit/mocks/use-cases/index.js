@@ -71,6 +71,9 @@ class Offer {
   async acceptCounterOffer() {
     return {}
   }
+  async syncOfferMutableData(){
+    return {}
+  }
 }
 
 class Order {
