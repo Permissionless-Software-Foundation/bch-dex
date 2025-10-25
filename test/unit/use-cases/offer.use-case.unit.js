@@ -1032,6 +1032,7 @@ describe('#offer-use-case', () => {
         assert.include(err.message, 'tokenId must be a string!')
       }
     })
+
     it('should throw error if tokenId is not found!', async () => {
       try {
         // Mock dependencies
@@ -1058,6 +1059,7 @@ describe('#offer-use-case', () => {
       assert.isObject(offer)
       assert.isTrue(spy.notCalled, 'it should not call retryQueue functions.')
     })
+
     it('should sync offer', async () => {
       // create a timestamp 6 minutes in the past
 

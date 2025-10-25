@@ -944,14 +944,14 @@ class OfferUseCases {
       if (!tokenId || typeof tokenId !== 'string') {
         throw new Error('tokenId must be a string!')
       }
+
       // validate existing offer with the associated tokenId
       const offer = await this.OfferModel.findOne({ tokenId })
       if (!offer) throw new Error('Associated offer not found!')
 
-      // Verify last update
+      // Verify last update timestamp. This prevents users from spamming the API with requests.
+      // It only updates the mutable data if it has been more than 5 minutes since the last update.
       const lastUpdateTs = Number(offer.lastUpdatedTokenData)
-      console.log('lastUpdateTs', lastUpdateTs)
-      // get now timestamp
       const now = new Date().getTime()
       const period = 5
       if (lastUpdateTs) {
@@ -972,6 +972,7 @@ class OfferUseCases {
       try {
         tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTokenData, tokenId)
       } catch (err) {
+        // Dev Note: If getTokenData() fails, the code below will
         console.error('Error in OfferUseCases/createOffer() getting token data: ', err.message)
       }
 
@@ -1008,7 +1009,11 @@ class OfferUseCases {
         // Save update time stamp
         offer.lastUpdatedTokenData = new Date().getTime()
       }
+
+      // Save the updated offer data to the database.
       await offer.save()
+
+      // Return the updated offer data.
       return offer
     } catch (err) {
       console.error('Error in syncOfferMutableData(): ', err)
