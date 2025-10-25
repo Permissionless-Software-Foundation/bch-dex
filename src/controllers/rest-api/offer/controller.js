@@ -34,6 +34,7 @@ class OfferRESTControllerLib {
     this.listFungibleOffers = this.listFungibleOffers.bind(this)
     this.takeOffer = this.takeOffer.bind(this)
     this.listOffersByAddress = this.listOffersByAddress.bind(this)
+    this.syncOfferMutableData = this.syncOfferMutableData.bind(this)
     this.handleError = this.handleError.bind(this)
   }
 
@@ -391,6 +392,18 @@ class OfferRESTControllerLib {
       ctx.body = offers
     } catch (err) {
       console.log('Error in listOffersByAddress REST API handler: ', err)
+      this.handleError(ctx, err)
+    }
+  }
+
+  async syncOfferMutableData (ctx) {
+    try {
+      const tokenId = ctx.request.body.tokenId
+      const offer = await this.useCases.offer.syncOfferMutableData(tokenId)
+
+      ctx.body = offer
+    } catch (err) {
+      console.log('Error in syncOfferMutableData REST API handler: ', err)
       this.handleError(ctx, err)
     }
   }

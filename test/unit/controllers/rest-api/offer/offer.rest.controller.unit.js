@@ -229,6 +229,27 @@ describe('#Offer-REST-Router', () => {
       }
     })
   })
+  describe('#syncOfferMutableData', () => {
+    it('should sync mutable data', async () => {
+      ctx.request.body = { tokenId: 'tokenId' }
+      sandbox.stub(uut.useCases.offer, 'syncOfferMutableData').resolves({})
+      await uut.syncOfferMutableData(ctx)
+      assert.isObject(ctx.body)
+    })
+    it('should catch and throw an error', async () => {
+      try {
+        ctx.request.body = { tokenId: 'tokenId' }
+        sandbox
+          .stub(uut.useCases.offer, 'syncOfferMutableData')
+          .throws(new Error('test error'))
+
+        await uut.syncOfferMutableData(ctx)
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
 
   describe('#handleError', () => {
     it('should still throw error if there is no message', () => {
