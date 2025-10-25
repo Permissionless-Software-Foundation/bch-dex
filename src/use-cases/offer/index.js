@@ -65,6 +65,7 @@ class OfferUseCases {
     this.flagOffer = this.flagOffer.bind(this)
     this.loadOffers = this.loadOffers.bind(this)
     this.listOffersByAddress = this.listOffersByAddress.bind(this)
+    this.syncOfferMutableData = this.syncOfferMutableData.bind(this)
 
     // State
     this.seenOffers = []
@@ -129,20 +130,57 @@ class OfferUseCases {
 
       // Get data about the token.
       const tokenId = offerEntity.tokenId
-      // const tokenData = await this.adapters.wallet.bchWallet.getTokenData(tokenId)
-      const tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTokenData, tokenId)
-      // console.log(`tokenData: ${JSON.stringify(tokenData, null, 2)}`)
+      let tokenData = null
+      try {
+        tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTokenData, tokenId)
+      } catch (err) {
+        console.error('Error in OfferUseCases/createOffer() getting token data: ', err.message)
+      }
 
-      // Generate a 'display category' for the token. This will allow the
-      // front end UI to figure out how to display the token.
-      const displayCategory = this.categorizeToken(offerEntity, tokenData)
-      console.log('displayCategory: ', displayCategory)
-      offerEntity.displayCategory = displayCategory
+      // Do additional data analysis if the token data was successfully retrieved.
+      if (tokenData) {
+        // Store the mutable and immutable data cids.
+        const mutableDataCid = tokenData.mutableData
+        const immutableDataCid = tokenData.immutableData
+        offerEntity.mutableDataCid = mutableDataCid
+        offerEntity.immutableDataCid = immutableDataCid
 
-      // Detect if user set the NSFW flag.
-      // const nsfw = false
-      // nsfw = await this.retryQueue.addToQueue(this.detectNsfw, tokenData)
-      // offerEntity.nsfw = nsfw
+        // Get the mutable data from the cid if it exists.
+        if (mutableDataCid && typeof mutableDataCid === 'string') {
+          let mutableData = null
+          try {
+            mutableData = await this.retryQueue.addToQueue(this.adapters.wallet.cid2json, mutableDataCid)
+          } catch (err) {
+            console.error('Error in OfferUseCases/createOffer() getting mutable data: ', err.message)
+          }
+          console.log('mutableData: ', mutableData)
+
+          if (mutableData) {
+            try {
+              offerEntity.tokenIconUrl = mutableData.tokenIcon
+              offerEntity.tokenCategories = mutableData.category
+              offerEntity.tokenTags = mutableData.tags
+              offerEntity.lastUpdatedTokenData = new Date().getTime()
+
+              offerEntity.userDataStr = JSON.stringify(mutableData.userData)
+            } catch (error) {
+              // skip error
+            }
+          }
+        }
+        console.log('offerEntity: ', offerEntity)
+
+        // Generate a 'display category' for the token. This will allow the
+        // front end UI to figure out how to display the token.
+        const displayCategory = this.categorizeToken(offerEntity, tokenData)
+        console.log('displayCategory: ', displayCategory)
+        offerEntity.displayCategory = displayCategory
+
+        // Detect if user set the NSFW flag.
+        // const nsfw = false
+        // nsfw = await this.retryQueue.addToQueue(this.detectNsfw, tokenData)
+        // offerEntity.nsfw = nsfw
+      }
 
       // Add offer to the local database.
       const offerModel = new this.OfferModel(offerEntity)
@@ -150,7 +188,7 @@ class OfferUseCases {
 
       return true
     } catch (err) {
-      console.error('Error in createOffer()', err.message)
+      console.error('\n\nError in createOffer()', err.message, '\n\n', err)
       throw err
     }
   }
@@ -895,6 +933,90 @@ class OfferUseCases {
       return offers
     } catch (err) {
       console.error('Error in listOffersByAddress(): ', err)
+      throw err
+    }
+  }
+
+  // update offer model  mutable data
+  async syncOfferMutableData (tokenId) {
+    try {
+      // validate input
+      if (!tokenId || typeof tokenId !== 'string') {
+        throw new Error('tokenId must be a string!')
+      }
+
+      // validate existing offer with the associated tokenId
+      const offer = await this.OfferModel.findOne({ tokenId })
+      if (!offer) throw new Error('Associated offer not found!')
+
+      // Verify last update timestamp. This prevents users from spamming the API with requests.
+      // It only updates the mutable data if it has been more than 5 minutes since the last update.
+      const lastUpdateTs = Number(offer.lastUpdatedTokenData)
+      const now = new Date().getTime()
+      const period = 5
+      if (lastUpdateTs) {
+        // add 5 minutes to the last update
+        const lastUpdate = new Date(lastUpdateTs)
+        console.log('lastUpdate', lastUpdate)
+        lastUpdate.setMinutes(lastUpdate.getMinutes() + period)
+
+        console.log(new Date().getMinutes() + ' ' + lastUpdate.getMinutes())
+        // if now is less than the lastUpdate + 5 minutos , them skip.
+        if (now < lastUpdate.getTime()) {
+          console.log('Skipping , token lastUpdate is less than 5 minutes.')
+          return offer
+        }
+      }
+
+      let tokenData = null
+      try {
+        tokenData = await this.retryQueue.addToQueue(this.adapters.wallet.bchWallet.getTokenData, tokenId)
+      } catch (err) {
+        // Dev Note: If getTokenData() fails, the code below will
+        console.error('Error in OfferUseCases/createOffer() getting token data: ', err.message)
+      }
+
+      // Do additional data analysis if the token data was successfully retrieved.
+      if (tokenData) {
+        // Store the mutable and immutable data cids.
+        const mutableDataCid = tokenData.mutableData
+        const immutableDataCid = tokenData.immutableData
+        offer.mutableDataCid = mutableDataCid
+        offer.immutableDataCid = immutableDataCid
+
+        // Get the mutable data from the cid if it exists.
+        if (mutableDataCid && typeof mutableDataCid === 'string') {
+          let mutableData = null
+          try {
+            mutableData = await this.retryQueue.addToQueue(this.adapters.wallet.cid2json, mutableDataCid)
+          } catch (err) {
+            console.error('Error in OfferUseCases/createOffer() getting mutable data: ', err.message)
+          }
+          console.log('mutableData: ', mutableData)
+
+          if (mutableData) {
+            try {
+              offer.tokenIconUrl = mutableData.tokenIcon
+              offer.tokenCategories = mutableData.category
+              offer.tokenTags = mutableData.tags
+
+              offer.userDataStr = JSON.stringify(mutableData.userData)
+            } catch (error) {
+              // skip error
+            }
+          }
+        }
+        // Save update time stamp
+        offer.lastUpdatedTokenData = new Date().getTime()
+      }
+
+      // Save the updated offer data to the database.
+      await offer.save()
+
+      // Return the updated offer data.
+      return offer
+    } catch (err) {
+      console.error('Error in syncOfferMutableData(): ', err)
       throw err
     }
   }

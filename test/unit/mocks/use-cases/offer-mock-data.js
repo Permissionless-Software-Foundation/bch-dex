@@ -126,6 +126,20 @@ const fungibleTokenData01 = {
   "immutableData": "troutsblog.com",
   "mutableData": ""
 }
+const mutableDataMock = {
+  schema: 'ps007-v1.0.3',
+  schemaDocs: 'https://github.com/Permissionless-Software-Foundation/specifications/blob/master/ps007-token-data-schema.md',
+  tokenIcon: 'https://files.tokentiger.com/ipfs/view/bafkreidr6wfd6mcmwpea7abm5uk5rrprc2wfbcvo5wdcmtlolrpjab5oqm',
+  fullSizedUrl: '',
+  nsfw: false,
+  userData: { currentUrl: 'https://tokentiger.com' },
+  jsonLd: {},
+  about: 'This is AI generated art.',
+  category: '',
+  tags: [],
+  mediaType: 'image',
+  currentOwner: {},
+}
 
 const offerMockData = {
   data: {
@@ -214,5 +228,6 @@ export default {
   fungibleTokenData01,
   offerMockData,
   deserealizeTxMockNoOperatorOut,
-  deserealizeTxMock
+  deserealizeTxMock,
+  mutableDataMock
 };

@@ -108,6 +108,73 @@ describe('#offer-use-case', () => {
       assert.isFalse(result)
     })
 
+    it('should create offer with mutable data', async () => {
+      const tokenDataMock = mockData.nftTokenData01
+      const offerObj = mockData.offerMockData
+      const mutableDataMock = mockData.mutableDataMock
+
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves({}) // Utxo Status call
+        .onCall(1).resolves(tokenDataMock) // Token Data call
+        .onCall(2).resolves(mutableDataMock)
+
+      const result = await uut.createOffer(offerObj)
+      assert.isTrue(result)
+    })
+
+    it('should skip userData stringify error', async () => {
+      const tokenDataMock = mockData.nftTokenData01
+      const offerObj = mockData.offerMockData
+      const mutableDataMock = mockData.mutableDataMock
+      mutableDataMock.userData = { n: 10n }
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves({}) // Utxo Status call
+        .onCall(1).resolves(tokenDataMock) // Token Data call
+        .onCall(2).resolves(mutableDataMock)
+
+      const result = await uut.createOffer(offerObj)
+      assert.isTrue(result)
+    })
+
+    it('should handle error getting token data', async () => {
+      // const tokenDataMock = mockData.nftTokenData01
+      const offerObj = mockData.offerMockData
+      const mutableDataMock = mockData.mutableDataMock
+      mutableDataMock.userData = { n: 10n }
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves({}) // Utxo Status call
+        .onCall(1).throws(new Error('test error'))
+
+      const result = await uut.createOffer(offerObj)
+      assert.isTrue(result)
+    })
+
+    it('should handle error getting mutable data', async () => {
+      const tokenDataMock = mockData.nftTokenData01
+      const offerObj = mockData.offerMockData
+      const mutableDataMock = mockData.mutableDataMock
+      mutableDataMock.userData = { n: 10n }
+      // Mock dependencies
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves({}) // Utxo Status call
+        .onCall(1).resolves(tokenDataMock) // Token Data call
+        .onCall(2).throws(new Error('test error')) // cid2json call
+
+      const result = await uut.createOffer(offerObj)
+      assert.isTrue(result)
+    })
+
     it('should create offer', async () => {
       const tokenDataMock = mockData.simpleNftTokenData01
       const offerObj = mockData.offerMockData
@@ -785,27 +852,29 @@ describe('#offer-use-case', () => {
       assert.equal(result, 'N/A')
     })
 
-    it('should return if utxo cant be validated', async () => {
+    it('should return N/A on axios error', async () => {
       // Mock dependencies
       const mock = Object.assign({}, mockData.offerMockData.data)
       sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
-      sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').throws(new Error('test error'))
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').throws(new Error('test error'))
+      const axiosErr = new Error('axios err')
+      axiosErr.isAxiosError = true
+      sandbox.stub(uut.retryQueue, 'addToQueue').throws(axiosErr)
+
+      const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
+      assert.equal(result, 'N/A')
+    })
+    it('should return if utxo can not be validated', async () => {
+      // Mock dependencies
+      const mock = Object.assign({}, mockData.offerMockData.data)
+      sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
+      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').throws(new Error('test error'))
+      sandbox.stub(uut.retryQueue, 'addToQueue').throws(new Error('test error'))
 
       const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
       assert.equal(result, 'N/A')
     })
 
-    it('should handle axios error', async () => {
-      // Mock dependencies
-      const mock = Object.assign({}, mockData.offerMockData.data)
-      const stubErr = new Error()
-      stubErr.isAxiosError = true
-      sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
-      sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').throws(stubErr)
-
-      const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
-      assert.equal(result, 'N/A')
-    })
     it('should return if utxo is invalid', async () => {
       // Mock dependencies
       const mock = Object.assign({}, mockData.offerMockData.data)
@@ -951,6 +1020,114 @@ describe('#offer-use-case', () => {
       const result = await uut.acceptCounterOffer({ data: {} })
       assert.isString(result)
       assert.notEqual('N/A')
+    })
+  })
+
+  describe('#syncOfferMutableData', () => {
+    it('should throw error if tokenId is not provided!', async () => {
+      try {
+        await uut.syncOfferMutableData()
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'tokenId must be a string!')
+      }
+    })
+
+    it('should throw error if tokenId is not found!', async () => {
+      try {
+        // Mock dependencies
+        sandbox.stub(uut.OfferModel, 'findOne').resolves(null)
+
+        await uut.syncOfferMutableData('tokenId')
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'Associated offer not found!')
+      }
+    })
+
+    it('should return current data if lastUpdatedTokenData is less than 5 minutes', async () => {
+      // Mock dependencies
+      const lastUpdatedTokenData = new Date().getTime()
+      const offerMock = Object.assign({}, mockData.offerMockData)
+      offerMock.lastUpdatedTokenData = lastUpdatedTokenData
+      // stub
+      sandbox.stub(uut.OfferModel, 'findOne').returns(offerMock)
+      const spy = sandbox.stub(uut.retryQueue, 'addToQueue').resolves(true)
+
+      const offer = await uut.syncOfferMutableData('tokenId')
+
+      assert.isObject(offer)
+      assert.isTrue(spy.notCalled, 'it should not call retryQueue functions.')
+    })
+
+    it('should sync offer', async () => {
+      // create a timestamp 6 minutes in the past
+
+      // Create offer mock
+      const offerMock = Object.assign({}, mockData.offerMockData)
+      offerMock.save = () => { }
+
+      // Stub functions
+      sandbox.stub(uut.OfferModel, 'findOne').returns(offerMock)
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves(mockData.simpleNftTokenData01) // Token Data call
+        .onCall(1).resolves(mockData.mutableDataMock)
+
+      const offer = await uut.syncOfferMutableData('tokenId')
+      assert.isObject(offer)
+      assert.isNumber(offer.lastUpdatedTokenData)
+    })
+
+    it('should skip userData stringify error', async () => {
+      // create mutable data mock
+      const mutableDataMock = mockData.mutableDataMock
+      mutableDataMock.userData = { n: 10n }
+
+      // create offer mock
+      const offerMock = Object.assign({}, mockData.offerMockData)
+      offerMock.save = () => { }
+
+      // Stub functions
+      sandbox.stub(uut.OfferModel, 'findOne').returns(offerMock)
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves(mockData.simpleNftTokenData01) // Token Data call
+        .onCall(1).resolves(mutableDataMock)
+
+      const offer = await uut.syncOfferMutableData('tokenId')
+
+      assert.isObject(offer)
+      assert.isNumber(offer.lastUpdatedTokenData)
+    })
+
+    it('should handle error getting token data', async () => {
+      // create offer mock
+      const offerMock = Object.assign({}, mockData.offerMockData)
+      offerMock.save = () => { }
+
+      // Stub functions
+      sandbox.stub(uut.OfferModel, 'findOne').returns(offerMock)
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).throws(new Error('tokendata error')) // Token Data call
+        .onCall(1).resolves(mockData.mutableDataMock)
+
+      const offer = await uut.syncOfferMutableData('tokenId')
+      assert.isObject(offer)
+    })
+
+    it('should handle error getting mutable data', async () => {
+      // create offer mock
+      const offerMock = Object.assign({}, mockData.offerMockData)
+      offerMock.save = () => { }
+
+      // Stub functions
+      sandbox.stub(uut.OfferModel, 'findOne').returns(offerMock)
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves(mockData.simpleNftTokenData01) // Token Data call
+        .onCall(1).throws(new Error('mutable data error'))
+
+      const offer = await uut.syncOfferMutableData('tokenId')
+      assert.isObject(offer)
+      assert.isNumber(offer.lastUpdatedTokenData)
     })
   })
 })
