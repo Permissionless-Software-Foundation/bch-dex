@@ -1,13 +1,15 @@
 import mongoose from 'mongoose'
-import config from '../../config/index.js'
+// import config from '../../config/index.js'
 import User from '../../src/adapters/localdb/models/users.js'
+
+const mongooseConnectStr = 'mongodb://172.17.0.1:5666/bch-swap-service-prod'
 
 async function getUsers () {
   // Connect to the Mongo Database.
   mongoose.Promise = global.Promise
   mongoose.set('useCreateIndex', true) // Stop deprecation warning.
   await mongoose.connect(
-    config.database,
+    mongooseConnectStr,
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
 
