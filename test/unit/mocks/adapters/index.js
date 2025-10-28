@@ -165,7 +165,31 @@ const localdb = {
     async save () {
       return {}
     }
-  }
+  },
+  DeletedChat: class DeletedChat {
+    constructor (obj) {}
+
+    static findById () {}
+    static find () {}
+    static findOne () {}
+    static updateOne () {}  
+
+    async save () {
+      return {}
+    }
+  },
+  DeletedPost: class DeletedPost {
+    constructor (obj) {}
+
+    static findById () {}
+    static find () {}
+    static findOne () {}
+    static updateOne () {}  
+
+    async save () {
+      return {}
+    }
+  } 
 }
 
 const bch = {
