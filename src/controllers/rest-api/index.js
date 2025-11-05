@@ -19,6 +19,7 @@ import OrderRouter from './order/index.js'
 import P2WDBRouter from './p2wdb/index.js'
 import UsageRESTController from './usage/index.js'
 import SmAccountRouter from './smAccount/index.js'
+import NostrRouter from './nostr/index.js'
 
 class RESTControllers {
   constructor (localConfig = {}) {
@@ -90,6 +91,10 @@ class RESTControllers {
 
     const smAccountRouter = new SmAccountRouter(dependencies)
     smAccountRouter.attach(app)
+
+    // Attach the REST API Controllers associated with the /nostr route
+    const nostrRouter = new NostrRouter(dependencies)
+    nostrRouter.attach(app)
   }
 }
 

@@ -9,6 +9,8 @@ import Order from './models/order.js'
 import Offer from './models/offer.js'
 import Usage from './models/usage.js'
 import SmAccount from './models/smAccount.js'
+import DeletedChat from './models/deletedChat.js'
+import DeletedPost from './models/deletedPost.js'
 
 class LocalDB {
   constructor () {
@@ -19,6 +21,8 @@ class LocalDB {
     this.Offer = Offer
     this.Usage = Usage
     this.SmAccount = SmAccount
+    this.DeletedChat = DeletedChat
+    this.DeletedPost = DeletedPost
   }
 }
 
