@@ -25,6 +25,8 @@ class NostrUseCases {
     this.getDeletedChats = this.getDeletedChats.bind(this)
     this.createDeletedPost = this.createDeletedPost.bind(this)
     this.getDeletedPosts = this.getDeletedPosts.bind(this)
+    this.removeOlderDeletedChats = this.removeOlderDeletedChats.bind(this)
+    this.removeOlderDeletedPosts = this.removeOlderDeletedPosts.bind(this)
   }
 
   // Create a new deleted chat model and add it to the Mongo database.
@@ -84,6 +86,42 @@ class NostrUseCases {
       return deletedPosts
     } catch (err) {
       wlogger.error('Error in lib/users.js/getDeletedPosts()')
+      throw err
+    }
+  }
+
+  // Remove deleted chats that are older than 3 months.
+  async removeOlderDeletedChats () {
+    try {
+      const deletedChats = await this.DeletedChatModel.find({})
+      const threeMonthsAgo = new Date()
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
+      for (let i = 0; i < deletedChats.length; i++) {
+        const deletedChat = deletedChats[i]
+        if (deletedChat.createdAt.getTime() < threeMonthsAgo.getTime()) {
+          await deletedChat.remove()
+        }
+      }
+    } catch (err) {
+      wlogger.error('Error in lib/users.js/removeOlderDeletedChats()')
+      throw err
+    }
+  }
+
+  // Remove deleted posts that are older than 3 months.
+  async removeOlderDeletedPosts () {
+    try {
+      const deletedPosts = await this.DeletedPostModel.find({})
+      const threeMonthsAgo = new Date()
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3)
+      for (let i = 0; i < deletedPosts.length; i++) {
+        const deletedPost = deletedPosts[i]
+        if (deletedPost.createdAt.getTime() < threeMonthsAgo.getTime()) {
+          await deletedPost.remove()
+        }
+      }
+    } catch (err) {
+      wlogger.error('Error in lib/users.js/removeOlderDeletedPosts()')
       throw err
     }
   }

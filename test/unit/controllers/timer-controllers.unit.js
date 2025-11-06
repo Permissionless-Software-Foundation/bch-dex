@@ -187,4 +187,20 @@ describe('#Timer-Controllers', () => {
       assert.equal(result, false)
     })
   })
+  describe('#removeOlderDeletedChatsAndPosts', () => {
+    it('should kick off the Use Cases and return true', async () => {
+      sandbox.stub(uut.useCases.nostr, 'removeOlderDeletedChats').resolves()
+      sandbox.stub(uut.useCases.nostr, 'removeOlderDeletedPosts').resolves()
+      const result = await uut.removeOlderDeletedChatsAndPosts()
+
+      assert.equal(result, true)
+    })
+  })
+  it('should kick off the Use Cases and return false on error', async () => {
+    sandbox.stub(uut.useCases.nostr, 'removeOlderDeletedChats').throws(new Error('test error'))
+    sandbox.stub(uut.useCases.nostr, 'removeOlderDeletedPosts').throws(new Error('test error'))
+    const result = await uut.removeOlderDeletedChatsAndPosts()
+
+    assert.equal(result, false)
+  })
 })
