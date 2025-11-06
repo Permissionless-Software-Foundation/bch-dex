@@ -28,6 +28,7 @@ class TimerControllers {
     this.backupUsageInterval = 60000 * 10 // 10 minutes
     this.newSmAccountsInterval = 60000 * 60 // 60 minutes
     this.updateSmAccountsInterval = 60000 * 10 // 10 minutes
+    this.removeOlderDeletedChatsAndPostsInterval = 60000 * 60 * 1 // 1 hour
 
     // Encapsulate dependencies
     this.config = config
@@ -42,7 +43,7 @@ class TimerControllers {
     this.backupUsage = this.backupUsage.bind(this)
     this.newSmAccounts = this.newSmAccounts.bind(this)
     this.updateSmAccounts = this.updateSmAccounts.bind(this)
-
+    this.removeOlderDeletedChatsAndPosts = this.removeOlderDeletedChatsAndPosts.bind(this)
     // State
     this.gcOrdersInt = null
     this.gcOffersInt = null
@@ -50,6 +51,7 @@ class TimerControllers {
     this.loadOffersInt = null
     this.newSmAccountsInt = null
     this.updateSmAccountsInt = null
+    this.removeOlderDeletedChatsAndPostsInt = null
   }
 
   // Start all the time-based controllers.
@@ -62,6 +64,7 @@ class TimerControllers {
     this.backupUsageHandle = setInterval(this.backupUsage, this.backupUsageInterval)
     this.newSmAccountsInt = setInterval(this.newSmAccounts, this.newSmAccountsInterval)
     this.updateSmAccountsInt = setInterval(this.updateSmAccounts, this.updateSmAccountsInterval)
+    this.removeOlderDeletedChatsAndPostsInt = setInterval(this.removeOlderDeletedChatsAndPosts, this.removeOlderDeletedChatsAndPostsInterval)
     return true
   }
 
@@ -74,6 +77,7 @@ class TimerControllers {
     clearInterval(this.backupUsageHandle)
     clearInterval(this.newSmAccountsInt)
     clearInterval(this.updateSmAccountsInt)
+    clearInterval(this.removeOlderDeletedChatsAndPostsInt)
   }
 
   // Garbage Collect the Orders.
@@ -191,6 +195,22 @@ class TimerControllers {
       return true
     } catch (err) {
       console.error('Error in time-controller.js/updateSmAccounts(): ', err)
+      return false
+    }
+  }
+
+  // Remove older deleted chats and posts.
+  async removeOlderDeletedChatsAndPosts () {
+    try {
+      //console.log('removeOlderDeletedChatsAndPosts() Timer Controller executing at ', new Date().toLocaleString())
+      clearInterval(this.removeOlderDeletedChatsAndPostsInt)
+      await this.useCases.nostr.removeOlderDeletedChats()
+      await this.useCases.nostr.removeOlderDeletedPosts()
+      this.removeOlderDeletedChatsAndPostsInt = setInterval(this.removeOlderDeletedChatsAndPosts, this.removeOlderDeletedChatsAndPostsInterval)
+      return true
+    } catch (err) {
+      console.error('Error in time-controller.js/removeOlderDeletedChatsAndPosts(): ', err)
+      this.removeOlderDeletedChatsAndPostsInt = setInterval(this.removeOlderDeletedChatsAndPosts, this.removeOlderDeletedChatsAndPostsInterval)
       return false
     }
   }
