@@ -240,7 +240,8 @@ const nostr = {
   read: async () => { return true },
   eventId2note: () => { return 'testNoteId' },
   readGlobalFeed: async () => { return [] },
-  getFollowers: async () => { return [] }
+  getFollowers: async () => { return [] },
+  privKeyToNpub: async () => { return 'fakeNpub' }
 }
 
 export default { ipfs, localdb, bch, wallet, p2wdb, bchjs, nostr}

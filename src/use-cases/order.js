@@ -116,6 +116,9 @@ class OrderLib {
       orderEntity.operatorAddress = this.config.operatorAddress
       orderEntity.operatorPercentage = this.config.operatorPercentage
 
+      // Convert the Seller's BCH private key to a Nostr npub. This is used to identify the seller in Nostr.
+      orderEntity.makerNpub = this.adapters.nostr.privKeyToNpub(userWallet.walletInfo.privateKey)
+
       // Post the new Order information to Nostr under the topic set in the
       // config file.
       const postObj = {
