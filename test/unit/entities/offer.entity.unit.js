@@ -491,6 +491,36 @@ describe('#Offer-Entity', () => {
         assert.include(err.message, "Property 'operatorPercentage' must be a number.")
       }
     })
+    it('should throw an error if makerNpub is not a string', () => {
+      try {
+        const offerData = {
+          data: {
+            messageType: 1,
+            messageClass: 1,
+            tokenId: 'fakeId',
+            buyOrSell: 'buy',
+            rateInBaseUnit: 1000,
+            minUnitsToExchange: 350,
+            numTokens: 1,
+            utxoTxid: 'fakeTxid',
+            utxoVout: 0,
+            offerStatus: 'posted',
+            makerAddr: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+            tokenType: 1,
+            nostrEventId: 'test',
+            operatorAddress: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
+            operatorPercentage: 10,
+            makerNpub: 1234
+          }
+        }
+        uut.validate(offerData)
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log(err)
+        assert.include(err.message, "Property 'makerNpub' must be a string.")
+      }
+    })
 
     it('should validate a new offer', () => {
       const offerObj = {
@@ -513,7 +543,8 @@ describe('#Offer-Entity', () => {
           tokenType: 1,
           nostrEventId: 'test',
           operatorAddress: 'bitcoincash:qzl0d3gcqeypv4cy7gh8rgdszxa9vvm2acv7fqtd00',
-          operatorPercentage: 10
+          operatorPercentage: 10,
+          makerNpub: 'npub1dtkf954h5k2yuv04xp44g5hnmk5k0ppv8mekxafm2gc0vveaxh6s0297qg'
         },
         timestamp: '2021-09-20T17:54:26.395Z',
         localTimeStamp: '9/20/2021, 10:54:26 AM',
@@ -539,6 +570,8 @@ describe('#Offer-Entity', () => {
       assert.property(result, 'txid')
       assert.property(result, 'p2wdbHash')
       assert.property(result, 'tokenType')
+      assert.property(result, 'makerAddr')
+      assert.property(result, 'makerNpub')
     })
   })
 })
