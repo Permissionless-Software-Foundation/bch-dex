@@ -202,7 +202,7 @@ class TimerControllers {
   // Remove older deleted chats and posts.
   async removeOlderDeletedChatsAndPosts () {
     try {
-      //console.log('removeOlderDeletedChatsAndPosts() Timer Controller executing at ', new Date().toLocaleString())
+      // console.log('removeOlderDeletedChatsAndPosts() Timer Controller executing at ', new Date().toLocaleString())
       clearInterval(this.removeOlderDeletedChatsAndPostsInt)
       await this.useCases.nostr.removeOlderDeletedChats()
       await this.useCases.nostr.removeOlderDeletedPosts()

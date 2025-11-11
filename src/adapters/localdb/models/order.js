@@ -24,6 +24,7 @@ const Order = new mongoose.Schema({
   p2wdbTxid: { type: String },
   p2wdbHash: { type: String },
   makerAddr: { type: String, required: true },
+  makerNpub: { type: String, required: true },
 
   // Authentication data
   signature: { type: String },
