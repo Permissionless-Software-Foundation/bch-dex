@@ -18,7 +18,7 @@ const Offer = new mongoose.Schema({
   p2wdbHash: { type: String },
   offerStatus: { type: String },
   makerAddr: { type: String },
-  makerNpub: { type: String },
+  makerNpub: { type: String, default: null },
 
   // Authentication data
   signature: { type: String },
