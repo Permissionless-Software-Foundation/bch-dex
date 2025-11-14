@@ -7,6 +7,8 @@ import BchNostr from 'bch-nostr'
 import { RelayPool } from 'nostr'
 import RetryQueue from '@chris.troutner/retry-queue'
 import * as nip19 from 'nostr-tools/nip19'
+import { base58_to_binary as base58Tobinary } from 'base58-js'
+import { getPublicKey } from 'nostr-tools/pure'
 
 class NostrAdapter {
   constructor (localConfig = { nostrRelay: '', nostrTopic: '' }) {
@@ -44,6 +46,7 @@ class NostrAdapter {
     this.npub2pubkey = this.npub2pubkey.bind(this)
     this.readGlobalFeed = this.readGlobalFeed.bind(this)
     this.getFollowers = this.getFollowers.bind(this)
+    this.privKeyToNpub = this.privKeyToNpub.bind(this)
   }
 
   // Create nostr keys.
@@ -244,6 +247,31 @@ class NostrAdapter {
       return followers
     } catch (error) {
       console.log(`Error in nostr.js/getFollowers() ${error.message} `)
+      throw error
+    }
+  }
+
+  // Convert a BCH private key (WIF) to a Nostr npub.
+  privKeyToNpub (privKey) {
+    try {
+      if (!privKey || typeof privKey !== 'string') {
+        throw new Error('privKey must be a string!')
+      }
+      // Extract the privaty key from the WIF, using this guide:
+      // https://learnmeabitcoin.com/technical/keys/private-key/wif/
+      const wifBuf = base58Tobinary(privKey)
+      const privBuf = wifBuf.slice(1, 33)
+      // console.log('privBuf: ', privBuf)
+
+      const nostrPubKey = getPublicKey(privBuf)
+      // console.log('nostrPubKey: ', nostrPubKey)
+      // Convert pubkey to npub
+      const nostrNpub = nip19.npubEncode(nostrPubKey)
+      // console.log('nostrNpub: ', nostrNpub)
+
+      return nostrNpub
+    } catch (error) {
+      console.log(`Error in nostr.js/privKeyToNpub() ${error.message} `)
       throw error
     }
   }

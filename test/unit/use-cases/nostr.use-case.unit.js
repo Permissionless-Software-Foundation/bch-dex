@@ -210,4 +210,78 @@ describe('#nostr-use-cases', () => {
       assert.include(err.message, 'test error')
     }
   })
+  describe('#removeOlderDeletedChats', () => {
+    it('should remove older deleted chats from the database', async () => {
+      const threeMonthsAgo = new Date()
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3) // 3 months ago
+      threeMonthsAgo.setDate(threeMonthsAgo.getDate() - 1) // 1 day ago
+      const spy = sinon.spy()
+      const deletedChatsMock = [
+        // Newer deleted chat
+        {
+          eventId: 'note19e93faw4ffqepsqsrwrnstd3ee00nmzakwwuyfjm43dankgummfqms4p6q',
+          createdAt: new Date(),
+          remove: spy
+        },
+        // Older deleted chat
+        {
+          eventId: 'note19e93faw4ffqepsqsrwrnstd3ee00nmzakwwuyfjm43dankgummfqms4p6q',
+          createdAt: threeMonthsAgo,
+          remove: spy
+        }
+      ]
+      sandbox.stub(uut.DeletedChatModel, 'find').resolves(deletedChatsMock)
+      await uut.removeOlderDeletedChats()
+      assert.equal(spy.callCount, 1, 'Expected to be called once.')
+    })
+    it('should handle error', async () => {
+      try {
+        // Force an error.
+        sandbox.stub(uut.DeletedChatModel, 'find').throws(new Error('test error'))
+
+        await uut.removeOlderDeletedChats()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
+  describe('#removeOlderDeletedPosts', () => {
+    it('should remove older deleted posts from the database', async () => {
+      const threeMonthsAgo = new Date()
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3) // 3 months ago
+      threeMonthsAgo.setDate(threeMonthsAgo.getDate() - 1) // 1 day ago
+      const spy = sinon.spy()
+      const deletedPostsMock = [
+        // Newer deleted post
+        {
+          eventId: 'note19e93faw4ffqepsqsrwrnstd3ee00nmzakwwuyfjm43dankgummfqms4p6q',
+          createdAt: new Date(),
+          remove: spy
+        },
+        // Older deleted post
+        {
+          eventId: 'note19e93faw4ffqepsqsrwrnstd3ee00nmzakwwuyfjm43dankgummfqms4p6q',
+          createdAt: threeMonthsAgo,
+          remove: spy
+        }
+      ]
+      sandbox.stub(uut.DeletedPostModel, 'find').resolves(deletedPostsMock)
+      await uut.removeOlderDeletedPosts()
+      assert.equal(spy.callCount, 1, 'Expected to be called once.')
+    })
+    it('should handle error', async () => {
+      try {
+        // Force an error.
+        sandbox.stub(uut.DeletedPostModel, 'find').throws(new Error('test error'))
+
+        await uut.removeOlderDeletedPosts()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
 })

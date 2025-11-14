@@ -31,6 +31,7 @@ class OfferEntity {
       utxoVout,
       offerStatus,
       makerAddr,
+      makerNpub,
       ticker,
       tokenType,
       nostrEventId,
@@ -89,6 +90,10 @@ class OfferEntity {
     if (!operatorPercentage || typeof operatorPercentage !== 'number') {
       throw new Error("Property 'operatorPercentage' must be a number.")
     }
+    // Validate npub type if it exist
+    if (makerNpub && typeof makerNpub !== 'string') {
+      throw new Error("Property 'makerNpub' must be a string.")
+    }
 
     // Convert the timestamp to a number.
     let timestamp = new Date(offerData.timestamp)
@@ -113,7 +118,8 @@ class OfferEntity {
       makerAddr,
       ticker,
       tokenType,
-      nostrEventId
+      nostrEventId,
+      makerNpub
     }
     // console.log('offer entity validatedOfferData: ', validatedOfferData)
 

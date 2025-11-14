@@ -52,6 +52,7 @@ describe('#OrderPagination', () => {
       nostrEventId: 'nostrEventId',
       dataType: 'dataType',
       makerAddr: 'makerAddr',
+      makerNpub: 'makerNpub',
       rateInBaseUnit: 'rateInBaseUnit',
       minUnitsToExchange: 'minUnitsToExchange',
       ticker: 'ticker',

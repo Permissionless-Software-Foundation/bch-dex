@@ -148,7 +148,12 @@ class NostrUseCasesMock {
   async getDeletedPosts() {
     return []
   }
-
+  async removeOlderDeletedChats() {
+    return true
+  }
+  async removeOlderDeletedPosts() {
+    return true
+  }
 }
 
 class UseCasesMock {

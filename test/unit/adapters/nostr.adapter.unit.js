@@ -224,4 +224,33 @@ describe('#nostr.js', () => {
       assert.isArray(result)
     })
   })
+  describe('#privKeyToNpub', () => {
+    it('should handle  error if providedprivKey is not a string', async () => {
+      try {
+        uut.privKeyToNpub()
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log('err: ', err)
+        assert.include(err.message, 'privKey must be a string!')
+      }
+    })
+
+    it('should return npub if privKey is valid', async () => {
+      const result = uut.privKeyToNpub('L2kh34VinQNRq1ad8nnXnGoFrb9pT7j8GJXiT6Scsg18KMxsUVDr')
+      // console.log('result: ', result)
+      assert.isString(result)
+      assert.include(result, 'npub')
+    })
+    it('should handle unexpected error', async () => {
+      try {
+        uut.privKeyToNpub('invalid format')
+
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        // console.log('err: ', err)
+        assert.include(err.message, 'Invalid base58 character')
+      }
+    })
+  })
 })
