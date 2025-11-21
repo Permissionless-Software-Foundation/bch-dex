@@ -74,6 +74,9 @@ class Offer {
   async syncOfferMutableData(){
     return {}
   }
+  async listCounterOffersByAddress() {
+    return []
+  }
 }
 
 class Order {

@@ -154,6 +154,17 @@ const localdb = {
       return {}
     }
   },
+  CounterOffer: class CounterOffer {
+    constructor (obj) {}
+
+    static findById () {}
+    static find () {}
+    static findOne () {}
+    static countDocuments(){}
+    async save () {
+      return {}
+    }
+  },
   SmAccount: class SmAccount {
     constructor (obj) {}
 

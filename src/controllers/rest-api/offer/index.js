@@ -60,6 +60,7 @@ class OfferRouter {
     this.router.get('/list/nft/:page', this.offerRESTController.listNftOffers)
     this.router.get('/list/fungible/:page', this.offerRESTController.listFungibleOffers)
     this.router.get('/list/addr/:addr', this.offerRESTController.listOffersByAddress)
+    this.router.get('/list/counter-offer/:addr', this.offerRESTController.listCounterOffersByAddress)
 
     // Attach the Controller routes to the Koa app.
     app.use(this.router.routes())
