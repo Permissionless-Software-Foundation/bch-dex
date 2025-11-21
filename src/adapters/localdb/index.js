@@ -11,6 +11,7 @@ import Usage from './models/usage.js'
 import SmAccount from './models/smAccount.js'
 import DeletedChat from './models/deletedChat.js'
 import DeletedPost from './models/deletedPost.js'
+import CounterOffer from './models/counter-offer.js'
 
 class LocalDB {
   constructor () {
@@ -23,6 +24,7 @@ class LocalDB {
     this.SmAccount = SmAccount
     this.DeletedChat = DeletedChat
     this.DeletedPost = DeletedPost
+    this.CounterOffer = CounterOffer
   }
 }
 

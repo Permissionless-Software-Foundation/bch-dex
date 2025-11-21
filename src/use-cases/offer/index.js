@@ -19,6 +19,7 @@ import RetryQueue from '@chris.troutner/retry-queue'
 
 // Local libraries
 import OfferEntity from '../../entities/offer.js'
+import CounterOfferEntity from '../../entities/counterOffer.js'
 import config from '../../../config/index.js'
 
 const DEFAULT_ENTRIES_PER_PAGE = 20
@@ -45,7 +46,9 @@ class OfferUseCases {
     this.config = config
     this.axios = axios
     this.offerEntity = new OfferEntity()
+    this.counterOfferEntity = new CounterOfferEntity()
     this.OfferModel = this.adapters.localdb.Offer
+    this.CounterOfferModel = this.adapters.localdb.CounterOffer
     this.retryQueue = new RetryQueue({ retryPeriod: 1000, attempts: 3 })
 
     // Bind 'this' object to functions
@@ -66,6 +69,7 @@ class OfferUseCases {
     this.loadOffers = this.loadOffers.bind(this)
     this.listOffersByAddress = this.listOffersByAddress.bind(this)
     this.syncOfferMutableData = this.syncOfferMutableData.bind(this)
+    this.listCounterOffersByAddress = this.listCounterOffersByAddress.bind(this)
 
     // State
     this.seenOffers = []
@@ -595,10 +599,21 @@ class OfferUseCases {
   // and broadcasts the transaction to accept the Counter Offer.
   async acceptCounterOffer (offerData) {
     try {
+      console.log('offerData', offerData)
       // console.log(`acceptCounterOffer() offerData: ${JSON.stringify(offerData, null, 2)}`)
 
       // Quickly skip over offers that have already been processed.
       const eventId = offerData.data.nostrEventId
+
+      // Create counter offer entity for nostr event id if it not exist
+      const existingCounterOffer = await this.CounterOfferModel.findOne(({ nostrEventId: eventId }))
+      if (!existingCounterOffer) {
+        const counterOEntity = this.counterOfferEntity.validate(offerData)
+        // Create new counter offfer model and save it.
+        const counterOffer = new this.CounterOfferModel(counterOEntity)
+        await counterOffer.save()
+      }
+
       if (this.seenOffers.includes(eventId)) {
         // console.log(`Offer with event ID ${eventId} already processed. Skipping.`)
         return false
@@ -1017,6 +1032,20 @@ class OfferUseCases {
       return offer
     } catch (err) {
       console.error('Error in syncOfferMutableData(): ', err)
+      throw err
+    }
+  }
+
+  async listCounterOffersByAddress (takerAddr) {
+    try {
+      if (!takerAddr || typeof takerAddr !== 'string') {
+        throw new Error('takerAddr must be a string')
+      }
+
+      const counterOffers = await this.CounterOfferModel.find({ takerAddr })
+      return counterOffers
+    } catch (err) {
+      console.error('Error in listCounterOffersByAddress(): ', err)
       throw err
     }
   }

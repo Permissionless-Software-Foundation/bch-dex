@@ -35,6 +35,7 @@ class OfferRESTControllerLib {
     this.takeOffer = this.takeOffer.bind(this)
     this.listOffersByAddress = this.listOffersByAddress.bind(this)
     this.syncOfferMutableData = this.syncOfferMutableData.bind(this)
+    this.listCounterOffersByAddress = this.listCounterOffersByAddress.bind(this)
     this.handleError = this.handleError.bind(this)
   }
 
@@ -404,6 +405,52 @@ class OfferRESTControllerLib {
       ctx.body = offer
     } catch (err) {
       console.log('Error in syncOfferMutableData REST API handler: ', err)
+      this.handleError(ctx, err)
+    }
+  }
+
+  /**
+   * @api {get} /offer/list/counter-offer/:addr List all counter offers being made by a given address
+   * @apiPermission public
+   * @apiName listCounterOffersByAddress
+   * @apiGroup REST Offer
+   *
+   * @apiExample Example usage:
+   * curl -H "Content-Type: application/json" -X GET localhost:5000/offer/list/counter-offer/bitcoincash:qq54a3xyyptty63ztlcavzzh64gy4d247qs4ueaupe
+   *
+   *
+
+   * @apiSuccess {String} offers.nostrEventId Nostr event id
+   * @apiSuccess {String} offers.takerNpub Nostr Npub.
+   * @apiSuccess {String} offers.takerAddr BCH Address.
+   * @apiSuccess {String} offers.counterOfferAddr BCH Address
+   * @apiSuccess {String} offers.counterOfferUtxo Utxo txid.
+   *
+   *
+   * @apiSuccessExample {json} Success-Response:
+   *     HTTP/1.1 200 OK
+   *     {
+   *       "counterOffers": [{
+   *          "_id": "56bd1da600a526986cf65c80",
+   *          "nostrEventId": "1234567890",
+   *          "takerAddr": "bitcoincash:qq54a3xyyptty63ztlcavzzh64gy4d247qs4ueaupe",
+   *          "takerNpub": "npub1nhc47z2tf42a4ps7plzcyax2j76gdausve763tqw3xuw7jjd7ceqppquly",
+   *          "counterOfferAddr": "bitcoincash:qzltx40ldxr53edchprppj5lpg4q7vl20usx25ga44",
+   *          "counterOfferUtxo": "71dab5b81cf06f3495aeebcc70fb351109e5e88bc85da67d0d144c0e5ca0bd6a",
+   *       }]
+   *     }
+   *
+   * @apiUse TokenError
+   */
+  async listCounterOffersByAddress (ctx) {
+    try {
+      const addr = ctx.params.addr
+
+      const counterOffers = await this.useCases.offer.listCounterOffersByAddress(addr)
+
+      ctx.body = { counterOffers }
+    } catch (err) {
+      console.log('Error in listCounterOffersByAddress REST API handler: ', err)
       this.handleError(ctx, err)
     }
   }
