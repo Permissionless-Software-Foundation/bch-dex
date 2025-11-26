@@ -608,6 +608,8 @@ class OfferUseCases {
       // Create counter offer entity for nostr event id if it not exist
       const existingCounterOffer = await this.CounterOfferModel.findOne(({ nostrEventId: eventId }))
       if (!existingCounterOffer) {
+        // Add taker offer utxo to counter offer data.
+        offerData.data.takerOfferUtxo = offerData.data.utxoTxid
         const counterOEntity = this.counterOfferEntity.validate(offerData)
         // Create new counter offfer model and save it.
         const counterOffer = new this.CounterOfferModel(counterOEntity)

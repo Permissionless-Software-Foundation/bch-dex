@@ -16,8 +16,11 @@ class CounterOfferEntity {
       nostrEventId,
       takerAddr,
       takerNpub,
+      makerNpub,
       counterOfferAddr,
-      counterOfferUtxo
+      counterOfferUtxo,
+      takerOfferUtxo,
+      tokenId
     } = offerData.data
 
     // Input Validation
@@ -37,13 +40,25 @@ class CounterOfferEntity {
     if (counterOfferUtxo && typeof counterOfferUtxo !== 'string') {
       throw new Error("Property 'counterOfferUtxo' must be a string.")
     }
+    if (takerOfferUtxo && typeof takerOfferUtxo !== 'string') {
+      throw new Error("Property 'takerOfferUtxo' must be a string.")
+    }
+    if (tokenId && typeof tokenId !== 'string') {
+      throw new Error("Property 'tokenId' must be a string.")
+    }
+    if (makerNpub && typeof makerNpub !== 'string') {
+      throw new Error("Property 'makerNpub' must be a string.")
+    }
 
     const validatedCounterOfferData = {
       nostrEventId,
       takerAddr,
       takerNpub,
       counterOfferAddr,
-      counterOfferUtxo
+      counterOfferUtxo,
+      takerOfferUtxo,
+      tokenId,
+      makerNpub
     }
 
     return validatedCounterOfferData
