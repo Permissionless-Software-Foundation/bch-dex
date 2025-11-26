@@ -11,7 +11,7 @@ let sandbox
 let uut
 
 describe('#CounterOffer-Entity', () => {
-  before(async () => {})
+  before(async () => { })
 
   beforeEach(() => {
     uut = new CounterOfferEntity()
@@ -24,7 +24,7 @@ describe('#CounterOffer-Entity', () => {
   describe('#validate', () => {
     it('should throw an error if data is not provided', () => {
       try {
-        uut.validate({ })
+        uut.validate({})
       } catch (err) {
         assert.include(err.message, 'Input to counterOffer.validate() must be an object with a data property.')
       }
@@ -59,12 +59,26 @@ describe('#CounterOffer-Entity', () => {
         assert.include(err.message, "Property 'takerNpub' must be a string")
       }
     })
+    it('should throw an error if provided makerNpub is not string', () => {
+      try {
+        const inObj = {
+          nostrEventId: 'nostr event id',
+          takerAddr: 'taker address',
+          takerNpub: 'npub',
+          makerNpub: 1234
+        }
+        uut.validate({ data: inObj })
+      } catch (err) {
+        assert.include(err.message, "Property 'makerNpub' must be a string")
+      }
+    })
     it('should throw an error if provided counterOfferAddr is not string', () => {
       try {
         const inObj = {
           nostrEventId: 'nostr event id',
           takerAddr: 'taker address',
           takerNpub: 'npub',
+          makerNpub: 'npub',
           counterOfferAddr: 1234
         }
         uut.validate({ data: inObj })
@@ -78,6 +92,7 @@ describe('#CounterOffer-Entity', () => {
           nostrEventId: 'nostr event id',
           takerAddr: 'taker address',
           takerNpub: 'npub',
+          makerNpub: 'npub',
           counterOfferAddr: 'counter offer address',
           counterOfferUtxo: 1234
         }
@@ -86,13 +101,50 @@ describe('#CounterOffer-Entity', () => {
         assert.include(err.message, "Property 'counterOfferUtxo' must be a string")
       }
     })
+    it('should throw an error if provided takerOfferUtxo is not string', () => {
+      try {
+        const inObj = {
+          nostrEventId: 'nostr event id',
+          takerAddr: 'taker address',
+          takerNpub: 'npub',
+          makerNpub: 'npub',
+          counterOfferAddr: 'counter offer address',
+          counterOfferUtxo: 'utxo txid',
+          takerOfferUtxo: 1234
+        }
+        uut.validate({ data: inObj })
+      } catch (err) {
+        assert.include(err.message, "Property 'takerOfferUtxo' must be a string")
+      }
+    })
+    it('should throw an error if provided tokenId is not string', () => {
+      try {
+        const inObj = {
+          nostrEventId: 'nostr event id',
+          takerAddr: 'taker address',
+          takerNpub: 'npub',
+          makerNpub: 'npub',
+          counterOfferAddr: 'counter offer address',
+          counterOfferUtxo: 'utxo txid',
+          takerOfferUtxo: 'utxo txid',
+          tokenId: 1234
+        }
+        uut.validate({ data: inObj })
+      } catch (err) {
+        assert.include(err.message, "Property 'tokenId' must be a string")
+      }
+    })
+
     it('should return a counter offer object', () => {
       const inObj = {
         nostrEventId: 'nostr event id',
         takerAddr: 'taker address',
         takerNpub: 'npub',
+        makerNpub: 'npub',
         counterOfferAddr: 'counter offer address',
-        counterOfferUtxo: 'utxo txid'
+        counterOfferUtxo: 'utxo txid',
+        takerOfferUtxo: 'utxo txid',
+        tokenId: 'token id'
       }
 
       const counterOfferEntity = uut.validate({ data: inObj })
@@ -106,11 +158,20 @@ describe('#CounterOffer-Entity', () => {
       assert.property(counterOfferEntity, 'takerNpub')
       assert.equal(counterOfferEntity.takerNpub, inObj.takerNpub)
 
+      assert.property(counterOfferEntity, 'makerNpub')
+      assert.equal(counterOfferEntity.makerNpub, inObj.makerNpub)
+
       assert.property(counterOfferEntity, 'counterOfferAddr')
       assert.equal(counterOfferEntity.counterOfferAddr, inObj.counterOfferAddr)
 
       assert.property(counterOfferEntity, 'counterOfferUtxo')
       assert.equal(counterOfferEntity.counterOfferUtxo, inObj.counterOfferUtxo)
+
+      assert.property(counterOfferEntity, 'takerOfferUtxo')
+      assert.equal(counterOfferEntity.takerOfferUtxo, inObj.takerOfferUtxo)
+
+      assert.property(counterOfferEntity, 'tokenId')
+      assert.equal(counterOfferEntity.tokenId, inObj.tokenId)
     })
   })
 })
