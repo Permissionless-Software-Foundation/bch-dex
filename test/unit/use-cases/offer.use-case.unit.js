@@ -835,6 +835,25 @@ describe('#offer-use-case', () => {
   })
 
   describe('#acceptCounterOffer', () => {
+    it('should capture counter offer if does not exist', async () => {
+      const offerObj = mockData.offerMockData
+      sandbox.stub(uut.CounterOfferModel, 'findOne').resolves(null)
+      const spy = sandbox.stub(uut.CounterOfferModel.prototype, 'save')
+      // Mock dependencies
+
+      await uut.acceptCounterOffer(offerObj)
+      assert.isTrue(spy.calledOnce)
+    })
+    it('should not save counter offer if already exist', async () => {
+      const offerObj = mockData.offerMockData
+      sandbox.stub(uut.CounterOfferModel, 'findOne').resolves(offerObj.data)
+      const spy = sandbox.stub(uut.CounterOfferModel.prototype, 'save')
+      // Mock dependencies
+
+      await uut.acceptCounterOffer(offerObj)
+      assert.isFalse(spy.calledOnce)
+    })
+
     it('should return false if order already processed', async () => {
       const offerObj = mockData.offerMockData
       uut.seenOffers.push(offerObj.data.nostrEventId)
@@ -846,14 +865,18 @@ describe('#offer-use-case', () => {
 
     it('should return if order is not found!', async () => {
       // Mock dependencies
+      const offerObj = mockData.offerMockData
+
       sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').throws(new Error('test error'))
 
-      const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
+      const result = await uut.acceptCounterOffer(offerObj)
       assert.equal(result, 'N/A')
     })
 
     it('should return N/A on axios error', async () => {
       // Mock dependencies
+      const offerObj = mockData.offerMockData
+
       const mock = Object.assign({}, mockData.offerMockData.data)
       sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
       // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').throws(new Error('test error'))
@@ -861,32 +884,38 @@ describe('#offer-use-case', () => {
       axiosErr.isAxiosError = true
       sandbox.stub(uut.retryQueue, 'addToQueue').throws(axiosErr)
 
-      const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
+      const result = await uut.acceptCounterOffer(offerObj)
       assert.equal(result, 'N/A')
     })
     it('should return if utxo can not be validated', async () => {
       // Mock dependencies
+      const offerObj = mockData.offerMockData
+
       const mock = Object.assign({}, mockData.offerMockData.data)
       sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
       // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').throws(new Error('test error'))
       sandbox.stub(uut.retryQueue, 'addToQueue').throws(new Error('test error'))
 
-      const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
+      const result = await uut.acceptCounterOffer(offerObj)
       assert.equal(result, 'N/A')
     })
 
     it('should return if utxo is invalid', async () => {
       // Mock dependencies
+      const offerObj = mockData.offerMockData
+
       const mock = Object.assign({}, mockData.offerMockData.data)
       sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
       sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
 
-      const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
+      const result = await uut.acceptCounterOffer(offerObj)
       assert.equal(result, 'N/A')
     })
 
     it('should handle error if counter offer cant be calculated', async () => {
       try {
+        const offerObj = mockData.offerMockData
+
         // Mock Data
         const mock = Object.assign({}, mockData.offerMockData.data)
         mock.rateInBaseUnit = null
@@ -895,8 +924,7 @@ describe('#offer-use-case', () => {
         sandbox.stub(uut.orderUseCase, 'findOrderByEvent').resolves(mock)
         sandbox.stub(uut.orderUseCase, 'findOrderByUtxo').resolves(mock)
 
-        const result = await uut.acceptCounterOffer({ data: {} })
-        console.log('result: ', result)
+        await uut.acceptCounterOffer(offerObj)
         assert.fail('unexpected code path')
       } catch (err) {
         assert.include(err.message, 'Could not calculate the amount of BCH offered in the Counter Offer')
@@ -906,6 +934,7 @@ describe('#offer-use-case', () => {
     it('should handle error for wrong transaction output', async () => {
       try {
         // Mock Data
+
         const mock = Object.assign({}, mockData.offerMockData.data)
 
         // Mock dependencies
@@ -923,6 +952,7 @@ describe('#offer-use-case', () => {
 
     it('should skip transactions that do not have an output for the operator', async () => {
       // Mock data
+
       const mock = Object.assign({}, mockData.offerMockData.data)
       mock.makerAddr = 'bitcoincash:qzy97glp47ut7tstm5g0tlrmkhk742795gkmyc7477' // Unknow Adress
       mock.rateInBaseUnit = 0
@@ -934,7 +964,7 @@ describe('#offer-use-case', () => {
 
       sandbox.stub(uut.adapters.wallet, 'deseralizeTx').resolves(mockData.deserealizeTxMockNoOperatorOut)
 
-      const result = await uut.acceptCounterOffer({ data: { /** .... */ } })
+      const result = await uut.acceptCounterOffer({ data: mock })
       assert.equal(result, 'N/A')
     })
     it('should skip transactions if operator address does not match', async () => {
@@ -952,7 +982,7 @@ describe('#offer-use-case', () => {
 
         sandbox.stub(uut.adapters.wallet, 'deseralizeTx').resolves(mockData.deserealizeTxMock)
 
-        await uut.acceptCounterOffer({ data: {} })
+        await uut.acceptCounterOffer({ data: mock })
         assert.fail('unexpected code path')
       } catch (error) {
         assert.include(error.message, 'The Counter Offer has an output address of')
@@ -974,7 +1004,7 @@ describe('#offer-use-case', () => {
 
         sandbox.stub(uut.adapters.wallet, 'deseralizeTx').resolves(mockData.deserealizeTxMock)
 
-        await uut.acceptCounterOffer({ data: {} })
+        await uut.acceptCounterOffer({ data: mock })
         assert.fail('unexpected code path')
       } catch (err) {
         assert.include(err.message, 'The Counter Offer has an output address of')
@@ -997,7 +1027,7 @@ describe('#offer-use-case', () => {
 
       sandbox.stub(uut.adapters.wallet, 'deseralizeTx').resolves(mockData.deserealizeTxMock)
 
-      const result = await uut.acceptCounterOffer({ data: {} })
+      const result = await uut.acceptCounterOffer({ data: mock })
       assert.equal(result, 'N/A')
     })
 
@@ -1017,7 +1047,7 @@ describe('#offer-use-case', () => {
       sandbox.stub(uut.adapters.wallet, 'deseralizeTx').resolves(mockData.deserealizeTxMock)
 
       //
-      const result = await uut.acceptCounterOffer({ data: {} })
+      const result = await uut.acceptCounterOffer({ data: mock })
       assert.isString(result)
       assert.notEqual('N/A')
     })
@@ -1128,6 +1158,25 @@ describe('#offer-use-case', () => {
       const offer = await uut.syncOfferMutableData('tokenId')
       assert.isObject(offer)
       assert.isNumber(offer.lastUpdatedTokenData)
+    })
+  })
+  describe('#listCounterOffersByAddress', () => {
+    it('should throw an error if takerAddr is not provided!', async () => {
+      try {
+        await uut.listCounterOffersByAddress()
+
+        assert.fail('unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'takerAddr must be a string')
+      }
+    })
+
+    it('should return counter offers by address', async () => {
+      // Mock dependencies
+      sandbox.stub(uut.CounterOfferModel, 'find').resolves([])
+
+      const result = await uut.listCounterOffersByAddress('bitcoincash:qzltx40ldxr53edchprppj5lpg4q7vl20usx25ga44')
+      assert.isArray(result)
     })
   })
 })

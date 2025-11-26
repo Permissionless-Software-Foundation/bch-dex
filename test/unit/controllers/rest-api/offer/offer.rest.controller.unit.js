@@ -251,6 +251,28 @@ describe('#Offer-REST-Router', () => {
     })
   })
 
+  describe('#listCounterOffersByAddress', () => {
+    it('should list counter offers by address', async () => {
+      ctx.params = { addr: 'testAddress' }
+      sandbox.stub(uut.useCases.offer, 'listCounterOffersByAddress').resolves([])
+      await uut.listCounterOffersByAddress(ctx)
+      assert.isArray(ctx.body.counterOffers)
+    })
+    it('should catch and throw an error', async () => {
+      try {
+        ctx.params = { addr: 'testAddress' }
+        sandbox
+          .stub(uut.useCases.offer, 'listCounterOffersByAddress')
+          .throws(new Error('test error'))
+
+        await uut.listCounterOffersByAddress(ctx)
+        assert.fail('Unexpected code path')
+      } catch (err) {
+        assert.include(err.message, 'test error')
+      }
+    })
+  })
+
   describe('#handleError', () => {
     it('should still throw error if there is no message', () => {
       try {
