@@ -148,6 +148,7 @@ class OfferUseCases {
         const immutableDataCid = tokenData.immutableData
         offerEntity.mutableDataCid = mutableDataCid
         offerEntity.immutableDataCid = immutableDataCid
+        offerEntity.tokenData = tokenData
 
         // Get the mutable data from the cid if it exists.
         if (mutableDataCid && typeof mutableDataCid === 'string') {
@@ -1000,6 +1001,7 @@ class OfferUseCases {
         const immutableDataCid = tokenData.immutableData
         offer.mutableDataCid = mutableDataCid
         offer.immutableDataCid = immutableDataCid
+        offer.tokenData = tokenData
 
         // Get the mutable data from the cid if it exists.
         if (mutableDataCid && typeof mutableDataCid === 'string') {
