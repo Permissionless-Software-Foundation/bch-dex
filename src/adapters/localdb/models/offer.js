@@ -46,6 +46,7 @@ const Offer = new mongoose.Schema({
   immutableDataCid: { type: String, default: null },
   mutableDataCid: { type: String, default: null },
   tokenIconUrl: { type: String, default: null },
+  tokenData: { type: Object },
   tokenCategories: { type: Array, default: [] },
   tokenTags: { type: Array, default: [] },
   userDataStr: { type: String }, // Token user data

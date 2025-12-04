@@ -107,14 +107,14 @@ describe('#offer-use-case', () => {
       const result = await uut.createOffer(offerObj)
       assert.isFalse(result)
     })
-
-    it('should create offer with mutable data', async () => {
+    it('should create offer with token data', async () => {
       const tokenDataMock = mockData.nftTokenData01
       const offerObj = mockData.offerMockData
       const mutableDataMock = mockData.mutableDataMock
+      const offerEntityMock = Object.assign({}, mockData.offerMockData.data)
 
       // Mock dependencies
-      // sandbox.stub(uut.adapters.wallet.bchWallet, 'utxoIsValid').resolves(false)
+      sandbox.stub(uut.offerEntity, 'validate').returns(offerEntityMock)
       sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
       sandbox.stub(uut.retryQueue, 'addToQueue')
         .onCall(0).resolves({}) // Utxo Status call
@@ -123,6 +123,31 @@ describe('#offer-use-case', () => {
 
       const result = await uut.createOffer(offerObj)
       assert.isTrue(result)
+      console.log('offerEntityMock', offerEntityMock)
+      assert.property(offerEntityMock, 'tokenData')
+    })
+    it('should create offer with mutable data', async () => {
+      const tokenDataMock = mockData.nftTokenData01
+      const offerObj = mockData.offerMockData
+      const mutableDataMock = mockData.mutableDataMock
+      const offerEntityMock = Object.assign({}, mockData.offerMockData.data)
+
+      // Mock dependencies
+      sandbox.stub(uut.offerEntity, 'validate').returns(offerEntityMock)
+      sandbox.stub(uut, 'findOfferByTxid').throws(new Error('offer not found'))
+      sandbox.stub(uut.retryQueue, 'addToQueue')
+        .onCall(0).resolves({}) // Utxo Status call
+        .onCall(1).resolves(tokenDataMock) // Token Data call
+        .onCall(2).resolves(mutableDataMock)
+
+      const result = await uut.createOffer(offerObj)
+      assert.isTrue(result)
+      console.log('offerEntityMock', offerEntityMock)
+
+      assert.property(offerEntityMock, 'tokenIconUrl')
+      assert.property(offerEntityMock, 'tokenCategories')
+      assert.property(offerEntityMock, 'tokenTags')
+      assert.property(offerEntityMock, 'lastUpdatedTokenData')
     })
 
     it('should skip userData stringify error', async () => {
@@ -1106,6 +1131,12 @@ describe('#offer-use-case', () => {
       const offer = await uut.syncOfferMutableData('tokenId')
       assert.isObject(offer)
       assert.isNumber(offer.lastUpdatedTokenData)
+
+      assert.property(offer, 'tokenData')
+      assert.property(offer, 'tokenIconUrl')
+      assert.property(offer, 'tokenCategories')
+      assert.property(offer, 'tokenTags')
+      assert.property(offer, 'lastUpdatedTokenData')
     })
 
     it('should skip userData stringify error', async () => {
