@@ -481,7 +481,7 @@ class WalletAdapter {
 
       return txObj2
     } catch (err) {
-      console.error('Error in wallet.js/deserializeTx()')
+      console.error('Error in wallet.js/deserializeTx(): ', err)
       throw err
     }
   }
