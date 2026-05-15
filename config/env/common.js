@@ -80,7 +80,7 @@ export default {
     ? (
         process.env.APISERVER
           ? process.env.APISERVER
-          : 'https://api.fullstack.cash/v5/'
+          : 'https://bch.fullstack.cash/v6/'
       )
     : 'https://free-bch.fullstack.cash/',
 

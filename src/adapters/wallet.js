@@ -468,8 +468,9 @@ class WalletAdapter {
       }
       // Ensure the URL points at FullStack.cash, since the web 3 infra does not
       // yet support this call.
+      // TODO: Remove this once the web 3 infra supports this call.
       const oldUrl = this.bchWallet.bchjs.RawTransactions.restURL
-      this.bchWallet.bchjs.RawTransactions.restURL = 'https://api.fullstack.cash/v5/'
+      this.bchWallet.bchjs.RawTransactions.restURL = 'https://bch.fullstack.cash/v6/'
 
       // Use a full node to deserialize the transaction.
       const txObj2 = await this.bchWallet.bchjs.RawTransactions.decodeRawTransaction(txHex)
