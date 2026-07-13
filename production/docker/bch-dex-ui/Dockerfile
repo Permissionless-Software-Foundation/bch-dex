@@ -46,14 +46,14 @@ WORKDIR /home/safeuser
 
 # Clone the rest.bitcoin.com repository
 WORKDIR /home/safeuser
-RUN git clone https://github.com/Permissionless-Software-Foundation/bch-dex-ui-v3
+RUN git clone https://github.com/FullStack-Agents/bch-dex-ui-v3
 
 # Switch to the desired branch. `master` is usually stable,
 # and `stage` has the most up-to-date changes.
 WORKDIR /home/safeuser/bch-dex-ui-v3
 
 # For development: switch to unstable branch
-RUN git checkout ct-unstable
+RUN git checkout fullstackcash
 
 # Install dependencies
 #RUN mkdir .ipfsdata

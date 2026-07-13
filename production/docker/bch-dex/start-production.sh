@@ -31,4 +31,6 @@ export APP_ID=bch-dex-001
 
 #export P2WDB_URL=http://172.17.0.1:5667
 
+export OPERATOR_ADDRESS=bitcoincash:qzauj67nsqqmtu2pql7wcak3ct7lu2fppqkj0xwvwl
+export OPERATOR_PERCENTAGE=10.0
 npm start
