@@ -33,4 +33,10 @@ export APP_ID=bch-dex-001
 
 export OPERATOR_ADDRESS=bitcoincash:qzauj67nsqqmtu2pql7wcak3ct7lu2fppqkj0xwvwl
 export OPERATOR_PERCENTAGE=10.0
+
+export FULLSTACKCASH=false
+export APISERVER=http://192.168.2.156:5942/v6/
+export WALLET_INTERFACE=web2
+
+
 npm start

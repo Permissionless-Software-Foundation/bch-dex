@@ -38,7 +38,7 @@ services:
       - '4005:4005' # WebRTC
 
     volumes:
-      - ../scripts/wallet.json:/home/safeuser/bch-dex/wallet.json
+      - ../../../scripts/wallet.json:/home/safeuser/bch-dex/wallet.json
       - ./bch-dex/start-production.sh:/home/safeuser/bch-dex/start-production.sh
     restart: always
 
